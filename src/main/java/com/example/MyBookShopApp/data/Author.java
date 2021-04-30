@@ -5,6 +5,24 @@ public class Author {
     private Integer id;
     private String firstName;
     private String secondName;
+    private String biography;
+    private String linkPhoto;
+
+    public String getBiography() {
+        return biography;
+    }
+
+    public void setBiography(String biography) {
+        this.biography = biography;
+    }
+
+    public String getLinkPhoto() {
+        return linkPhoto;
+    }
+
+    public void setLinkPhoto(String linkPhoto) {
+        this.linkPhoto = linkPhoto;
+    }
 
     public Integer getId() {
         return id;

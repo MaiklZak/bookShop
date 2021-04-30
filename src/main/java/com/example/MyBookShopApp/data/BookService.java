@@ -1,10 +1,11 @@
 package com.example.MyBookShopApp.data;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,21 +14,20 @@ public class BookService {
 
     private final JdbcTemplate jdbcTemplate;
 
+    private final RowMapper<Book> mapper = new BeanPropertyRowMapper(Book.class);
+
     @Autowired
     public BookService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     public List<Book> getBookData() {
-        List<Book> books = jdbcTemplate.query("SELECT * FROM books", (ResultSet rs, int rowNum) -> {
-           Book book = new Book();
-           book.setId(rs.getInt("id"));
-           book.setAuthor(rs.getString("author"));
-           book.setTitle(rs.getString("title"));
-           book.setPriceOld(rs.getString("priceOld"));
-           book.setPrice(rs.getString("price"));
-           return book;
-        });
+        List<Book> books = jdbcTemplate.query("SELECT * FROM books b INNER JOIN authors a ON a.id = b.author_id", mapper);
+        return new ArrayList<>(books);
+    }
+
+    public List<Book> getBookByAuthor(Integer id) {
+        List<Book> books = jdbcTemplate.query("SELECT * FROM books b INNER JOIN authors a ON a.id = b.author_id WHERE a.id = ?", mapper, id);
         return new ArrayList<>(books);
     }
 }
