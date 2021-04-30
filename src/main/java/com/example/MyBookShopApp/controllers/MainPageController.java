@@ -1,40 +1,31 @@
 package com.example.MyBookShopApp.controllers;
 
-import com.example.MyBookShopApp.data.AuthorService;
+import com.example.MyBookShopApp.data.Book;
 import com.example.MyBookShopApp.data.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+
+import java.util.List;
 
 @Controller
-@RequestMapping("/bookshop")
 public class MainPageController {
 
     private final BookService bookService;
-    private final AuthorService authorService;
+
+    @ModelAttribute("recommendedBooks")
+    public List<Book> recommendedBooks() {
+        return bookService.getBookData();
+    }
 
     @Autowired
-    public MainPageController(BookService bookService, AuthorService authorService) {
+    public MainPageController(BookService bookService) {
         this.bookService = bookService;
-        this.authorService = authorService;
     }
 
-    @GetMapping("/main")
-    public String mainPage(Model model) {
-        model.addAttribute("bookData", bookService.getBookData());
+    @GetMapping("/")
+    public String mainPage() {
         return "index";
-    }
-
-    @GetMapping("/genres")
-    public String genresPage() {
-        return "genres/index";
-    }
-
-    @GetMapping("/authors")
-    public String authorsPage(Model model) {
-        model.addAttribute("authors", authorService.getAuthors());
-        return "authors/index";
     }
 }
