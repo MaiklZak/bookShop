@@ -12,7 +12,7 @@
 <html lang="ru" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"> <!--<![endif]-->
 <head>
-    <title>Авторы</title>
+    <title>Помощь</title>
     <meta name="description" content="Описание страницы">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
@@ -41,29 +41,17 @@
           | браузера здесь&nbsp;
       | для правильного отображения сайта.
   -->
-<header th:replace="~{fragments/header_fragment :: headFragment('authors')}"></header>
+<header th:replace="~{fragments/header_fragment :: headFragment('')}"></header>
 <div class="Middle">
     <div class="wrap">
         <main class="Middle-main">
-            <h1 class="Middle-title">Авторы
-            </h1>
-            <div class="Section">
-                <div class="Authors">
-                    <div class="Authors-links">
-                        <a th:each="authorList : ${authorsMap}" class="Authors-link" href="#a"
-                           th:href="'#' + ${#strings.toLowerCase(authorList.key)}" th:text="${authorList.key}">А</a>
-                    </div>
-                    <div class="Authors-block" th:each="authorList : ${authorsMap}">
-                        <h2 class="Authors-title" id="a" th:id="${#strings.toLowerCase(authorList.key)}" th:text="${authorList.key}">А
-                        </h2>
-                        <div class="Authors-letter">
-                            <div th:each="author : ${authorList.value}" class="Authors-item">
-                                <a href="/authors/slug.html" th:text="${author.lastName + ' ' + author.firstName}">Абгарян Наринэ</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <h2>Supplied directly pleasant we ignorant ecstatic of jointure so if</h2>
+
+            <p>Merry alone do it burst me songs. Sorry equal charm joy her those folly ham. In they no is many both.
+                Recommend new contented intention improving bed performed age. Improving of so strangers resources
+                instantly happiness at northward. Danger nearer length oppose really add now either. But ask regret eat
+                branch fat garden. Become am he except wishes. Past so at door we walk want such sang. Feeling colonel
+                get her garrets own.</p>
         </main>
     </div>
 </div>

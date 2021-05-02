@@ -12,7 +12,7 @@
 <html lang="ru" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"> <!--<![endif]-->
 <head>
-    <title>Авторы</title>
+    <title>Контакты</title>
     <meta name="description" content="Описание страницы">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
@@ -41,29 +41,22 @@
           | браузера здесь&nbsp;
       | для правильного отображения сайта.
   -->
-<header th:replace="~{fragments/header_fragment :: headFragment('authors')}"></header>
+<header th:replace="~{fragments/header_fragment :: headFragment('')}"></header>
 <div class="Middle">
     <div class="wrap">
         <main class="Middle-main">
-            <h1 class="Middle-title">Авторы
-            </h1>
-            <div class="Section">
-                <div class="Authors">
-                    <div class="Authors-links">
-                        <a th:each="authorList : ${authorsMap}" class="Authors-link" href="#a"
-                           th:href="'#' + ${#strings.toLowerCase(authorList.key)}" th:text="${authorList.key}">А</a>
-                    </div>
-                    <div class="Authors-block" th:each="authorList : ${authorsMap}">
-                        <h2 class="Authors-title" id="a" th:id="${#strings.toLowerCase(authorList.key)}" th:text="${authorList.key}">А
-                        </h2>
-                        <div class="Authors-letter">
-                            <div th:each="author : ${authorList.value}" class="Authors-item">
-                                <a href="/authors/slug.html" th:text="${author.lastName + ' ' + author.firstName}">Абгарян Наринэ</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <h2>Turned it up should no valley cousin he</h2>
+
+            <p>He do subjects prepared bachelor juvenile ye oh. He feelings removing informed he as ignorant we
+                prepared. Evening do forming observe spirits is in. Country hearted be of justice sending. On so they as
+                with room cold ye. Be call four my went mean. Celebrated if remarkably especially an. Going eat set she
+                books found met aware.</p>
+
+            <p>Smile spoke total few great had never their too. Amongst moments do in arrived at my replied. Fat
+                weddings servants but man believed prospect. Companions understood is as especially pianoforte
+                connection introduced. Nay newspaper can sportsman are admitting gentleman belonging his. Is oppose no
+                he summer lovers twenty in. Not his difficulty boisterous surrounded bed. Seems folly if in given scale.
+                Sex contented dependent conveying advantage can use.</p>
         </main>
     </div>
 </div>
