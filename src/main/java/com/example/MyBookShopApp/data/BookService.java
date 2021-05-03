@@ -30,4 +30,19 @@ public class BookService {
         List<Book> books = jdbcTemplate.query("SELECT * FROM books WHERE title = ?", mapper, title);
         return new ArrayList<>(books);
     }
+
+    public List<Book> getBookNews() {
+        List<Book> books = jdbcTemplate.query("SELECT * FROM books LIMIT(20)", mapper);
+        return new ArrayList<>(books);
+    }
+
+    public List<Book> getBookPopular() {
+        List<Book> books = jdbcTemplate.query("SELECT * FROM books ORDER BY 1 DESC LIMIT(20)", mapper);
+        return new ArrayList<>(books);
+    }
+
+    public Book getBookById(Integer id) {
+        List<Book> books = jdbcTemplate.query("SELECT * FROM books WHERE id = ?", mapper, id);
+        return books.stream().findAny().orElse(null);
+    }
 }

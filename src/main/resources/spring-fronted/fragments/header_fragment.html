@@ -3,6 +3,21 @@
 
 <body>
 <header class="Header" th:fragment="headFragment(chapter)">
+
+    <th:block>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#locales").change(function () {
+                    var selectedOption = $("#locales").val();
+                    if (selectedOption != '') {
+                        window.location.replace('?lang=' + selectedOption);
+                    }
+                });
+            });
+        </script>
+    </th:block>
+
     <div class="Header-rowMain">
         <div class="wrap">
             <div class="row">
@@ -24,10 +39,10 @@
                     </div>
                     <div class="Header-search">
                         <div class="search">
-                            <form class="form form_search" action="" method="post" data-searchlimit="20" >
+                            <form class="form form_search" action="" method="post" data-searchlimit="20">
                                 <input class="search-input" id="query" name="query" type="text"
                                        placeholder="Search over 30 million book titles" value=""/>
-                                <button class="search-button" type="submit" name="search" id="search">Поиск
+                                <button class="search-button" type="submit" name="search" id="search" th:text="#{topbar.search}">Поиск
                                 </button>
                             </form>
                         </div>
@@ -66,6 +81,11 @@
                         </svg>
                     </a>
                     </div>
+                    <select style="margin-left:50px;" id="locales">
+                        <option value="" th:text="#{topbar.language}"></option>
+                        <option value="en">English</option>
+                        <option value="ru">Русский</option>
+                    </select>
                 </div>
                 <div class="row-block Header-trigger"><a class="menuTrigger" href="#navigate">
                     <div class="menuTrigger-content">Показать навигацию
@@ -80,24 +100,52 @@
             <nav class="menuModal" id="navigate">
                 <ul class="menu menu_main">
                     <li th:class="${chapter == 'main' ? 'menu-item menu-item_ACTIVE' : 'menu-item'}">
-                        <a class="menu-link"  th:href="@{/}">Главная</a>
+                        <a class="menu-link" th:href="@{/}" th:text="#{topbar.main}">Главная</a>
                     </li>
                     <li th:class="${chapter == 'genres' ? 'menu-item menu-item_ACTIVE' : 'menu-item'}">
-                        <a class="menu-link" th:href="@{/genres}">Жанры</a>
+                        <a class="menu-link" th:href="@{/genres}" th:text="#{topbar.genres}">Жанры</a>
                     </li>
                     <li th:class="${chapter == 'recent' ? 'menu-item menu-item_ACTIVE' : 'menu-item'}">
-                        <a class="menu-link" th:href="@{/recent}">Новинки</a>
+                        <a class="menu-link" th:href="@{/recent}" th:text="#{topbar.news}">Новинки</a>
                     </li>
                     <li th:class="${chapter == 'popular' ? 'menu-item menu-item_ACTIVE' : 'menu-item'}">
-                        <a class="menu-link" th:href="@{/popular}">Популярное</a>
+                        <a class="menu-link" th:href="@{/popular}" th:text="#{topbar.popular}">Популярное</a>
                     </li>
                     <li th:class="${chapter == 'authors' ? 'menu-item menu-item_ACTIVE' : 'menu-item'}">
-                        <a class="menu-link" th:href="@{/authors}">Авторы</a>
+                        <a class="menu-link" th:href="@{/authors}" th:text="#{topbar.authors}">Авторы</a>
                     </li>
+                    <li th:class="'menu-item'"></li>
+<!--                    <li th:class="'menu-item'">-->
+<!--                        <select id="locales">-->
+<!--                            <option value="" th:text="#{topbar.language}"></option>-->
+<!--                            <option value="en">English</option>-->
+<!--                            <option value="ru">Русский</option>-->
+<!--                        </select>-->
+<!--                    </li>-->
                 </ul>
             </nav>
         </div>
     </div>
 </header>
+
+<head th:fragment="head(title)">
+    <title th:text="${title}">Автор</title>
+    <meta name="description" content="Описание страницы">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <!--meta( http-equiv="cache-control" content="no-cache")-->
+    <!--meta( http-equiv="expires" content="0")-->
+    <!--link(rel="preload" href="assets/css/extra.min.css?v=" + version as="style" crossorigin="anonymous")-->
+    <link href="favicon.ico" rel="shortcut icon">
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin="anonymous">
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Light.woff2" as="font" crossorigin="anonymous">
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Medium.woff2" as="font" crossorigin="anonymous">
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-ExtraBold.woff2" as="font" crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/css/fonts.min.css?v=40130258">
+    <link rel="stylesheet" href="/assets/css/basic.min.css?v=40130258">
+    <link rel="stylesheet" href="/assets/css/extra.min.css?v=40130258"><!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <script defer src="/assets/js/scripts.min.js?v=40130258"></script>
+</head>
 </body>
 </html>

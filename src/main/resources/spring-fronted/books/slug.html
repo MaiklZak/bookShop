@@ -11,7 +11,7 @@
 <![endif]-->
 <!--[if gt IE 9]><!--> <html lang="ru" xmlns="http://www.w3.org/1999/xhtml"
                              xmlns:th="http://www.thymeleaf.org"> <!--<![endif]-->
-<head th:replace="~{fragments/header_fragment :: head(#{topbar.search})}"></head>
+<head th:replace="~{fragments/header_fragment :: head(#{title.book})}"></head>
 <body class="Site">
 <!--if lt IE 8
 p.error-browser
@@ -29,17 +29,23 @@ p.error-browser
       <ul class="breadcrumbs">
         <li class="breadcrumbs-item"><a th:href="@{/}" th:text="#{topbar.main}">Главная</a>
         </li>
-        <li class="breadcrumbs-item"><a href="/genres/index.html" th:text="#{title.books}">Книги</a>
+        <li class="breadcrumbs-item"><a th:href="@{/genres}" th:text="#{title.books}">Книги</a>
         </li>
-        <li class="breadcrumbs-item breadcrumbs-item_current"><span>Популярное</span>
+        <li class="breadcrumbs-item breadcrumbs-item_current"><span th:text="${book.title}"></span>
         </li>
       </ul>
-      <div class="Section">
-        <div class="Section-header">
-          <h1 class="Section-title" th:text="#{section.found}">Найдено
-          </h1>
+      <div class="Card"><a class="Card-picture" th:href="@{/books/slug(id=${book.id})}"><img
+              src="/assets/img/content/main/card.jpg" alt="card.jpg"/></a>
+        <div class="Card-content">
+          <strong class="Card-title"><a th:href="@{/books/slug(id=${book.id})}" th:text="${book.title}">Техника</a>
+          </strong>
+          <div class="Card-description" th:text="${book.author}">Кондратенко Валерий
+            Петрович
+          </div>
+          <div class="Card-cost"><span class="Card-priceOld" th:text="${book.priceOld}">₽300.00</span>
+            <span class="Card-price" th:text="${book.price}">₽190.00</span>
+          </div>
         </div>
-        <div th:replace="~{fragments/bookList :: bookListCard(${books})}"></div>
       </div>
     </main>
   </div>

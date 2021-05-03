@@ -1,7 +1,9 @@
 package com.example.MyBookShopApp.data;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
@@ -13,6 +15,8 @@ import java.util.stream.Collectors;
 public class AuthorService {
 
     private final JdbcTemplate jdbcTemplate;
+
+    private final RowMapper<Author> mapper = new BeanPropertyRowMapper(Author.class);
 
     @Autowired
     public AuthorService(JdbcTemplate jdbcTemplate) {
@@ -28,5 +32,10 @@ public class AuthorService {
             return author;
         });
         return authors.stream().collect(Collectors.groupingBy((Author a) -> {return a.getLastName().substring(0, 1);}));
+    }
+
+    public Author getAuthorById(Integer id) {
+            List<Author> authors = jdbcTemplate.query("SELECT * FROM authors WHERE id = ?", mapper, id);
+            return authors.stream().findAny().orElse(null);
     }
 }
