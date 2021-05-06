@@ -1,25 +1,25 @@
 package com.example.MyBookShopApp.config;
 
+import com.example.MyBookShopApp.data.BookRepository;
 import com.example.MyBookShopApp.data.TestEntity;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import com.example.MyBookShopApp.data.TestEntityCrudRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
-import javax.persistence.EntityManagerFactory;
 import java.util.logging.Logger;
 
 @Configuration
 public class CommandLineRunnerImpl implements CommandLineRunner {
 
+    TestEntityCrudRepository testEntityCrudRepository;
 
-    private final EntityManagerFactory entityManagerFactory;
+    BookRepository bookRepository;
 
     @Autowired
-    public CommandLineRunnerImpl(EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
+    public CommandLineRunnerImpl(TestEntityCrudRepository testEntityCrudRepository, BookRepository bookRepository) {
+        this.testEntityCrudRepository = testEntityCrudRepository;
+        this.bookRepository = bookRepository;
     }
 
     @Override
@@ -44,91 +44,29 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         }
 
         deleteTestEntityById(4L);
+
+        Logger.getLogger(CommandLineRunnerImpl.class.getSimpleName()).info(bookRepository.findBooksByAuthor_FirstName("Brade").toString());
+        Logger.getLogger(CommandLineRunnerImpl.class.getSimpleName()).info(bookRepository.customFindAllBooks().toString());
     }
 
     private void deleteTestEntityById(Long id) {
-        Session session = entityManagerFactory.createEntityManager().unwrap(Session.class);
-        Transaction tx = null;
-
-        try {
-            tx = session.beginTransaction();
-            TestEntity findEntity = readTestEntityById(id);
-            TestEntity mergeTestEntity = (TestEntity) session.merge(findEntity);
-            session.remove(mergeTestEntity);
-            tx.commit();
-        } catch (HibernateException hex) {
-            if (tx != null) {
-                tx.rollback();
-            } else {
-                hex.printStackTrace();
-            }
-        } finally {
-            session.close();
-        }
+        TestEntity testEntity = testEntityCrudRepository.findById(id).get();
+        testEntityCrudRepository.delete(testEntity);
     }
 
     private TestEntity updateTestEntityById(Long id) {
-        Session session = entityManagerFactory.createEntityManager().unwrap(Session.class);
-        Transaction tx = null;
-        TestEntity result = null;
-
-        try {
-            tx = session.beginTransaction();
-            TestEntity findEntity = readTestEntityById(id);
-            findEntity.setData("NEW DATA UPDATE");
-            result = (TestEntity) session.merge(findEntity);
-            result = session.find(TestEntity.class, id);
-            tx.commit();
-        } catch (HibernateException hex) {
-            if (tx != null) {
-                tx.rollback();
-            } else {
-                hex.printStackTrace();
-            }
-        } finally {
-            session.close();
-        }
-        return result;
+        TestEntity testEntity = testEntityCrudRepository.findById(id).get();
+        testEntity.setData("NEW DATA");
+        testEntityCrudRepository.save(testEntity);
+        return testEntity;
     }
 
     private TestEntity readTestEntityById(Long id) {
-        Session session = entityManagerFactory.createEntityManager().unwrap(Session.class);
-        Transaction tx = null;
-        TestEntity result = null;
-
-        try {
-            tx = session.beginTransaction();
-            result = session.find(TestEntity.class, id);
-            tx.commit();
-        } catch (HibernateException hex) {
-            if (tx != null) {
-                tx.rollback();
-            } else {
-                hex.printStackTrace();
-            }
-        } finally {
-            session.close();
-        }
-        return result;
+        return testEntityCrudRepository.findById(id).get();
     }
 
     private void createTestEntity(TestEntity entity) {
-        Session session = entityManagerFactory.createEntityManager().unwrap(Session.class);
-        Transaction tx = null;
-
-        try {
-            tx = session.beginTransaction();
-            entity.setData(entity.getClass().getSimpleName() + entity.hashCode());
-            session.save(entity);
-            tx.commit();
-        } catch (HibernateException hex) {
-            if (tx != null) {
-                tx.rollback();
-            } else {
-                hex.printStackTrace();
-            }
-        } finally {
-            session.close();
-        }
+        entity.setData(entity.getClass().getSimpleName() + entity.hashCode());
+        testEntityCrudRepository.save(entity);
     }
 }
