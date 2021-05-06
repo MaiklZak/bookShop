@@ -1,4 +1,7 @@
-package com.example.MyBookShopApp.data;
+package com.example.MyBookShopApp.data.model;
+
+import com.example.MyBookShopApp.data.model.Author;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 
@@ -9,7 +12,6 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
 
     @ManyToOne()
     @JoinColumn(name = "author_id", referencedColumnName = "id")
