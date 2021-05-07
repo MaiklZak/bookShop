@@ -13,4 +13,8 @@
 
     <include file="db/changelog/set/drop-column.xml"/>
 
+    <changeSet id="data" author="postgres">
+        <sqlFile path="data.sql"/>
+    </changeSet>
+
 </databaseChangeLog>
