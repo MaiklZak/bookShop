@@ -10,6 +10,9 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     List<Book> findBooksByAuthor_FirstName(String name);
 
+//    @Query("FROM Book b JOIN Author a ON b.author.id = a.id")
     @Query("FROM Book")
     List<Book> customFindAllBooks();
+
+    List<Book> findBookByUsers_Name(String name);
 }

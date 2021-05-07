@@ -1,8 +1,10 @@
 package com.example.MyBookShopApp.config;
 
-import com.example.MyBookShopApp.data.repositories.BookRepository;
 import com.example.MyBookShopApp.data.model.TestEntity;
+import com.example.MyBookShopApp.data.repositories.AuthorRepository;
+import com.example.MyBookShopApp.data.repositories.BookRepository;
 import com.example.MyBookShopApp.data.repositories.TestEntityCrudRepository;
+import com.example.MyBookShopApp.data.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
@@ -16,10 +18,16 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
 
     BookRepository bookRepository;
 
+    AuthorRepository authorRepository;
+
+    UserRepository userRepository;
+
     @Autowired
-    public CommandLineRunnerImpl(TestEntityCrudRepository testEntityCrudRepository, BookRepository bookRepository) {
+    public CommandLineRunnerImpl(TestEntityCrudRepository testEntityCrudRepository, BookRepository bookRepository, AuthorRepository authorRepository, UserRepository userRepository) {
         this.testEntityCrudRepository = testEntityCrudRepository;
         this.bookRepository = bookRepository;
+        this.authorRepository = authorRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -31,14 +39,14 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         TestEntity readTestEntity = readTestEntityById(3L);
 
         if (readTestEntity != null) {
-            Logger.getLogger(CommandLineRunnerImpl.class.getSimpleName()).info("read" + readTestEntity.toString());
+            Logger.getLogger(CommandLineRunnerImpl.class.getSimpleName()).info("read " + readTestEntity.toString());
         } else {
             throw new NullPointerException();
         }
 
         TestEntity updatedTestEntity = updateTestEntityById(5L);
         if (updatedTestEntity != null) {
-            Logger.getLogger(CommandLineRunnerImpl.class.getSimpleName()).info("update" + updatedTestEntity.toString());
+            Logger.getLogger(CommandLineRunnerImpl.class.getSimpleName()).info("update " + updatedTestEntity.toString());
         } else {
             throw new NullPointerException();
         }
@@ -47,6 +55,11 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
 
         Logger.getLogger(CommandLineRunnerImpl.class.getSimpleName()).info(bookRepository.findBooksByAuthor_FirstName("Brade").toString());
         Logger.getLogger(CommandLineRunnerImpl.class.getSimpleName()).info(bookRepository.customFindAllBooks().toString());
+        Logger.getLogger(CommandLineRunnerImpl.class.getSimpleName()).info(authorRepository.findById(13).get().toString());
+        Logger.getLogger(CommandLineRunnerImpl.class.getSimpleName()).info(userRepository.findAll().toString());
+        Logger.getLogger(CommandLineRunnerImpl.class.getSimpleName()).info(bookRepository.findBookByUsers_Name("Sonsing").toString());
+        Logger.getLogger(CommandLineRunnerImpl.class.getSimpleName()).info(userRepository.findUserByBooksTitle("Quo Lux").toString());
+
     }
 
     private void deleteTestEntityById(Long id) {

@@ -1,9 +1,11 @@
 package com.example.MyBookShopApp.data.model;
 
-import com.example.MyBookShopApp.data.model.Author;
-import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "books")
@@ -19,6 +21,17 @@ public class Book {
     private String title;
     private String priceOld;
     private String price;
+
+    @ManyToMany(mappedBy = "books")
+    private Set<User> users = new HashSet<>();
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
 
     public Author getAuthor() {
         return author;
