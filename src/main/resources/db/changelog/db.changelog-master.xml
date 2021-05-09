@@ -9,9 +9,9 @@
 
     <include file="db/changelog/liquibase-outputChangeLog.xml"/>
 
-    <include file="db/changelog/set/add-column.xml"/>
+<!--    <include file="db/changelog/set/add-column.xml"/>-->
 
-    <include file="db/changelog/set/drop-column.xml"/>
+<!--    <include file="db/changelog/set/drop-column.xml"/>-->
 
     <changeSet id="data" author="postgres">
         <sqlFile path="data.sql"/>

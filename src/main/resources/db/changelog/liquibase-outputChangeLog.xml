@@ -1,63 +1,81 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet author="postgres" id="1620410313169-1">
+    <changeSet author="postgres" id="1620582878342-1">
         <createSequence sequenceName="authors_id_seq"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-2">
+    <changeSet author="postgres" id="1620582878342-2">
         <createSequence sequenceName="authors_id_seq1"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-3">
+    <changeSet author="postgres" id="1620582878342-3">
         <createSequence sequenceName="authors_id_seq2"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-4">
+    <changeSet author="postgres" id="1620582878342-4">
         <createSequence sequenceName="authors_id_seq3"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-5">
+    <changeSet author="postgres" id="1620582878342-5">
         <createSequence sequenceName="authors_id_seq4"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-6">
+    <changeSet author="postgres" id="1620582878342-6">
+        <createSequence sequenceName="authors_id_seq5"/>
+    </changeSet>
+    <changeSet author="postgres" id="1620582878342-7">
         <createSequence sequenceName="books_id_seq"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-7">
+    <changeSet author="postgres" id="1620582878342-8">
         <createSequence sequenceName="books_id_seq1"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-8">
+    <changeSet author="postgres" id="1620582878342-9">
         <createSequence sequenceName="books_id_seq2"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-9">
+    <changeSet author="postgres" id="1620582878342-10">
         <createSequence sequenceName="books_id_seq3"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-10">
+    <changeSet author="postgres" id="1620582878342-11">
         <createSequence sequenceName="books_id_seq4"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-11">
+    <changeSet author="postgres" id="1620582878342-12">
+        <createSequence sequenceName="books_id_seq5"/>
+    </changeSet>
+    <changeSet author="postgres" id="1620582878342-13">
+        <createSequence sequenceName="documents_id_seq"/>
+    </changeSet>
+    <changeSet author="postgres" id="1620582878342-14">
+        <createSequence sequenceName="genres_id_seq"/>
+    </changeSet>
+    <changeSet author="postgres" id="1620582878342-15">
         <createSequence sequenceName="test_entities_id_seq"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-12">
+    <changeSet author="postgres" id="1620582878342-16">
         <createSequence sequenceName="test_entities_id_seq1"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-13">
+    <changeSet author="postgres" id="1620582878342-17">
         <createSequence sequenceName="test_entities_id_seq2"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-14">
+    <changeSet author="postgres" id="1620582878342-18">
         <createSequence sequenceName="test_entities_id_seq3"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-15">
+    <changeSet author="postgres" id="1620582878342-19">
         <createSequence sequenceName="test_entities_id_seq4"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-16">
+    <changeSet author="postgres" id="1620582878342-20">
+        <createSequence sequenceName="test_entities_id_seq5"/>
+    </changeSet>
+    <changeSet author="postgres" id="1620582878342-21">
         <createSequence sequenceName="users_id_seq"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-17">
+    <changeSet author="postgres" id="1620582878342-22">
         <createSequence sequenceName="users_id_seq1"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-18">
+    <changeSet author="postgres" id="1620582878342-23">
         <createSequence sequenceName="users_id_seq2"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-19">
+    <changeSet author="postgres" id="1620582878342-24">
         <createSequence sequenceName="users_id_seq3"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-20">
+    <changeSet author="postgres" id="1620582878342-25">
+        <createSequence sequenceName="users_id_seq4"/>
+    </changeSet>
+    <changeSet author="postgres" id="1620582878342-26">
         <createTable tableName="authors">
             <column autoIncrement="true" name="id" type="SERIAL">
                 <constraints primaryKey="true" primaryKeyName="authors_pkey"/>
@@ -66,7 +84,17 @@
             <column name="last_name" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-21">
+    <changeSet author="postgres" id="1620582878342-27">
+        <createTable tableName="book_genre">
+            <column name="genre_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="book_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="postgres" id="1620582878342-28">
         <createTable tableName="books">
             <column autoIncrement="true" name="id" type="SERIAL">
                 <constraints primaryKey="true" primaryKeyName="books_pkey"/>
@@ -77,7 +105,24 @@
             <column name="author_id" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-22">
+    <changeSet author="postgres" id="1620582878342-29">
+        <createTable tableName="documents">
+            <column autoIncrement="true" name="id" type="SERIAL">
+                <constraints primaryKey="true" primaryKeyName="documents_pkey"/>
+            </column>
+            <column name="text" type="VARCHAR(255)"/>
+            <column name="title" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="postgres" id="1620582878342-30">
+        <createTable tableName="genres">
+            <column autoIncrement="true" name="id" type="SERIAL">
+                <constraints primaryKey="true" primaryKeyName="genres_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="postgres" id="1620582878342-31">
         <createTable tableName="test_entities">
             <column autoIncrement="true" name="id" type="BIGSERIAL">
                 <constraints primaryKey="true" primaryKeyName="test_entities_pkey"/>
@@ -85,7 +130,7 @@
             <column name="data" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-23">
+    <changeSet author="postgres" id="1620582878342-32">
         <createTable tableName="user_book">
             <column name="user_id" type="INT">
                 <constraints nullable="false"/>
@@ -95,7 +140,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-24">
+    <changeSet author="postgres" id="1620582878342-33">
         <createTable tableName="users">
             <column autoIncrement="true" name="id" type="SERIAL">
                 <constraints primaryKey="true" primaryKeyName="users_pkey"/>
@@ -104,16 +149,25 @@
             <column name="name" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-25">
+    <changeSet author="postgres" id="1620582878342-34">
+        <addPrimaryKey columnNames="genre_id, book_id" constraintName="book_genre_pkey" tableName="book_genre"/>
+    </changeSet>
+    <changeSet author="postgres" id="1620582878342-35">
         <addPrimaryKey columnNames="user_id, book_id" constraintName="user_book_pkey" tableName="user_book"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-26">
-        <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="books" constraintName="fkfjixh2vym2cvfj3ufxj91jem7" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="authors"/>
+    <changeSet author="postgres" id="1620582878342-36">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="book_genre" constraintName="fk_book_genre_book_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="books"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-27">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_book" constraintName="fkhon6i1tqj4tp43386dq6uo9ch" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users"/>
+    <changeSet author="postgres" id="1620582878342-37">
+        <addForeignKeyConstraint baseColumnNames="genre_id" baseTableName="book_genre" constraintName="fk_book_genre_genre_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="genres"/>
     </changeSet>
-    <changeSet author="postgres" id="1620410313169-28">
-        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="user_book" constraintName="fkpdj1sbs1l1n6mxv71humguylo" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="books"/>
+    <changeSet author="postgres" id="1620582878342-38">
+        <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="books" constraintName="fk_books_author_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="authors"/>
+    </changeSet>
+    <changeSet author="postgres" id="1620582878342-39">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="user_book" constraintName="fk_user_book_book_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="books"/>
+    </changeSet>
+    <changeSet author="postgres" id="1620582878342-40">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_book" constraintName="fk_user_book_user_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users"/>
     </changeSet>
 </databaseChangeLog>

@@ -22,6 +22,17 @@ public class Book {
     private String priceOld;
     private String price;
 
+    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
+    private Set<Genre> genres = new HashSet<>();
+
+    public Set<Genre> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(Set<Genre> genres) {
+        this.genres = genres;
+    }
+
     @ManyToMany(mappedBy = "books")
     private Set<User> users = new HashSet<>();
 
@@ -81,6 +92,7 @@ public class Book {
                 ", title='" + title + '\'' +
                 ", priceOld='" + priceOld + '\'' +
                 ", price='" + price + '\'' +
+                ", genres='" + genres + '\'' +
                 '}';
     }
 }
