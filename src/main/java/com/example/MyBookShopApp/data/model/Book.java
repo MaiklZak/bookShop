@@ -1,14 +1,15 @@
 package com.example.MyBookShopApp.data.model;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "books")
+@NamedEntityGraph(name = "Book.authorsAndGenres", attributeNodes = {
+        @NamedAttributeNode("author"),
+        @NamedAttributeNode("genres")
+})
 public class Book {
 
     @Id
@@ -18,12 +19,14 @@ public class Book {
     @ManyToOne()
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private Author author;
+
+    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
+    private Set<Genre> genres = new HashSet<>();
+
     private String title;
     private String priceOld;
     private String price;
 
-    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
-    private Set<Genre> genres = new HashSet<>();
 
     public Set<Genre> getGenres() {
         return genres;
@@ -88,11 +91,11 @@ public class Book {
     public String toString() {
         return "Book{" +
                 "id=" + id +
-                ", author=" + author +
+//                ", author=" + author +
                 ", title='" + title + '\'' +
                 ", priceOld='" + priceOld + '\'' +
                 ", price='" + price + '\'' +
-                ", genres='" + genres + '\'' +
+//                ", genres='" + genres + '\'' +
                 '}';
     }
 }
