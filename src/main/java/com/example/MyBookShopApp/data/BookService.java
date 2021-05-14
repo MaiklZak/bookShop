@@ -1,9 +1,12 @@
 package com.example.MyBookShopApp.data;
 
+import com.example.MyBookShopApp.data.model.Book;
+import com.example.MyBookShopApp.data.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,4 +60,16 @@ public class BookService {
         Pageable nextPage = PageRequest.of(offset, limit);
         return bookRepository.findBookByTitleContaining(searchWord, nextPage);
     }
+
+    public Page<Book> getPageOfRecentBooks(int offset, int limit) {
+        Pageable nextPage = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "pubDate", "title"));
+        return bookRepository.findAll(nextPage);
+    }
+
+    public List<Book> getPageOfPopularBooks(int offset, int limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return bookRepository.findPopularBooks(nextPage);
+    }
+
+
 }

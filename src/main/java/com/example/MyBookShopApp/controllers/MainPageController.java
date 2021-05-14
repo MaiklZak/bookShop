@@ -1,9 +1,9 @@
 package com.example.MyBookShopApp.controllers;
 
-import com.example.MyBookShopApp.data.Book;
 import com.example.MyBookShopApp.data.BookService;
-import com.example.MyBookShopApp.data.BooksPageDto;
-import com.example.MyBookShopApp.data.SearchWordDto;
+import com.example.MyBookShopApp.data.dto.BooksPageDto;
+import com.example.MyBookShopApp.data.dto.SearchWordDto;
+import com.example.MyBookShopApp.data.model.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +20,16 @@ public class MainPageController {
     @ModelAttribute("recommendedBooks")
     public List<Book> recommendedBooks() {
         return bookService.getPageOfRecommendedBooks(0, 6).getContent();
+    }
+
+    @ModelAttribute("recentBooks")
+    public List<Book> recentBooks() {
+        return bookService.getPageOfRecentBooks(0, 6).getContent();
+    }
+
+    @ModelAttribute("popularBooks")
+    public List<Book> popularBooks() {
+        return bookService.getPageOfPopularBooks(0, 6);
     }
 
     @ModelAttribute("searchWordDto")
@@ -46,6 +56,18 @@ public class MainPageController {
     @ResponseBody
     public BooksPageDto getBooksPage(@RequestParam("offset") Integer offset, @RequestParam("limit") Integer limit) {
         return new BooksPageDto(bookService.getPageOfRecommendedBooks(offset, limit).getContent());
+    }
+
+    @GetMapping("/books/recent")
+    @ResponseBody
+    public BooksPageDto getRecentBooksPage(@RequestParam("offset") Integer offset, @RequestParam("limit") Integer limit) {
+        return new BooksPageDto(bookService.getPageOfRecentBooks(offset, limit).getContent());
+    }
+
+    @GetMapping("/books/popular")
+    @ResponseBody
+    public BooksPageDto getPopularBooksPage(@RequestParam("offset") Integer offset, @RequestParam("limit") Integer limit) {
+        return new BooksPageDto(bookService.getPageOfPopularBooks(offset, limit));
     }
 
     @GetMapping(value = {"/search", "/search/{searchWord}"})

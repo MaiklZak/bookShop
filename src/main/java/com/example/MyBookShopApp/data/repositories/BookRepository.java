@@ -1,5 +1,6 @@
-package com.example.MyBookShopApp.data;
+package com.example.MyBookShopApp.data.repositories;
 
+import com.example.MyBookShopApp.data.model.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface BookRepository extends JpaRepository<Book, Integer> {
+
 
     List<Book> findBooksByAuthor_FirstName(String name);
 
@@ -31,4 +33,18 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     List<Book> getBooksWithMaxDiscount();
 
     Page<Book> findBookByTitleContaining(String bookTitle, Pageable nextPage);
+
+    @Query(value = "SELECT id, description, image, is_bestseller, discount, price, pub_date, slug, title, author_id FROM books INNER JOIN (SELECT book_id, SUM(popul) AS pop FROM (SELECT book_id, type_id, \n" +
+                "CASE \n" +
+                "WHEN type_id = 3 THEN COUNT(*) \n" +
+                "WHEN type_id = 2 THEN COUNT(*) * 0.7\n" +
+                "WHEN type_id = 1 THEN COUNT(*) * 0.4\n" +
+                "ELSE 0 END as popul\n" +
+                "FROM book2user bu INNER JOIN book2user_type but ON bu.type_id = but.id GROUP BY 1, 2) AS tab1\n" +
+                "GROUP BY 1 ORDER BY 2 DESC) AS tab2 \n" +
+                "ON books.id = tab2.book_id\n" +
+                "ORDER BY pop DESC", nativeQuery = true)
+    List<Book> findPopularBooks(Pageable nextPage);
+
+//    Page<Book> findBooksByIdIn(List<Integer> idBooks, Pageable nextPage);
 }

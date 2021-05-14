@@ -1,4 +1,4 @@
-package com.example.MyBookShopApp.data;
+package com.example.MyBookShopApp.data.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "books")
@@ -53,6 +54,10 @@ public class Book {
     @Column(name = "discount")
     @JsonProperty("discount value for book")
     private Double price;
+
+    @OneToMany(mappedBy = "book")
+    @JsonIgnore
+    private Set<BookUser> bookUser;
 
     public Date getPubDate() {
         return pubDate;
@@ -132,6 +137,14 @@ public class Book {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Set<BookUser> getBookUser() {
+        return bookUser;
+    }
+
+    public void setBookUser(Set<BookUser> bookUser) {
+        this.bookUser = bookUser;
     }
 
     @Override
