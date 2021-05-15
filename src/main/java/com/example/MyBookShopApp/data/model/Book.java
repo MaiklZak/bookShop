@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -58,6 +59,18 @@ public class Book {
     @OneToMany(mappedBy = "book")
     @JsonIgnore
     private Set<BookUser> bookUser;
+
+    @ManyToMany(mappedBy = "books")
+    @JsonIgnore
+    private Set<Tag> tags = new HashSet<>();
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 
     public Date getPubDate() {
         return pubDate;

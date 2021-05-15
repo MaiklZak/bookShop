@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.sql.Date;
 import java.util.List;
@@ -57,4 +58,11 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     List<Book> findBooksByPubDateBefore(Date to, Pageable nextPage);
 
     List<Book> findBooksByPubDateAfter(Date from, Pageable nextPage);
+
+    @Query(value = "SELECT b.id, description, image, is_bestseller, discount, price, pub_date, slug, title, author_id " +
+                     "FROM books b INNER JOIN book_tag bt ON b.id = bt.book_id " +
+                                  "INNER JOIN tags t ON t.id = bt.tag_id " +
+                    "WHERE t.id = :tagId", nativeQuery = true)
+    Page<Book> findBooksByTagId(@Param(value = "tagId") Integer id, Pageable nextPage);
+
 }

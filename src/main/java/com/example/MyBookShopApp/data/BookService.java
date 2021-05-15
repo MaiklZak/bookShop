@@ -85,5 +85,8 @@ public class BookService {
         return bookRepository.findPopularBooks(nextPage);
     }
 
-
+    public List<Book> getBookByTag(Integer offset, Integer limit, Integer id) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return bookRepository.findBooksByTagId(id, nextPage).getContent();
+    }
 }

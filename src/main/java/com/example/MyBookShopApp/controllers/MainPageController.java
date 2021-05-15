@@ -1,9 +1,11 @@
 package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.BookService;
+import com.example.MyBookShopApp.data.TagService;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.data.dto.SearchWordDto;
 import com.example.MyBookShopApp.data.model.Book;
+import com.example.MyBookShopApp.data.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,11 +13,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class MainPageController {
 
     private final BookService bookService;
+
+    private final TagService tagService;
 
     @ModelAttribute("recommendedBooks")
     public List<Book> recommendedBooks() {
@@ -42,9 +47,15 @@ public class MainPageController {
         return new ArrayList<>();
     }
 
+    @ModelAttribute("tags")
+    public Map<Tag, Integer> tagsOfBooks() {
+        return tagService.getTagsAndCount();
+    }
+
     @Autowired
-    public MainPageController(BookService bookService) {
+    public MainPageController(BookService bookService, TagService tagService) {
         this.bookService = bookService;
+        this.tagService = tagService;
     }
 
     @GetMapping("/")
