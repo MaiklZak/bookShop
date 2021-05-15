@@ -65,6 +65,20 @@ public class BookService {
         Pageable nextPage = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "pubDate", "title"));
         return bookRepository.findAll(nextPage);
     }
+    public List<Book> getPageOfRecentBooks(java.util.Date from, java.util.Date to, int offset, int limit) {
+        if (from == null && to == null) {
+            return getPageOfRecentBooks(offset, limit).getContent();
+        }
+        Pageable nextPage = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "pubDate", "title"));
+        if (from == null) {
+            return bookRepository.findBooksByPubDateBefore(new java.sql.Date(to.getTime()), nextPage);
+        }
+        if (to == null) {
+            return bookRepository.findBooksByPubDateAfter(new java.sql.Date(from.getTime()), nextPage);
+        }
+        return bookRepository.findBooksByPubDateAfterAndPubDateBefore(new java.sql.Date(from.getTime()), new java.sql.Date(to.getTime()), nextPage);
+    }
+
 
     public List<Book> getPageOfPopularBooks(int offset, int limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
