@@ -6,6 +6,7 @@ import com.example.MyBookShopApp.data.dto.SearchWordDto;
 import com.example.MyBookShopApp.data.model.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -35,12 +36,12 @@ public class RecentPageController {
         return bookService.getPageOfRecentBooks(0, 20).getContent();
     }
 
-    @GetMapping("/recent")
+    @GetMapping(value = "/books/recent", produces = MediaType.TEXT_HTML_VALUE)
     public String getRecentPage() {
         return "books/recent";
     }
 
-    @GetMapping("/books/recent")
+    @GetMapping(value = "/books/recent", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public BooksPageDto getRecentBooksPage(@RequestParam(value = "from", required = false) @DateTimeFormat(pattern = "dd.MM.yyyy") Date from,
                                            @RequestParam(value = "to", required = false) @DateTimeFormat(pattern = "dd.MM.yyyy") Date to,
