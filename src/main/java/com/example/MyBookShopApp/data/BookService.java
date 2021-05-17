@@ -9,7 +9,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -28,7 +31,7 @@ public class BookService {
     //NEW BOOK SERVICE METHOD
 
     public List<Book> getBooksByAuthor(String authorName) {
-        return bookRepository.findBooksByAuthorFirstNameContaining(authorName);
+        return bookRepository.findBooksByAuthorNameContaining(authorName);
     }
 
     public List<Book> getBooksByTitle(String title) {
@@ -93,5 +96,31 @@ public class BookService {
     public List<Book> getBooksByGenreId(Integer offset, Integer limit, Integer id) {
         Pageable nextPage = PageRequest.of(offset, limit);
         return bookRepository.findBooksByGenreId(id, nextPage);
+    }
+
+    public List<Book> getBooksByAuthorId(Integer offset, Integer limit, Integer id) {
+        Pageable nextPage = PageRequest.of(offset, limit, Sort.Direction.DESC, "pubDate", "title");
+        return bookRepository.findBooksByAuthorId(id, nextPage);
+    }
+
+    public List<String> getListOfDescription(String description) {
+        List<String> result = new ArrayList<>();
+        String[] arr = description.split("\\. ");
+        if (arr.length > 5) {
+            result.add(arr[0] + ". " + arr[1] + ". " + arr[2] + ". " + arr[3] + ". " + arr[4] + ". ");
+            StringBuilder builder = new StringBuilder();
+            for (String s : arr) {
+                builder.append(s + ". ");
+            }
+            result.add(builder.toString());
+        } else {
+            StringBuilder builder = new StringBuilder();
+            for (String s : arr) {
+                builder.append(s + ". ");
+            }
+            result.add(builder.toString());
+        }
+        return result;
+
     }
 }

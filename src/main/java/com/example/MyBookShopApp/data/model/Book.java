@@ -24,10 +24,9 @@ public class Book {
     @ApiModelProperty("date of book publication")
     private Date pubDate;
 
-    @ManyToOne()
-    @JoinColumn(name = "author_id", referencedColumnName = "id")
+    @ManyToMany(mappedBy = "books")
     @JsonIgnore
-    private Author author;
+    private Set<Author> author = new HashSet<>();
 
     @Column(name = "is_bestseller")
     @ApiModelProperty("if isBestseller = 1 so the book is considered to be bestseller and if 0 the book is not a " +
@@ -124,13 +123,6 @@ public class Book {
         this.description = description;
     }
 
-    public Author getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Author author) {
-        this.author = author;
-    }
 
     public Integer getId() {
         return id;
@@ -170,6 +162,14 @@ public class Book {
 
     public void setBookUser(Set<BookUser> bookUser) {
         this.bookUser = bookUser;
+    }
+
+    public Set<Author> getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Set<Author> author) {
+        this.author = author;
     }
 
     @Override

@@ -13,14 +13,14 @@ import java.util.List;
 public interface BookRepository extends JpaRepository<Book, Integer> {
 
 
-    List<Book> findBooksByAuthor_FirstName(String name);
+    List<Book> findBooksByAuthor_Name(String name);
 
     @Query("FROM Book")
     List<Book> customFindAllBooks();
 
     //NEW BOOK REST REPOSITORY COMMANDS
 
-    List<Book> findBooksByAuthorFirstNameContaining(String authorFirstName);
+    List<Book> findBooksByAuthorNameContaining(String authorFirstName);
 
     List<Book> findBooksByTitleContaining(String bookTitle);
 
@@ -37,7 +37,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     Page<Book> findBookByTitleContaining(String bookTitle, Pageable nextPage);
 
     @Query(value = "" +
-            "SELECT id, description, image, is_bestseller, discount, price, pub_date, slug, title, author_id " +
+            "SELECT id, description, image, is_bestseller, discount, price, pub_date, slug, title " +
               "FROM books INNER JOIN " +
                    "(SELECT book_id, SUM(popul) AS popular " +
                       "FROM (SELECT book_id," +
@@ -59,7 +59,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     List<Book> findBooksByPubDateAfter(Date from, Pageable nextPage);
 
-    @Query(value = "SELECT b.id, description, image, is_bestseller, discount, price, pub_date, slug, title, author_id " +
+    @Query(value = "SELECT b.id, description, image, is_bestseller, discount, price, pub_date, slug, title " +
                      "FROM books b INNER JOIN book2tag bt ON b.id = bt.book_id " +
                                   "INNER JOIN tags t ON t.id = bt.tag_id " +
                     "WHERE t.id = :tagId", nativeQuery = true)
@@ -67,4 +67,6 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     @Query("SELECT b FROM Book b JOIN b.genres g WHERE g.id = :id")
     List<Book> findBooksByGenreId(@Param("id") Integer id, Pageable nextPage);
+
+    List<Book> findBooksByAuthorId(Integer id, Pageable nextPage);
 }
