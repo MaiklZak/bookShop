@@ -32,4 +32,8 @@ public class GenreService {
         genres.sort((o1, o2) -> o2.getBooks().size() - o1.getBooks().size());
         return genres;
     }
+
+    public Genre getGenreById(Integer id) {
+        return genreRepository.getOne(id);
+    }
 }

@@ -65,4 +65,6 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
                     "WHERE t.id = :tagId", nativeQuery = true)
     Page<Book> findBooksByTagId(@Param(value = "tagId") Integer id, Pageable nextPage);
 
+    @Query("SELECT b FROM Book b JOIN b.genres g WHERE g.id = :id")
+    List<Book> findBooksByGenreId(@Param("id") Integer id, Pageable nextPage);
 }

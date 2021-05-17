@@ -53,33 +53,39 @@ p.error-browser
                         <th:block th:each="genreRoot : ${genresRoot}">
                             <div class="Tags-title">
                                 <div class="Tag">
-                                    <a href="/genres/slug.html" th:text="${genreRoot.name + ' (' + genreRoot.books.size() + ')'}">Лёгкое чтение
+                                    <a href="/genres/slug.html" th:href="@{/genres/SLUG(id=${genreRoot.id})}"
+                                       th:text="${genreRoot.name + ' (' + genreRoot.books.size() + ')'}">Лёгкое чтение
                                         <span class="undefined-amount">(15638)</span></a>
                                 </div>
                             </div>
                             <th:block th:each="genreDto : ${genresDto}">
-                                <th:block th:if="${!genreDto.childGenres.isEmpty() and genreDto.parentGenre.id == genreRoot.id}">
+                                <th:block
+                                        th:if="${!genreDto.childGenres.isEmpty() and genreDto.parentGenre.id == genreRoot.id}">
                                     <div class="Tags">
                                         <div class="Tags-title">
                                             <div class="Tag">
                                                 <a href="/genres/slug.html"
-
+                                                   th:href="@{/genres/SLUG(id=${genreDto.genre.id})}"
                                                    th:text="${genreDto.genre.name + ' (' + genreDto.countBooks + ')'}">Фантастика
                                                     <span class="undefined-amount">(44333)</span></a>
                                             </div>
                                         </div>
                                         <th:block th:each="genreChild : ${genreDto.childGenres}">
-                                        <div class="Tag" >
-                                            <a href="/genres/slug.html" th:text="${genreChild.name  + ' (' + genreChild.books.size() + ')'}">Боевики<span
-                                                    class="undefined-amount">(158)</span></a>
-                                        </div>
+                                            <div class="Tag">
+                                                <a href="/genres/slug.html"
+                                                   th:href="@{/genres/SLUG(id=${genreChild.id})}"
+                                                   th:text="${genreChild.name  + ' (' + genreChild.books.size() + ')'}">Боевики<span
+                                                        class="undefined-amount">(158)</span></a>
+                                            </div>
                                         </th:block>
                                     </div>
                                 </th:block>
-                                <th:block th:if="${genreDto.childGenres.isEmpty() and genreDto.parentGenre.id == genreRoot.id}">
+                                <th:block
+                                        th:if="${genreDto.childGenres.isEmpty() and genreDto.parentGenre.id == genreRoot.id}">
                                     <div class="Tag">
                                         <a href="/genres/slug.html"
                                            th:if="${genreDto.parentGenre.id == genreRoot.id}"
+                                           th:href="@{/genres/SLUG(id=${genreDto.genre.id})}"
                                            th:text="${genreDto.genre.name + ' (' + genreDto.countBooks + ')'}">Фантастика
                                             <span class="undefined-amount">(44333)</span></a>
                                     </div>
