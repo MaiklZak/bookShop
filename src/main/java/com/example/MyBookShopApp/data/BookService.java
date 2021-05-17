@@ -10,9 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -68,6 +66,7 @@ public class BookService {
         Pageable nextPage = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "pubDate", "title"));
         return bookRepository.findAll(nextPage);
     }
+
     public List<Book> getPageOfRecentBooks(java.util.Date from, java.util.Date to, int offset, int limit) {
         if (from == null && to == null) {
             return getPageOfRecentBooks(offset, limit).getContent();

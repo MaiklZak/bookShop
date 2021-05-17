@@ -4,6 +4,7 @@ import com.example.MyBookShopApp.data.BookService;
 import com.example.MyBookShopApp.data.GenreService;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.data.dto.SearchWordDto;
+import com.example.MyBookShopApp.data.model.Genre;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,9 @@ public class GenrePageController {
 
     @GetMapping("/genres/SLUG")
     public String getGenreSlugPage(@RequestParam("id") Integer id, Model model) {
-        model.addAttribute("genre", genreService.getGenreById(id));
+        Genre genre = genreService.getGenreById(id);
+        model.addAttribute("parentGenre", genre.getParentId() != null ? genreService.getGenreById(genre.getParentId()) : null);
+        model.addAttribute("genre", genre);
         model.addAttribute("books", bookService.getBooksByGenreId(0, 20, id));
         return "genres/slug";
     }

@@ -111,7 +111,7 @@ p.error-browser
                     </div>
                 </div>
                 <footer class="Section-footer"><a class="Author-books" th:href="@{/books/author/SLUG(id=${author.id})}">Все книги автора<span
-                        class="Author-amount">(55)</span></a>
+                        class="Author-amount" th:text="${author.books.size()}">(55)</span></a>
                 </footer>
             </div>
         </main>

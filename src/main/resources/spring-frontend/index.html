@@ -154,7 +154,6 @@ p.error-browser
                     <div class="Tag Tag_xs"
                          th:class="${tag.value <= 8 ? 'Tag Tag_xs' : (tag.value <= 16 ? 'Tag Tag_sm' : (tag.value <= 24 ? 'Tag' : (tag.value <= 32 ? 'Tag Tag_md' : 'Tag Tag_lg')))}">
                         <a href="/tags/index.html" th:href="@{/tags/SLUG(tag=${tag.key.id})}" th:text="${tag.key.name}">современная литература</a>
-<!--                        th:href="@{/bookshop/authors/slug(id=${author.id})}"-->
                     </div>
                 </th:block>
             </div>
