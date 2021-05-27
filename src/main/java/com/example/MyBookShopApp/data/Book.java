@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.data;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
@@ -27,6 +28,11 @@ public class Book {
     @JsonIgnore
     private Author author;
 
+    @JsonGetter("authors")
+    public String authorFullName() {
+        return author.toString();
+    }
+
     @Column(name = "is_bestseller")
     @ApiModelProperty("if isBestseller = 1 so the book is considered to be bestseller and if 0 the book is not a " +
             "bestseller")
@@ -53,6 +59,12 @@ public class Book {
     @Column(name = "discount")
     @JsonProperty("discount value for book")
     private Double price;
+
+    @JsonProperty
+    public Integer discountPrice() {
+        Integer discountedPriceInt = priceOld - Math.toIntExact(Math.round(price * priceOld));
+        return discountedPriceInt;
+    }
 
     public Date getPubDate() {
         return pubDate;
