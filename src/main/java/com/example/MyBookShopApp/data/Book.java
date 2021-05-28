@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "books")
@@ -47,6 +49,10 @@ public class Book {
     @ApiModelProperty("image url")
     private String image;
 
+    @OneToMany(mappedBy = "book")
+    @JsonIgnore
+    private List<BookFile> bookFileList = new ArrayList<>();
+
     @Column(columnDefinition = "TEXT")
     @ApiModelProperty("book description text")
     private String description;
@@ -64,6 +70,14 @@ public class Book {
     public Integer discountPrice() {
         Integer discountedPriceInt = priceOld - Math.toIntExact(Math.round(price * priceOld));
         return discountedPriceInt;
+    }
+
+    public List<BookFile> getBookFileList() {
+        return bookFileList;
+    }
+
+    public void setBookFileList(List<BookFile> bookFileList) {
+        this.bookFileList = bookFileList;
     }
 
     public Date getPubDate() {
