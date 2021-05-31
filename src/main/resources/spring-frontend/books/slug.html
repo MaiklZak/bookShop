@@ -521,7 +521,7 @@ p.error-browser
                             </div>
                             <div class="ProductCard-cartElement">
                                 <button class="btn btn_primary btn_outline" data-sendstatus="CART" data-bookid="[1111]"
-                                        data-btntype="check" data-btnradio="buyblock" data-check="false"
+                                        th:attr="data-bookid = ${slugBook.slug}" data-btntype="check" data-btnradio="buyblock" data-check="false"
                                         data-alttext="В корзине"><span class="btn-icon"><img
                                         src="/assets/img/icons/shopping-basket.svg"
                                         alt="shopping-basket.svg"/></span><span class="btn-content">Купить</span>
