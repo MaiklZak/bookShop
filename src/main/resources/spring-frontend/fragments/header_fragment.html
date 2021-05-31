@@ -37,7 +37,9 @@
                           style="color: red"></span>
                 </div>
                 <div class="row-block Header-cart">
-                    <div class="CartBlock"><a class="CartBlock-block" href="/postponed.html">
+                    <div class="CartBlock"><a class="CartBlock-block"
+                                              href="/postponed.html"
+                                              th:href="@{/books/postponed}">
                         <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" height="23" width="23"
                              viewBox="0 0 512 512">
                             <g>
@@ -92,7 +94,7 @@
                     </li>
                     <li class="menu-item"><a class="menu-link" href="/books/popular.html">Популярное</a>
                     </li>
-                    <li class="menu-item menu-item_ACTIVE"><a class="menu-link" href="/authors/index.html"
+                    <li class="menu-item"><a class="menu-link" href="/authors/index.html"
                                                               th:href="@{/authors}">Авторы</a>
                     </li>
                 </ul>

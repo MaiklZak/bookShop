@@ -1,8 +1,9 @@
 package com.example.MyBookShopApp.controllers;
 
-import com.example.MyBookShopApp.data.Book;
-import com.example.MyBookShopApp.data.BookRepository;
+import com.example.MyBookShopApp.data.model.Book;
+import com.example.MyBookShopApp.data.repositories.BookRepository;
 import com.example.MyBookShopApp.data.ResourceStorage;
+import com.example.MyBookShopApp.data.dto.SearchWordDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +24,11 @@ public class BooksController {
 
     private final BookRepository bookRepository;
     private final ResourceStorage storage;
+
+    @ModelAttribute("searchWordDto")
+    public SearchWordDto searchWordDto() {
+        return new SearchWordDto();
+    }
 
     @Autowired
     public BooksController(BookRepository bookRepository, ResourceStorage storage) {
