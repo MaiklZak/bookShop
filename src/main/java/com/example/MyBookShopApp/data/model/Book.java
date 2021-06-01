@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -14,7 +15,7 @@ import java.util.List;
 @Entity
 @Table(name = "books")
 @ApiModel(description = "entity representing a book")
-public class Book {
+public class Book extends RepresentationModel<Book> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
