@@ -1,10 +1,12 @@
 package com.example.MyBookShopApp.controllers;
 
-import com.example.MyBookShopApp.data.model.Book;
-import com.example.MyBookShopApp.data.model.BookReview;
-import com.example.MyBookShopApp.data.repositories.BookRepository;
 import com.example.MyBookShopApp.data.ResourceStorage;
 import com.example.MyBookShopApp.data.dto.SearchWordDto;
+import com.example.MyBookShopApp.data.model.Book;
+import com.example.MyBookShopApp.data.model.BookReview;
+import com.example.MyBookShopApp.data.model.BookReviewLike;
+import com.example.MyBookShopApp.data.repositories.BookRepository;
+import com.example.MyBookShopApp.data.repositories.BookReviewLikeRepository;
 import com.example.MyBookShopApp.data.repositories.BookReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -16,14 +18,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.StringJoiner;
 import java.util.logging.Logger;
 
 @Controller
 @RequestMapping("/books")
 public class BooksController {
 
+    private final BookReviewLikeRepository bookReviewLikeRepository;
     private final BookReviewRepository bookReviewRepository;
     private final BookRepository bookRepository;
     private final ResourceStorage storage;
@@ -34,7 +43,8 @@ public class BooksController {
     }
 
     @Autowired
-    public BooksController(BookReviewRepository bookReviewRepository, BookRepository bookRepository, ResourceStorage storage) {
+    public BooksController(BookReviewLikeRepository bookReviewLikeRepository, BookReviewRepository bookReviewRepository, BookRepository bookRepository, ResourceStorage storage) {
+        this.bookReviewLikeRepository = bookReviewLikeRepository;
         this.bookReviewRepository = bookReviewRepository;
         this.bookRepository = bookRepository;
         this.storage = storage;
@@ -43,6 +53,9 @@ public class BooksController {
     @GetMapping("/{slug}")
     public String bookPage(@PathVariable("slug") String slug, Model model) {
         model.addAttribute("slugBook", bookRepository.findBookBySlug(slug));
+        List<BookReview> bookReviewList = bookReviewRepository.findAllByBookSlug(slug);
+        bookReviewList.sort(Comparator.comparing(br -> br.getDisLikes() - br.getLikes()));
+        model.addAttribute("reviewsOfBook", bookReviewList);
         return "/books/slug";
     }
 
@@ -76,8 +89,64 @@ public class BooksController {
     @PostMapping("/{slug}/bookReview")
     public String addReview(@PathVariable("slug") String slug, @RequestParam("text") String text) {
         BookReview bookReview = new BookReview(bookRepository.findBookBySlug(slug), text);
-        bookReview.setId(2332);
         bookReviewRepository.save(bookReview);
+        return "redirect:/books/" + slug;
+    }
+
+//    @PostMapping("/{slug}/rateBookReview/{reviewId}")
+//    public String rateBookReview(@PathVariable("slug") String slug,
+//                                 @PathVariable("reviewId") Integer reviewId,
+//                                 @RequestParam("value") Integer value) {
+//        bookReviewLikeRepository.save(new BookReviewLike(bookReviewRepository.findById(reviewId).get(), value));
+//        return "redirect:/books/" + slug;
+//    }
+
+    @PostMapping("/{slug}/rateBookReview/{reviewId}")
+    public String rateBookReview(
+            @PathVariable("slug") String slug,
+            @PathVariable("reviewId") Integer reviewId,
+            @RequestParam("value") Integer value,
+            @CookieValue(name = "rateReviewContents", required = false) String rateReviewContents,
+            HttpServletResponse response
+    ) {
+        if (rateReviewContents == null || rateReviewContents.equals("")) {
+            BookReviewLike bookReviewLike = new BookReviewLike(bookReviewRepository.findById(reviewId).get(), value);
+            bookReviewLikeRepository.save(bookReviewLike);
+            Cookie cookie = new Cookie("rateReviewContents", "/" + reviewId + "=" + value + ":" + bookReviewLike.getId());
+            cookie.setPath("/books");
+            response.addCookie(cookie);
+        } else if (!rateReviewContents.contains(reviewId + "=")) {
+            BookReviewLike bookReviewLike = new BookReviewLike(bookReviewRepository.findById(reviewId).get(), value);
+            bookReviewLikeRepository.save(bookReviewLike);
+            StringJoiner stringJoiner = new StringJoiner("/");
+            Cookie cookie = new Cookie("rateReviewContents",
+                    stringJoiner.add(rateReviewContents).add(reviewId + "=" + value + ":" + bookReviewLike.getId()).toString());
+            cookie.setPath("/books");
+            response.addCookie(cookie);
+        } else {
+            if (rateReviewContents.contains(reviewId + "=" + value)) {
+                String[] elementsCookie = rateReviewContents.split("/");
+                String element = Arrays.stream(elementsCookie)
+                        .filter(s -> s.contains(reviewId + "=" + value))
+                        .findFirst().get();
+                bookReviewLikeRepository.deleteById(Integer.valueOf(element.split(":")[1]));
+                Cookie cookie = new Cookie("rateReviewContents", rateReviewContents.replace("/" + element, ""));
+                cookie.setPath("/books");
+                response.addCookie(cookie);
+            } else {
+                String[] elementsCookie = rateReviewContents.split("/");
+                String element = Arrays.stream(elementsCookie)
+                        .filter(s -> s.contains(reviewId + "="))
+                        .findFirst().get();
+                BookReviewLike bookReviewLike = bookReviewLikeRepository.findById(Integer.valueOf(element.split(":")[1])).get();
+                bookReviewLike.setValue(value);
+                bookReviewLikeRepository.save(bookReviewLike);
+                Cookie cookie = new Cookie("rateReviewContents",
+                        rateReviewContents.replace(element, reviewId + "=" + value + ":" + bookReviewLike.getId()));
+                cookie.setPath("/books");
+                response.addCookie(cookie);
+            }
+        }
         return "redirect:/books/" + slug;
     }
 }

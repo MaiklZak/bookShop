@@ -4,6 +4,8 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "book_review")
@@ -24,17 +26,43 @@ public class BookReview {
     @Column(columnDefinition = "TEXT")
     private String text;
 
+    @OneToMany(mappedBy = "bookReview")
+    private Set<BookReviewLike> bookReviewLikes = new HashSet<>();
+
     public String getFormatTime() {
         return time.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT));
     }
 
+    public long getLikes() {
+        return getBookReviewLikes()
+                .stream()
+                .filter(brl -> brl.getValue() == 1)
+                .count();
+    }
+
+    public long getDisLikes() {
+        return getBookReviewLikes()
+                .stream()
+                .filter(brl -> brl.getValue() == -1)
+                .count();
+    }
+
     public BookReview(Book book, String text) {
+        this();
         this.book = book;
-        this.time = LocalDateTime.now();
         this.text = text;
     }
 
     public BookReview() {
+        this.time = LocalDateTime.now();
+    }
+
+    public Set<BookReviewLike> getBookReviewLikes() {
+        return bookReviewLikes;
+    }
+
+    public void setBookReviewLikes(Set<BookReviewLike> bookReviewLikes) {
+        this.bookReviewLikes = bookReviewLikes;
     }
 
     public Integer getId() {
