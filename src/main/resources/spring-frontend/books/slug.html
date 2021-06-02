@@ -503,7 +503,7 @@ p.error-browser
                         <div class="Comment-column">
                             <header class="Comment-header">
                                 <div>
-                                    <strong class="Comment-title" th:text="'unknown'">Александр Кузнецов<span class="Comment-rating"><span
+                                    <strong class="Comment-title" th:text="${review.user != null ? review.user.name : 'unknown'}">Александр Кузнецов<span class="Comment-rating"><span
                                             class="Rating Rating_comment"><span class="Rating-stars"><span
                                             class="Rating-star Rating-star_view">
                               <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">

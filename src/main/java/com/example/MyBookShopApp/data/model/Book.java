@@ -78,6 +78,17 @@ public class Book extends RepresentationModel<Book> {
     @OneToMany(mappedBy = "book")
     private Set<BookReview> bookReviews = new HashSet<>();
 
+    @OneToMany(mappedBy = "book")
+    private Set<BookRating> bookRatings = new HashSet<>();
+
+    public Set<BookRating> getBookRatings() {
+        return bookRatings;
+    }
+
+    public void setBookRatings(Set<BookRating> bookRatings) {
+        this.bookRatings = bookRatings;
+    }
+
     public Set<BookReview> getBookReviews() {
         return bookReviews;
     }

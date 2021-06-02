@@ -5,6 +5,7 @@ import com.example.MyBookShopApp.data.dto.SearchWordDto;
 import com.example.MyBookShopApp.data.model.Book;
 import com.example.MyBookShopApp.data.model.BookReview;
 import com.example.MyBookShopApp.data.model.BookReviewLike;
+import com.example.MyBookShopApp.data.model.User;
 import com.example.MyBookShopApp.data.repositories.BookRepository;
 import com.example.MyBookShopApp.data.repositories.BookReviewLikeRepository;
 import com.example.MyBookShopApp.data.repositories.BookReviewRepository;
@@ -89,6 +90,7 @@ public class BooksController {
     @PostMapping("/{slug}/bookReview")
     public String addReview(@PathVariable("slug") String slug, @RequestParam("text") String text) {
         BookReview bookReview = new BookReview(bookRepository.findBookBySlug(slug), text);
+
         bookReviewRepository.save(bookReview);
         return "redirect:/books/" + slug;
     }

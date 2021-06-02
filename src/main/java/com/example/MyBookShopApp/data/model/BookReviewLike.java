@@ -16,6 +16,10 @@ public class BookReviewLike {
     @JoinColumn(name = "review_id", referencedColumnName = "id")
     private BookReview bookReview;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime time;
 
@@ -46,6 +50,14 @@ public class BookReviewLike {
 
     public void setBookReview(BookReview bookReview) {
         this.bookReview = bookReview;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public LocalDateTime getTime() {
