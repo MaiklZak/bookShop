@@ -76,10 +76,27 @@ public class Book extends RepresentationModel<Book> {
     }
 
     @OneToMany(mappedBy = "book")
+    @JsonIgnore
     private Set<BookReview> bookReviews = new HashSet<>();
 
     @OneToMany(mappedBy = "book")
+    @JsonIgnore
     private Set<BookRating> bookRatings = new HashSet<>();
+
+    public long getCountRating(int value) {
+        return bookRatings.stream()
+                .filter(rat -> rat.getValue() == value)
+                .count();
+    }
+
+    public Integer getAverageRating() {
+        if (bookRatings.size() == 0) {
+            return 0;
+        }
+        return Math.round(bookRatings
+                .stream()
+                .mapToInt(br -> br.getValue()).sum() / bookRatings.size());
+    }
 
     public Set<BookRating> getBookRatings() {
         return bookRatings;

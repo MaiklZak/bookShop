@@ -7,7 +7,8 @@ import javax.persistence.*;
 public class BookRating {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "seq_bok_rating", sequenceName = "seq_bok_rating", initialValue = 1001, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_bok_rating")
     private Integer id;
 
     private Integer value;
@@ -19,6 +20,14 @@ public class BookRating {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
+    public BookRating(Integer value, Book book) {
+        this.value = value;
+        this.book = book;
+    }
+
+    public BookRating() {
+    }
 
     public Integer getId() {
         return id;

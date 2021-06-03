@@ -3,9 +3,10 @@ package com.example.MyBookShopApp.controllers;
 import com.example.MyBookShopApp.data.ResourceStorage;
 import com.example.MyBookShopApp.data.dto.SearchWordDto;
 import com.example.MyBookShopApp.data.model.Book;
+import com.example.MyBookShopApp.data.model.BookRating;
 import com.example.MyBookShopApp.data.model.BookReview;
 import com.example.MyBookShopApp.data.model.BookReviewLike;
-import com.example.MyBookShopApp.data.model.User;
+import com.example.MyBookShopApp.data.repositories.BookRatingRepository;
 import com.example.MyBookShopApp.data.repositories.BookRepository;
 import com.example.MyBookShopApp.data.repositories.BookReviewLikeRepository;
 import com.example.MyBookShopApp.data.repositories.BookReviewRepository;
@@ -33,6 +34,7 @@ import java.util.logging.Logger;
 @RequestMapping("/books")
 public class BooksController {
 
+    private final BookRatingRepository bookRatingRepository;
     private final BookReviewLikeRepository bookReviewLikeRepository;
     private final BookReviewRepository bookReviewRepository;
     private final BookRepository bookRepository;
@@ -44,7 +46,8 @@ public class BooksController {
     }
 
     @Autowired
-    public BooksController(BookReviewLikeRepository bookReviewLikeRepository, BookReviewRepository bookReviewRepository, BookRepository bookRepository, ResourceStorage storage) {
+    public BooksController(BookRatingRepository bookRatingRepository, BookReviewLikeRepository bookReviewLikeRepository, BookReviewRepository bookReviewRepository, BookRepository bookRepository, ResourceStorage storage) {
+        this.bookRatingRepository = bookRatingRepository;
         this.bookReviewLikeRepository = bookReviewLikeRepository;
         this.bookReviewRepository = bookReviewRepository;
         this.bookRepository = bookRepository;
@@ -53,9 +56,10 @@ public class BooksController {
 
     @GetMapping("/{slug}")
     public String bookPage(@PathVariable("slug") String slug, Model model) {
-        model.addAttribute("slugBook", bookRepository.findBookBySlug(slug));
+        Book book = bookRepository.findBookBySlug(slug);
         List<BookReview> bookReviewList = bookReviewRepository.findAllByBookSlug(slug);
         bookReviewList.sort(Comparator.comparing(br -> br.getDisLikes() - br.getLikes()));
+        model.addAttribute("slugBook", book);
         model.addAttribute("reviewsOfBook", bookReviewList);
         return "/books/slug";
     }
@@ -90,7 +94,6 @@ public class BooksController {
     @PostMapping("/{slug}/bookReview")
     public String addReview(@PathVariable("slug") String slug, @RequestParam("text") String text) {
         BookReview bookReview = new BookReview(bookRepository.findBookBySlug(slug), text);
-
         bookReviewRepository.save(bookReview);
         return "redirect:/books/" + slug;
     }
@@ -145,6 +148,64 @@ public class BooksController {
                 bookReviewLikeRepository.save(bookReviewLike);
                 Cookie cookie = new Cookie("rateReviewContents",
                         rateReviewContents.replace(element, reviewId + "=" + value + ":" + bookReviewLike.getId()));
+                cookie.setPath("/books");
+                response.addCookie(cookie);
+            }
+        }
+        return "redirect:/books/" + slug;
+    }
+
+//    @PostMapping("/toRating")
+//    public String toRatingBook(@RequestParam("bookId") String slug, @RequestParam("value") Integer value) {
+//        BookRating bookRating = new BookRating();
+//        bookRating.setValue(value);
+//        bookRating.setBook(bookRepository.findBookBySlug(slug));
+//        bookRatingRepository.save(bookRating);
+//        return "redirect:/books/" + slug;
+//    }
+
+    @PostMapping("/toRating")
+    public String toRatingBook(
+            @RequestParam("bookId") String slug,
+            @RequestParam("value") Integer value,
+            @CookieValue(value = "ratingBookContents", required = false) String ratingBookContents,
+            HttpServletResponse response
+    ) {
+
+        if (ratingBookContents == null || ratingBookContents.equals("")) {
+            BookRating bookRating = new BookRating(value, bookRepository.findBookBySlug(slug));
+            bookRatingRepository.save(bookRating);
+            Cookie cookie = new Cookie("ratingBookContents", "/" + slug + "=" + value + ":" + bookRating.getId());
+            cookie.setPath("/books");
+            response.addCookie(cookie);
+        } else if (!ratingBookContents.contains(slug + "=")) {
+            BookRating bookRating = new BookRating(value, bookRepository.findBookBySlug(slug));
+            bookRatingRepository.save(bookRating);
+            StringJoiner stringJoiner = new StringJoiner("/");
+            Cookie cookie = new Cookie("ratingBookContents",
+                    stringJoiner.add(ratingBookContents).add(slug + "=" + value + ":" + bookRating.getId()).toString());
+            cookie.setPath("/books");
+            response.addCookie(cookie);
+        } else {
+            if (ratingBookContents.contains(slug + "=" + value)) {
+                String[] elementsCookie = ratingBookContents.split("/");
+                String element = Arrays.stream(elementsCookie)
+                        .filter(s -> s.contains(slug + "=" + value))
+                        .findFirst().get();
+                bookRatingRepository.deleteById(Integer.valueOf(element.split(":")[1]));
+                Cookie cookie = new Cookie("ratingBookContents", ratingBookContents.replace("/" + element, ""));
+                cookie.setPath("/books");
+                response.addCookie(cookie);
+            } else {
+                String[] elementsCookie = ratingBookContents.split("/");
+                String element = Arrays.stream(elementsCookie)
+                        .filter(s -> s.contains(slug + "="))
+                        .findFirst().get();
+                BookRating bookRating = bookRatingRepository.findById(Integer.valueOf(element.split(":")[1])).get();
+                bookRating.setValue(value);
+                bookRatingRepository.save(bookRating);
+                Cookie cookie = new Cookie("ratingBookContents",
+                        ratingBookContents.replace(element, slug + "=" + value + ":" + bookRating.getId()));
                 cookie.setPath("/books");
                 response.addCookie(cookie);
             }

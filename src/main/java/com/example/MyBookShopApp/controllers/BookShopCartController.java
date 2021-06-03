@@ -45,8 +45,11 @@ public class BookShopCartController {
         if (cartContents == null || cartContents.equals("")) {
             model.addAttribute("isCartEmpty", true);
         } else {
+            List<Book> books = bookService.getBooksByCookie(cartContents, bookRepository);
             model.addAttribute("isCartEmpty", false);
-            model.addAttribute("bookCart", bookService.getBooksByCookie(cartContents, bookRepository));
+            model.addAttribute("bookCart", books);
+            model.addAttribute("allPriceOld", books.stream().mapToInt(Book::getPriceOld).sum());
+            model.addAttribute("allPrice", books.stream().mapToInt(Book::discountPrice).sum());
         }
         return "cart";
     }

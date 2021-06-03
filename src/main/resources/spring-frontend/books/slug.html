@@ -78,7 +78,8 @@ p.error-browser
                             <div class="ProductCard-rating"><span class="ProductCard-titleProp">Рейтинг:</span>
                                 <button class="trigger trigger_dropdown" type="button">
                                     <div class="Rating Rating_noStyleLink"><span class="Rating-stars"><span
-                                            class="Rating-star Rating-star_view">
+                                            class="Rating-star Rating-star_view"
+                                            th:class="${slugBook.getAverageRating() >= 1 ? 'Rating-star Rating-star_view' : 'Rating-star'}">
                           <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
                             <g>
                               <g>
@@ -86,7 +87,8 @@ p.error-browser
                                       d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
                               </g>
                             </g>
-                          </svg></span><span class="Rating-star Rating-star_view">
+                          </svg></span><span class="Rating-star Rating-star_view"
+                                             th:class="${slugBook.getAverageRating() >= 2 ? 'Rating-star Rating-star_view' : 'Rating-star'}">
                           <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
                             <g>
                               <g>
@@ -94,7 +96,8 @@ p.error-browser
                                       d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
                               </g>
                             </g>
-                          </svg></span><span class="Rating-star">
+                          </svg></span><span class="Rating-star"
+                                             th:class="${slugBook.getAverageRating() >= 3 ? 'Rating-star Rating-star_view' : 'Rating-star'}">
                           <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
                             <g>
                               <g>
@@ -102,7 +105,8 @@ p.error-browser
                                       d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
                               </g>
                             </g>
-                          </svg></span><span class="Rating-star">
+                          </svg></span><span class="Rating-star"
+                                             th:class="${slugBook.getAverageRating() >= 4 ? 'Rating-star Rating-star_view' : 'Rating-star'}">
                           <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
                             <g>
                               <g>
@@ -110,7 +114,8 @@ p.error-browser
                                       d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
                               </g>
                             </g>
-                          </svg></span><span class="Rating-star">
+                          </svg></span><span class="Rating-star"
+                                             th:class="${slugBook.getAverageRating() >= 5 ? 'Rating-star Rating-star_view' : 'Rating-star'}">
                           <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
                             <g>
                               <g>
@@ -166,7 +171,7 @@ p.error-browser
                                             d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
                                     </g>
                                   </g>
-                                </svg></span></span><span class="Rating-title">1</span></span><br><span
+                                </svg></span></span><span class="Rating-title" th:text="${slugBook.getCountRating(5)}">1</span></span><br><span
                                                     class="Rating"><span class="Rating-stars"><span
                                                     class="Rating-star Rating-star_view">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
@@ -208,7 +213,7 @@ p.error-browser
                                             d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
                                     </g>
                                   </g>
-                                </svg></span></span><span class="Rating-title">4</span></span><br><span
+                                </svg></span></span><span class="Rating-title" th:text="${slugBook.getCountRating(4)}">4</span></span><br><span
                                                     class="Rating"><span class="Rating-stars"><span
                                                     class="Rating-star Rating-star_view">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
@@ -250,7 +255,7 @@ p.error-browser
                                             d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
                                     </g>
                                   </g>
-                                </svg></span></span><span class="Rating-title">0</span></span><br><span
+                                </svg></span></span><span class="Rating-title" th:text="${slugBook.getCountRating(3)}">0</span></span><br><span
                                                     class="Rating"><span class="Rating-stars"><span
                                                     class="Rating-star Rating-star_view">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
@@ -292,7 +297,7 @@ p.error-browser
                                             d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
                                     </g>
                                   </g>
-                                </svg></span></span><span class="Rating-title">10</span></span><br><span class="Rating"><span
+                                </svg></span></span><span class="Rating-title" th:text="${slugBook.getCountRating(2)}">10</span></span><br><span class="Rating"><span
                                                     class="Rating-stars"><span class="Rating-star Rating-star_view">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
                                   <g>
@@ -333,15 +338,17 @@ p.error-browser
                                             d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
                                     </g>
                                   </g>
-                                </svg></span></span><span class="Rating-title">3</span></span>
+                                </svg></span></span><span class="Rating-title" th:text="${slugBook.getCountRating(1)}">3</span></span>
                                             </div>
                                         </div>
                                     </div>
                                 </button>
-                            </div>
+                                    </div>
                             <div class="ProductCard-assessment"><span
-                                    class="ProductCard-titleProp">Оцените книгу:</span><span class="Rating Rating_input"
-                                                                                             data-bookid="2121"><span
+                                    class="ProductCard-titleProp">Оцените книгу:</span>
+                                <span class="Rating Rating_input"
+                                      data-bookid="2121"
+                                      th:attr="data-bookid = ${slugBook.slug}"><span
                                     class="Rating-stars"><span class="Rating-star">
                         <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
                           <g>
@@ -563,16 +570,16 @@ p.error-browser
                                     <div class="Comment-appeal">
                                         <button class="btn btn_white btn_like" data-btntype="check" data-check="false"
                                                 data-btnradio="two2"
-                                                th:attr="data-likeid = ${slugBook.slug + '/rateBookReview/' + review.id}"
-                                                data-likeid="1111">
+                                                data-likeid="1111"
+                                                th:attr="data-likeid = ${slugBook.slug + '/rateBookReview/' + review.id}">
                                             <span class="btn-icon"><img
                                                 src="/assets/img/icons/comment/like.svg" alt="like.svg"/></span><span
                                                 class="btn-content" th:text="${review.getLikes()}">200</span>
                                         </button>
                                         <button class="btn btn_white btn_dislike" data-btntype="check"
                                                 data-check="false" data-btnradio="two2"
-                                                th:attr="data-likeid = ${slugBook.slug + '/rateBookReview/' + review.id}"
-                                                data-likeid="1111"><span
+                                                data-likeid="1111"
+                                                th:attr="data-likeid = ${slugBook.slug + '/rateBookReview/' + review.id}"><span
                                                 class="btn-icon"><img src="/assets/img/icons/comment/dislike.svg"
                                                                       alt="dislike.svg"/></span><span
                                                 class="btn-content" th:text="${review.getDisLikes()}">100</span>
