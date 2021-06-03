@@ -57,6 +57,10 @@ public class BooksController {
     @GetMapping("/{slug}")
     public String bookPage(@PathVariable("slug") String slug, Model model) {
         Book book = bookRepository.findBookBySlug(slug);
+        if (book == null) {
+            return "redirect:/index";
+        }
+
         List<BookReview> bookReviewList = bookReviewRepository.findAllByBookSlug(slug);
         bookReviewList.sort(Comparator.comparing(br -> br.getDisLikes() - br.getLikes()));
         model.addAttribute("slugBook", book);
@@ -97,6 +101,7 @@ public class BooksController {
         bookReviewRepository.save(bookReview);
         return "redirect:/books/" + slug;
     }
+
 
 //    @PostMapping("/{slug}/rateBookReview/{reviewId}")
 //    public String rateBookReview(@PathVariable("slug") String slug,
