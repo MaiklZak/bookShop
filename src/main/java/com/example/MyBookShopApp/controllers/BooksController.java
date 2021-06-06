@@ -32,7 +32,11 @@ public class BooksController {
 
     @GetMapping("/{slug}")
     public String bookPage(@PathVariable("slug") String slug, Model model) {
-        model.addAttribute("slugBook", bookRepository.findBookBySlug(slug));
+        Book book = bookRepository.findBookBySlug(slug);
+        if (book == null) {
+            return "redirect:/index";
+        }
+        model.addAttribute("slugBook", book);
         return "/books/slug";
     }
 
