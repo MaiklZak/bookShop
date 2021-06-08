@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -22,16 +21,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
     private final BookstoreUserDetailsService bookstoreUserDetailsService;
     private final JWTRequestFilter filter;
-    private final JWTUtil jwtUtil;
 
 
     @Autowired
     public SecurityConfig(CustomLogoutSuccessHandler customLogoutSuccessHandler,
-                          BookstoreUserDetailsService bookstoreUserDetailsService, JWTRequestFilter filter, JWTUtil jwtUtil) {
+                          BookstoreUserDetailsService bookstoreUserDetailsService, JWTRequestFilter filter) {
         this.customLogoutSuccessHandler = customLogoutSuccessHandler;
         this.bookstoreUserDetailsService = bookstoreUserDetailsService;
         this.filter = filter;
-        this.jwtUtil = jwtUtil;
     }
 
 

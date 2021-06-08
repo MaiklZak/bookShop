@@ -7,7 +7,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
+import springfox.documentation.service.OAuth;
 
 @Service
 public class BookstoreUserRegister {
@@ -60,8 +62,11 @@ public class BookstoreUserRegister {
     }
 
     public Object getCurrentUser() {
-        BookstoreUserDetails userDetails =
-                (BookstoreUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userDetails.getBookstoreUser();
+        Object userDetails = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (userDetails instanceof OAuth2AuthenticatedPrincipal) {
+            OAuth2AuthenticatedPrincipal oa2 = (OAuth2AuthenticatedPrincipal) userDetails;
+            return new UserDto(oa2.getAttribute("name"), oa2.getAttribute("email"), oa2.getAttribute("phone"));
+        }
+        return ((BookstoreUserDetails) userDetails).getBookstoreUser();
     }
 }
