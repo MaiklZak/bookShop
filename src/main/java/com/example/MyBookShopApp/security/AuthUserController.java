@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.security;
 
+import com.example.MyBookShopApp.data.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,10 +16,12 @@ import javax.servlet.http.HttpServletResponse;
 public class AuthUserController {
 
     private final BookstoreUserRegister userRegister;
+    private final BookRepository bookRepository;
 
     @Autowired
-    public AuthUserController(BookstoreUserRegister userRegister) {
+    public AuthUserController(BookstoreUserRegister userRegister, BookRepository bookRepository) {
         this.userRegister = userRegister;
+        this.bookRepository = bookRepository;
     }
 
     @GetMapping("/signin")
@@ -66,7 +69,8 @@ public class AuthUserController {
     }
 
     @GetMapping("/my")
-    public String handleMy() {
+    public String handleMy(Model model) {
+        model.addAttribute("books", bookRepository.findBooksByUser());
         return "my";
     }
 

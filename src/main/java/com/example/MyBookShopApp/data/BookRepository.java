@@ -35,4 +35,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     Book findBookBySlug(String slug);
 
     List<Book> findBooksBySlugIn(String[] slugs);
+
+    @Query(value = "SELECT * FROM books LIMIT 20", nativeQuery = true)
+    List<Book> findBooksByUser();
 }
