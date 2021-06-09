@@ -71,6 +71,7 @@ public class AuthUserController {
     @GetMapping("/my")
     public String handleMy(Model model) {
         model.addAttribute("books", bookRepository.findBooksByUser());
+        model.addAttribute("curUsr", userRegister.getCurrentUser());
         return "my";
     }
 
