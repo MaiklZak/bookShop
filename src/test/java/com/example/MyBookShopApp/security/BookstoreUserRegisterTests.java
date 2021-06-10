@@ -34,7 +34,7 @@ class BookstoreUserRegisterTests {
         registrationForm = new RegistrationForm();
         registrationForm.setEmail("test@mail.org");
         registrationForm.setName("Tester");
-        registrationForm.setPass("iddqd");
+        registrationForm.setPass("pass");
         registrationForm.setPass("9031232323");
     }
 
