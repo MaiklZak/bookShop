@@ -1,7 +1,7 @@
 package com.example.MyBookShopApp.controllers;
 
-import com.example.MyBookShopApp.data.ApiResponse;
-import com.example.MyBookShopApp.data.Book;
+import com.example.MyBookShopApp.data.dto.ApiResponse;
+import com.example.MyBookShopApp.data.model.Book;
 import com.example.MyBookShopApp.data.BookService;
 import com.example.MyBookShopApp.errs.BookstoreApiWrongParameterException;
 import io.swagger.annotations.Api;

@@ -1,5 +1,7 @@
-package com.example.MyBookShopApp.data;
+package com.example.MyBookShopApp.data.dto;
 
+import com.example.MyBookShopApp.data.model.TestEntity;
+import com.example.MyBookShopApp.data.reposirories.AbstractHibernateDao;
 import org.springframework.stereotype.Repository;
 
 @Repository

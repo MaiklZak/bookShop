@@ -1,5 +1,7 @@
 package com.example.MyBookShopApp.data;
 
+import com.example.MyBookShopApp.data.model.Book;
+import com.example.MyBookShopApp.data.reposirories.BookRepository;
 import com.example.MyBookShopApp.errs.BookstoreApiWrongParameterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
