@@ -1,4 +1,3 @@
-insert into users (id, email, name, password, phone) values (1, 'yayota1045@naymio.com', 'Pol', '$2a$10$YUVtwcUqbTp5jNxpgwFAJ.Pnm2428efPTXIFCyKAqTVRiD9Mwj4RC', '1231231231');
 
 insert into authors (id, first_name, last_name) values (1, 'Mirabelle', 'Fries');
 insert into authors (id, first_name, last_name) values (2, 'Kendal', 'McDaid');
