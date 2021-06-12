@@ -35,7 +35,7 @@ class BookRepositoryTests {
 
         for (Book book : bookListByAuthorFirstName) {
             Logger.getLogger(this.getClass().getSimpleName()).info(book.toString());
-            assertThat(book.getAuthor().getFirstName().contains(token));
+            assertThat(book.getAuthor().getFirstName()).contains(token);
         }
     }
 
@@ -47,7 +47,7 @@ class BookRepositoryTests {
         assertFalse(bookListByTitleContaining.isEmpty());
         for (Book book : bookListByTitleContaining) {
             Logger.getLogger(this.getClass().getSimpleName()).info(book.toString());
-            assertThat(book.getTitle().contains(token));
+            assertThat(book.getTitle()).contains(token);
         }
     }
 

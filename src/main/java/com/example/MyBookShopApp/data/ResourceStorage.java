@@ -59,6 +59,7 @@ public class ResourceStorage {
     public MediaType getBookFileMime(String hash) {
         BookFile bookFile = bookFileRepository.findBookFileByHash(hash);
         String mimeType = URLConnection.guessContentTypeFromName(Paths.get(bookFile.getPath()).getFileName().toString());
+        Logger.getLogger(this.getClass().getSimpleName()).info(mimeType + " MIMETYPE OK!");
         if (mimeType != null) {
             return MediaType.parseMediaType(mimeType);
         } else {
