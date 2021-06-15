@@ -68,4 +68,19 @@ public class MainPageController {
                                           @PathVariable(value = "searchWord", required = false) SearchWordDto searchWordDto) {
         return new BooksPageDto(bookService.getPageOfSearchResultBooks(searchWordDto.getExample(), offset, limit).getContent());
     }
+
+    @GetMapping("/recent")
+    public String getRecentPage() {
+        return "books/recent";
+    }
+
+    @GetMapping("/genres")
+    public String getGenresPage() {
+        return "genres/index";
+    }
+
+    @GetMapping("/popular")
+    public String getPopularPage() {
+        return "books/popular";
+    }
 }
