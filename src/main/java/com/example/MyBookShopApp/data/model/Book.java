@@ -9,7 +9,9 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "books")
@@ -70,6 +72,17 @@ public class Book {
     public Integer discountPrice() {
         Integer discountedPriceInt = priceOld - Math.toIntExact(Math.round(price * priceOld));
         return discountedPriceInt;
+    }
+
+    @OneToMany(mappedBy = "book")
+    private Set<BookReview> bookReviews = new HashSet<>();
+
+    public Set<BookReview> getBookReviews() {
+        return bookReviews;
+    }
+
+    public void setBookReviews(Set<BookReview> bookReviews) {
+        this.bookReviews = bookReviews;
     }
 
     public List<BookFile> getBookFileList() {

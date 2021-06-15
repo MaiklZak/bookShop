@@ -3,12 +3,14 @@ package com.example.MyBookShopApp.selenium;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@TestPropertySource("/application-test.properties")
 class NavigateSectionsOfStoreTests {
 
     private static ChromeDriver driver;

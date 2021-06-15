@@ -1,8 +1,12 @@
 package com.example.MyBookShopApp.controllers;
 
+import com.example.MyBookShopApp.data.dto.ReviewDto;
+import com.example.MyBookShopApp.data.dto.SearchWordDto;
 import com.example.MyBookShopApp.data.model.Book;
+import com.example.MyBookShopApp.data.model.BookReview;
 import com.example.MyBookShopApp.data.reposirories.BookRepository;
 import com.example.MyBookShopApp.data.ResourceStorage;
+import com.example.MyBookShopApp.data.reposirories.BookReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -21,13 +25,20 @@ import java.util.logging.Logger;
 @RequestMapping("/books")
 public class BooksController {
 
+    private final BookReviewRepository bookReviewRepository;
     private final BookRepository bookRepository;
     private final ResourceStorage storage;
 
     @Autowired
-    public BooksController(BookRepository bookRepository, ResourceStorage storage) {
+    public BooksController(BookReviewRepository bookReviewRepository, BookRepository bookRepository, ResourceStorage storage) {
+        this.bookReviewRepository = bookReviewRepository;
         this.bookRepository = bookRepository;
         this.storage = storage;
+    }
+
+    @ModelAttribute("searchWordDto")
+    public SearchWordDto searchWordDto() {
+        return new SearchWordDto();
     }
 
     @GetMapping("/{slug}")
@@ -65,5 +76,12 @@ public class BooksController {
                 .contentType(mediaType)
                 .contentLength(data.length)
                 .body(new ByteArrayResource(data));
+    }
+
+    @PostMapping("/{slug}/bookReview")
+    public String addReview(@PathVariable("slug") String slug, @RequestBody ReviewDto payload) {
+        BookReview bookReview = new BookReview(bookRepository.findBookBySlug(slug), payload.getText());
+        bookReviewRepository.save(bookReview);
+        return "redirect:/books/" + slug;
     }
 }
