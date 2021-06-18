@@ -1,5 +1,7 @@
 package com.example.MyBookShopApp.data;
 
+import com.example.MyBookShopApp.aspects.annotations.LoggingAuthorService;
+import com.example.MyBookShopApp.data.model.Author;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ public class AuthorService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @LoggingAuthorService
     public Map<String, List<Author>> getAuthorsMap() {
         List<Author> authors = jdbcTemplate.query("SELECT * FROM authors", (ResultSet rs, int rowNum) -> {
             Author author = new Author();

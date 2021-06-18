@@ -1,9 +1,9 @@
 package com.example.MyBookShopApp.controllers;
 
-import com.example.MyBookShopApp.data.Author;
+import com.example.MyBookShopApp.data.dto.SearchWordDto;
+import com.example.MyBookShopApp.data.model.Author;
 import com.example.MyBookShopApp.data.AuthorService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,6 +23,11 @@ public class AuthorsController {
     @Autowired
     public AuthorsController(AuthorService authorService) {
         this.authorService = authorService;
+    }
+
+    @ModelAttribute("searchWordDto")
+    public SearchWordDto searchWordDto() {
+        return new SearchWordDto();
     }
 
     @ModelAttribute("authorsMap")

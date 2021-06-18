@@ -1,5 +1,8 @@
 package com.example.MyBookShopApp.data;
 
+import com.example.MyBookShopApp.aspects.annotations.LoggingResourceStorageMethods;
+import com.example.MyBookShopApp.data.model.BookFile;
+import com.example.MyBookShopApp.data.repositories.BookFileRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +34,7 @@ public class ResourceStorage {
         this.bookFileRepository = bookFileRepository;
     }
 
+    @LoggingResourceStorageMethods
     public String saveNewBookImage(MultipartFile file, String slug) throws IOException {
         String resourceURI = null;
 
@@ -49,11 +53,13 @@ public class ResourceStorage {
         return resourceURI;
     }
 
+    @LoggingResourceStorageMethods
     public Path getBookFilePath(String hash) {
         BookFile bookFile = bookFileRepository.findBookFileByHash(hash);
         return Paths.get(bookFile.getPath());
     }
 
+    @LoggingResourceStorageMethods
     public MediaType getBookFileMime(String hash) {
         BookFile bookFile = bookFileRepository.findBookFileByHash(hash);
         String mimeType = URLConnection.guessContentTypeFromName(Paths.get(bookFile.getPath()).getFileName().toString());
@@ -64,6 +70,7 @@ public class ResourceStorage {
         }
     }
 
+    @LoggingResourceStorageMethods
     public byte[] getBookFileByteArray(String hash) throws IOException {
         BookFile bookFile = bookFileRepository.findBookFileByHash(hash);
         Path path = Paths.get(downloadPath, bookFile.getPath());
