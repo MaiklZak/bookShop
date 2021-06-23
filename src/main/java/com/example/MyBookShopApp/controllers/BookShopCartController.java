@@ -2,13 +2,16 @@ package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.Book;
 import com.example.MyBookShopApp.data.BookRepository;
+import com.example.MyBookShopApp.data.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,12 +26,13 @@ public class BookShopCartController {
         return new ArrayList<>();
     }
 
-
     private final BookRepository bookRepository;
+    private final PaymentService paymentService;
 
     @Autowired
-    public BookShopCartController(BookRepository bookRepository) {
+    public BookShopCartController(BookRepository bookRepository, PaymentService paymentService) {
         this.bookRepository = bookRepository;
+        this.paymentService = paymentService;
     }
 
     @GetMapping("/cart")
@@ -81,5 +85,15 @@ public class BookShopCartController {
             model.addAttribute("isCartEmpty", false);
         }
         return "redirect:/books/" + slug;
+    }
+
+    @GetMapping("/pay")
+    public RedirectView handlePay(@CookieValue(value = "cartContents", required = false) String cartContents) throws NoSuchAlgorithmException {
+        cartContents = cartContents.startsWith("/") ? cartContents.substring(1) : cartContents;
+        cartContents = cartContents.endsWith("/") ? cartContents.substring(0, cartContents.length() - 1) : cartContents;
+        String[] cookieSlugs = cartContents.split("/");
+        List<Book> booksFromCookieSlugs = bookRepository.findBooksBySlugIn(cookieSlugs);
+        String paymentUrl = paymentService.getPaymentUrl(booksFromCookieSlugs);
+        return new RedirectView(paymentUrl);
     }
 }
