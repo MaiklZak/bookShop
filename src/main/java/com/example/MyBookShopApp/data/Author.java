@@ -28,6 +28,15 @@ public class Author {
     @JsonIgnore
     private List<Book> bookList = new ArrayList<>();
 
+    public Author(List<String> authors) {
+        if (authors != null) {
+            this.firstName = authors.toString();
+        }
+    }
+
+    public Author() {
+    }
+
     public List<Book> getBookList() {
         return bookList;
     }
