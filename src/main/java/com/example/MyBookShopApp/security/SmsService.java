@@ -1,7 +1,7 @@
 package com.example.MyBookShopApp.security;
 
-import com.example.MyBookShopApp.data.SmsCode;
-import com.example.MyBookShopApp.data.SmsCodeRepository;
+import com.example.MyBookShopApp.data.model.SmsCode;
+import com.example.MyBookShopApp.data.repositories.SmsCodeRepository;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;

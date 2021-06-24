@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.security;
 
+import com.example.MyBookShopApp.errs.PasswordNoConfirmed;
 import com.example.MyBookShopApp.security.jwt.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -83,5 +84,25 @@ public class BookstoreUserRegister {
         BookstoreUserDetails userDetails =
                 (BookstoreUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userDetails.getBookstoreUser();
+    }
+
+    public void updateUser(ChangeUserForm changeUserForm) throws PasswordNoConfirmed {
+        BookstoreUser bookstoreUser = (BookstoreUser) getCurrentUser();
+        if (changeUserForm.getPassword() != null && !changeUserForm.getPassword().isEmpty()) {
+            if (!changeUserForm.getPassword().equals(changeUserForm.getPasswordReply())) {
+                throw new PasswordNoConfirmed("Password is not confirmed");
+            }
+            bookstoreUser.setPassword(passwordEncoder.encode(changeUserForm.getPassword()));
+        }
+        if (changeUserForm.getName() != null && !changeUserForm.getName().isEmpty()) {
+            bookstoreUser.setName(changeUserForm.getName());
+        }
+        if (changeUserForm.getEmail() != null && !changeUserForm.getEmail().isEmpty()) {
+            bookstoreUser.setEmail(changeUserForm.getEmail());
+        }
+        if (changeUserForm.getPhone() != null && !changeUserForm.getPhone().isEmpty()) {
+            bookstoreUser.setPhone(changeUserForm.getPhone());
+        }
+        bookstoreUserRepository.save(bookstoreUser);
     }
 }

@@ -2,6 +2,9 @@ package com.example.MyBookShopApp.data;
 
 import com.example.MyBookShopApp.data.google.api.books.Item;
 import com.example.MyBookShopApp.data.google.api.books.Root;
+import com.example.MyBookShopApp.data.model.Author;
+import com.example.MyBookShopApp.data.model.Book;
+import com.example.MyBookShopApp.data.repositories.BookRepository;
 import com.example.MyBookShopApp.errs.BookstoreApiWrongParameterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

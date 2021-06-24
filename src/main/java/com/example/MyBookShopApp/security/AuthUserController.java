@@ -1,9 +1,11 @@
 package com.example.MyBookShopApp.security;
 
-import com.example.MyBookShopApp.data.SmsCode;
+import com.example.MyBookShopApp.data.model.SmsCode;
+import com.example.MyBookShopApp.errs.PasswordNoConfirmed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -120,6 +122,12 @@ public class AuthUserController {
     public String handleProfile(Model model) {
         model.addAttribute("curUsr", userRegister.getCurrentUser());
         return "profile";
+    }
+
+    @PostMapping("/profile")
+    public String handleChangeProfile(ChangeUserForm changeUserForm) throws PasswordNoConfirmed {
+        userRegister.updateUser(changeUserForm);
+        return "redirect:/profile";
     }
 
 //    @GetMapping("/logout")

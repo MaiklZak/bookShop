@@ -163,7 +163,9 @@
                           <button class="btn btn_primary" type="submit">Сохранить
                           </button>
                         </div>
-                        <div class="Profile-success">Профиль успешно сохранен
+                        <div class="Profile-success" style="color: red" th:if="${passwordError}">Пароли не совподают
+                      </div>
+                        <div class="Profile-success" th:unless="${passwordError}">Профиль успешно сохранен
                         </div>
                       </div>
                     </div>
