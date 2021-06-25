@@ -4,8 +4,13 @@ import com.example.MyBookShopApp.data.google.api.books.Item;
 import com.example.MyBookShopApp.data.google.api.books.Root;
 import com.example.MyBookShopApp.data.model.Author;
 import com.example.MyBookShopApp.data.model.Book;
+import com.example.MyBookShopApp.data.model.BookUser;
+import com.example.MyBookShopApp.data.model.BookUserType;
 import com.example.MyBookShopApp.data.repositories.BookRepository;
+import com.example.MyBookShopApp.data.repositories.BookUserRepository;
 import com.example.MyBookShopApp.errs.BookstoreApiWrongParameterException;
+import com.example.MyBookShopApp.security.BookstoreUser;
+import com.example.MyBookShopApp.security.BookstoreUserRegister;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -22,11 +27,15 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final RestTemplate restTemplate;
+    private final BookUserRepository bookUserRepository;
+    private final BookstoreUserRegister userRegister;
 
     @Autowired
-    public BookService(BookRepository bookRepository, RestTemplate restTemplate) {
+    public BookService(BookRepository bookRepository, RestTemplate restTemplate, BookUserRepository bookUserRepository, BookstoreUserRegister userRegister) {
         this.bookRepository = bookRepository;
         this.restTemplate = restTemplate;
+        this.bookUserRepository = bookUserRepository;
+        this.userRegister = userRegister;
     }
 
     public List<Book> getBookData() {
@@ -109,5 +118,20 @@ public class BookService {
             }
         }
         return list;
+    }
+
+    public void changeBookStatusForUser(BookUserType type, String slug) {
+        Book book = bookRepository.findBookBySlug(slug);
+        BookstoreUser user = (BookstoreUser) userRegister.getCurrentUser();
+        BookUser bookUser = bookUserRepository.findByBookAndUserAndType(book, user, type);
+        if (bookUser == null) {
+            bookUserRepository.save(new BookUser(type, book, user));
+        }
+    }
+
+    public void removeBookFromCartBySlag(BookstoreUser user, String slug) {
+        Book book = bookRepository.findBookBySlug(slug);
+        BookUser bookUser = bookUserRepository.findByBookAndUserAndType(book, user, BookUserType.CART);
+        bookUserRepository.delete(bookUser);
     }
 }

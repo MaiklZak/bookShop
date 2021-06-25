@@ -1,6 +1,8 @@
 package com.example.MyBookShopApp.data.repositories;
 
 import com.example.MyBookShopApp.data.model.Book;
+import com.example.MyBookShopApp.data.model.BookUserType;
+import com.example.MyBookShopApp.security.BookstoreUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,4 +38,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     Book findBookBySlug(String slug);
 
     List<Book> findBooksBySlugIn(String[] slugs);
+
+    @Query("SELECT b FROM Book b, BookUser bu WHERE b.id = bu.book.id AND bu.user = :user AND bu.type = :type")
+    List<Book> findBooksByUserAndType(BookstoreUser user, BookUserType type);
 }

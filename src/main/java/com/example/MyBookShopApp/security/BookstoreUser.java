@@ -15,6 +15,17 @@ public class BookstoreUser {
     private String phone;
     private String password;
 
+    @Column(columnDefinition="INT default '0'")
+    private Integer balance;
+
+    public Integer getBalance() {
+        return balance;
+    }
+
+    public void setBalance(Integer balance) {
+        this.balance = balance;
+    }
+
     public Integer getId() {
         return id;
     }
