@@ -179,6 +179,7 @@
             <div class="Cart-block Cart-block_total">
               <strong class="Cart-title">Итого:
               </strong><span class="Cart-price">534 р.</span><span class="Cart-price_old">658 р.</span>
+              <h3 style="color: red" th:if="${fundsError}" th:text="${fundsError.message}">Корзина пуста </h3>
             </div>
             <div class="Cart-block"><a class="btn btn_success btn_md" href="/order.html" th:href="@{/books/pay}">Купить</a>
             </div>

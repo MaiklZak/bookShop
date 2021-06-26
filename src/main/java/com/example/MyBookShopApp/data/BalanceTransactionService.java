@@ -6,6 +6,8 @@ import com.example.MyBookShopApp.security.BookstoreUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class BalanceTransactionService {
 
@@ -19,5 +21,9 @@ public class BalanceTransactionService {
     public Integer newTransaction(BookstoreUser user, Integer sum, String description) {
         BalanceTransaction transaction = balanceTransactionRepository.save(new BalanceTransaction(user, null, sum, description));
         return transaction.getId();
+    }
+
+    public List<BalanceTransaction> findTransactionsByUser(BookstoreUser user) {
+        return balanceTransactionRepository.findBalanceTransactionByUser(user);
     }
 }

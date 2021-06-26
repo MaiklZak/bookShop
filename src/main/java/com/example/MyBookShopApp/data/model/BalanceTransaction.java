@@ -4,6 +4,8 @@ import com.example.MyBookShopApp.security.BookstoreUser;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 @Entity
 @Table(name = "balance_transaction")
@@ -39,6 +41,10 @@ public class BalanceTransaction {
 
     public BalanceTransaction() {
         this.time = LocalDateTime.now();
+    }
+
+    public String getFormatTime() {
+        return time.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT));
     }
 
     public Integer getId() {

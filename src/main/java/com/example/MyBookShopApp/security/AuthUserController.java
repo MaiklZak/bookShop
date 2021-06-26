@@ -1,7 +1,6 @@
 package com.example.MyBookShopApp.security;
 
 import com.example.MyBookShopApp.data.model.SmsCode;
-import com.example.MyBookShopApp.errs.PasswordNoConfirmed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -116,18 +115,6 @@ public class AuthUserController {
     public String handleMy(Model model) {
         model.addAttribute("curUsr", userRegister.getCurrentUser());
         return "my";
-    }
-
-    @GetMapping("/profile")
-    public String handleProfile(Model model) {
-        model.addAttribute("curUsr", userRegister.getCurrentUser());
-        return "profile";
-    }
-
-    @PostMapping("/profile")
-    public String handleChangeProfile(ChangeUserForm changeUserForm) throws PasswordNoConfirmed {
-        userRegister.updateUser(changeUserForm);
-        return "redirect:/profile";
     }
 
 //    @GetMapping("/logout")

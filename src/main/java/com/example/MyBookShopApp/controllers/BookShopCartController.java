@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 
 @Controller
 @RequestMapping("/books")
@@ -107,8 +108,27 @@ public class BookShopCartController {
 //    }
 
     @PostMapping("/changeBookStatus/{slug}")
-    public String handleChangeBookStatus(@PathVariable("slug") String slug) {
-        bookService.changeBookStatusForUser(BookUserType.CART, slug);
+    public String handleChangeBookStatus(@AuthenticationPrincipal BookstoreUserDetails user,
+                                         @PathVariable("slug") String slug,
+                                         @CookieValue(name = "cartContents", required = false) String cartContents,
+                                         HttpServletResponse response, Model model) {
+        if (user != null) {
+            bookService.changeBookStatusForUser(BookUserType.CART, slug);
+            return "redirect:/books/" + slug;
+        }
+        if (cartContents == null || cartContents.equals("")) {
+            Cookie cookie = new Cookie("cartContents", slug);
+            cookie.setPath("/books");
+            response.addCookie(cookie);
+            model.addAttribute("isCartEmpty", false);
+        } else if (!cartContents.contains(slug)) {
+            StringJoiner stringJoiner = new StringJoiner("/");
+            stringJoiner.add(cartContents).add(slug);
+            Cookie cookie = new Cookie("cartContents", stringJoiner.toString());
+            cookie.setPath("/books");
+            response.addCookie(cookie);
+            model.addAttribute("isCartEmpty", false);
+        }
         return "redirect:/books/" + slug;
     }
 
@@ -124,7 +144,7 @@ public class BookShopCartController {
 
     @GetMapping("/pay")
     public String handlePay(@AuthenticationPrincipal BookstoreUserDetails user) throws NoEnoughFundsForPayment {
-        boolean result = paymentService.buyBooksByUser(user.getBookstoreUser());
+        paymentService.buyBooksByUser(user.getBookstoreUser());
         return "redirect:/books/cart";
     }
 }
