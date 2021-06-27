@@ -175,7 +175,7 @@ p.error-browser
                        th:class="${#strings.equals(part, 'transactionPart') ? 'Tabs-link Tabs-link_ACTIVE' : 'Tabs-link'}"
                        href="#transactions" th:href="@{/profile(part='transactionPart')}">Историятранзакций</a>
                     <a th:class="${#strings.equals(part, 'topupPart') ? 'Tabs-link Tabs-link_ACTIVE' : 'Tabs-link'}"
-                       href="#topup">Пополнить счет</a>
+                       href="#topup" th:href="@{/profile(part='topupPart')}">Пополнить счет</a>
                 </div>
                 <div class="Tabs-wrap">
                     <th:block th:if="${part == null}">
@@ -288,7 +288,7 @@ p.error-browser
                     </th:block>
                     <th:block th:if="${part != null and #strings.equals(part, 'topupPart')}">
                         <div class="Tabs-block" id="topup">
-                            <form class="form Topup" action="#" th:action="@{/books/payment}" method="post"
+                            <form class="form Topup" action="#" th:action="@{/payment}" method="post"
                                   data-sendHash="34534535">
                                 <div class="Topup-wrap">
                                     <strong class="Topup-title">Введите сумму, на которую хотите пополнить свой счет:

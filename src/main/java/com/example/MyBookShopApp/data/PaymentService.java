@@ -9,6 +9,7 @@ import com.example.MyBookShopApp.data.repositories.BookRepository;
 import com.example.MyBookShopApp.data.repositories.BookUserRepository;
 import com.example.MyBookShopApp.errs.NoEnoughFundsForPayment;
 import com.example.MyBookShopApp.security.BookstoreUser;
+import com.example.MyBookShopApp.security.BookstoreUserDetails;
 import com.example.MyBookShopApp.security.BookstoreUserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,21 +39,6 @@ public class PaymentService {
         this.bookstoreUserRepository = bookstoreUserRepository;
         this.balanceTransactionRepository = balanceTransactionRepository;
         this.bookUserRepository = bookUserRepository;
-    }
-
-    public String getPaymentUrl(List<Book> booksFromCookieSlugs) throws NoSuchAlgorithmException {
-        Double paymentSumTotal = booksFromCookieSlugs.stream().mapToDouble(Book::discountPrice).sum();
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        String invId = "5"; //just for testing TODO order indexing later
-        md.update((merchantLogin + ":" + paymentSumTotal.toString() + ":" + invId + ":" + firstTestPass).getBytes());
-        return "https://auth.robokassa.ru/Merchant/index.aspx" +
-                "?MerchantLogin=" + merchantLogin +
-                "&InvId=" + invId +
-                "&Culture=ru" +
-                "&Encoding=utf-8" +
-                "&OutSum=" + paymentSumTotal.toString() +
-                "&SignatureValue=" + DatatypeConverter.printHexBinary(md.digest()).toUpperCase() +
-                "&IsTest=1";
     }
 
     public String getPaymentUrl(Integer sum, Integer invId) throws NoSuchAlgorithmException {
@@ -88,5 +74,13 @@ public class PaymentService {
             bookUserRepository.save(bookUser);
         }
         return true;
+    }
+
+    public String deposit(BookstoreUserDetails user, Integer sum) throws NoSuchAlgorithmException {
+        BookstoreUser currentUser = user.getBookstoreUser();
+        BalanceTransaction transaction = balanceTransactionRepository.save(new BalanceTransaction(currentUser, null, sum, "Depositing funds through Robokassa"));
+        currentUser.setBalance(currentUser.getBalance() + sum);
+        bookstoreUserRepository.save(currentUser);
+        return getPaymentUrl(sum, transaction.getId());
     }
 }

@@ -18,11 +18,6 @@ public class BalanceTransactionService {
         this.balanceTransactionRepository = balanceTransactionRepository;
     }
 
-    public Integer newTransaction(BookstoreUser user, Integer sum, String description) {
-        BalanceTransaction transaction = balanceTransactionRepository.save(new BalanceTransaction(user, null, sum, description));
-        return transaction.getId();
-    }
-
     public List<BalanceTransaction> findTransactionsByUser(BookstoreUser user) {
         return balanceTransactionRepository.findBalanceTransactionByUser(user);
     }

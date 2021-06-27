@@ -1,11 +1,9 @@
 package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.BookService;
-import com.example.MyBookShopApp.data.PaymentService;
 import com.example.MyBookShopApp.data.model.Book;
 import com.example.MyBookShopApp.data.model.BookUserType;
 import com.example.MyBookShopApp.data.repositories.BookRepository;
-import com.example.MyBookShopApp.errs.NoEnoughFundsForPayment;
 import com.example.MyBookShopApp.security.BookstoreUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,13 +28,11 @@ public class BookShopCartController {
     }
 
     private final BookRepository bookRepository;
-    private final PaymentService paymentService;
     private final BookService bookService;
 
     @Autowired
-    public BookShopCartController(BookRepository bookRepository, PaymentService paymentService, BookService bookService) {
+    public BookShopCartController(BookRepository bookRepository, BookService bookService) {
         this.bookRepository = bookRepository;
-        this.paymentService = paymentService;
         this.bookService = bookService;
     }
 
@@ -142,9 +138,5 @@ public class BookShopCartController {
 //        return new RedirectView(paymentUrl);
 //    }
 
-    @GetMapping("/pay")
-    public String handlePay(@AuthenticationPrincipal BookstoreUserDetails user) throws NoEnoughFundsForPayment {
-        paymentService.buyBooksByUser(user.getBookstoreUser());
-        return "redirect:/books/cart";
-    }
+
 }

@@ -2,6 +2,7 @@ package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.BalanceTransactionService;
 import com.example.MyBookShopApp.data.PaymentService;
+import com.example.MyBookShopApp.errs.NoEnoughFundsForPayment;
 import com.example.MyBookShopApp.errs.PasswordNoConfirmed;
 import com.example.MyBookShopApp.security.BookstoreUser;
 import com.example.MyBookShopApp.security.BookstoreUserDetails;
@@ -30,13 +31,6 @@ public class ProfileController {
         this.userRegister = userRegister;
     }
 
-    @PostMapping("/payment")
-    public RedirectView handlePayment(@AuthenticationPrincipal BookstoreUserDetails user, @RequestParam Integer sum) throws NoSuchAlgorithmException {
-        Integer transactionId = balanceTransactionService.newTransaction(user.getBookstoreUser(), sum, "Depositing funds through Robokassa");
-        String paymentUrl = paymentService.getPaymentUrl(sum, transactionId);
-        return new RedirectView(paymentUrl);
-    }
-
     @GetMapping("/profile")
     public String handleProfile(@RequestParam(name = "part", required = false) String part, Model model) {
         BookstoreUser user = (BookstoreUser) userRegister.getCurrentUser();
@@ -50,6 +44,18 @@ public class ProfileController {
     public String handleChangeProfile(ChangeUserForm changeUserForm) throws PasswordNoConfirmed {
         userRegister.updateUser(changeUserForm);
         return "redirect:/profile";
+    }
+
+    @GetMapping("/pay")
+    public String handlePay(@AuthenticationPrincipal BookstoreUserDetails user) throws NoEnoughFundsForPayment {
+        paymentService.buyBooksByUser(user.getBookstoreUser());
+        return "redirect:/books/cart";
+    }
+
+    @PostMapping("/payment")
+    public RedirectView handlePayment(@AuthenticationPrincipal BookstoreUserDetails user, @RequestParam Integer sum) throws NoSuchAlgorithmException {
+        String paymentUrl = paymentService.deposit(user, sum);
+        return new RedirectView(paymentUrl);
     }
 
 }
