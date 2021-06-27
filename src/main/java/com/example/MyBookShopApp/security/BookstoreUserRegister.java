@@ -1,8 +1,12 @@
 package com.example.MyBookShopApp.security;
 
-import com.example.MyBookShopApp.errs.PasswordNoConfirmed;
+import com.example.MyBookShopApp.data.model.SmsCode;
+import com.example.MyBookShopApp.errs.WrongCredentialsException;
 import com.example.MyBookShopApp.security.jwt.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,14 +23,21 @@ public class BookstoreUserRegister {
     private final AuthenticationManager authenticationManager;
     private final BookstoreUserDetailsService bookstoreUserDetailsService;
     private final JWTUtil jwtUtil;
+    private final SmsService smsService;
+    private final JavaMailSender javaMailSender;
+
+    @Value("${appEmail.email}")
+    private String email;
 
     @Autowired
-    public BookstoreUserRegister(BookstoreUserRepository bookstoreUserRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, BookstoreUserDetailsService bookstoreUserDetailsService, JWTUtil jwtUtil) {
+    public BookstoreUserRegister(BookstoreUserRepository bookstoreUserRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, BookstoreUserDetailsService bookstoreUserDetailsService, JWTUtil jwtUtil, SmsService smsService, JavaMailSender javaMailSender) {
         this.bookstoreUserRepository = bookstoreUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.bookstoreUserDetailsService = bookstoreUserDetailsService;
         this.jwtUtil = jwtUtil;
+        this.smsService = smsService;
+        this.javaMailSender = javaMailSender;
     }
 
     public BookstoreUser registerNewUser(RegistrationForm registrationForm) {
@@ -86,23 +97,75 @@ public class BookstoreUserRegister {
         return userDetails.getBookstoreUser();
     }
 
-    public void updateUser(ChangeUserForm changeUserForm) throws PasswordNoConfirmed {
+    public void updateUser(ChangeUserForm changeUserForm) throws WrongCredentialsException {
         BookstoreUser bookstoreUser = (BookstoreUser) getCurrentUser();
-        if (changeUserForm.getPassword() != null && !changeUserForm.getPassword().isEmpty()) {
-            if (!changeUserForm.getPassword().equals(changeUserForm.getPasswordReply())) {
-                throw new PasswordNoConfirmed("Password is not confirmed");
-            }
-            bookstoreUser.setPassword(passwordEncoder.encode(changeUserForm.getPassword()));
+        BookstoreUser updateUser = new BookstoreUser();
+        if (verifyPassword(changeUserForm.getPassword(), changeUserForm.getPasswordReply())) {
+            updateUser.setPassword(passwordEncoder.encode(changeUserForm.getPassword()));
         }
-        if (changeUserForm.getName() != null && !changeUserForm.getName().isEmpty()) {
-            bookstoreUser.setName(changeUserForm.getName());
+        if (verifyUserName(changeUserForm.getName())) {
+            updateUser.setName(changeUserForm.getName());
         }
-        if (changeUserForm.getEmail() != null && !changeUserForm.getEmail().isEmpty()) {
-            bookstoreUser.setEmail(changeUserForm.getEmail());
+        if (verifyEmail(changeUserForm.getMail())) {
+            updateUser.setEmail(changeUserForm.getMail());
         }
-        if (changeUserForm.getPhone() != null && !changeUserForm.getPhone().isEmpty()) {
-            bookstoreUser.setPhone(changeUserForm.getPhone());
+        if (verifyPhone(changeUserForm.getPhone())) {
+            updateUser.setPhone(changeUserForm.getPhone());
         }
-        bookstoreUserRepository.save(bookstoreUser);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(email);
+        message.setTo(bookstoreUser.getEmail());
+        SmsCode smsCode = new SmsCode(smsService.generateCode(), 300); //5 minutes
+        smsService.saveNewCode(smsCode);
+        message.setSubject("Changing credentials!");
+        message.setText("Please, visit next link: http://localhost:8080/changeCredentials/"
+                + bookstoreUserRepository.save(updateUser).getId() + "/"
+                + bookstoreUser.getId() + "/"
+                + smsCode.getCode().replaceAll(" ", "_"));
+        javaMailSender.send(message);
     }
+
+    public void approveCredentials(Integer userId, Integer currentUserId, String code) throws WrongCredentialsException {
+        BookstoreUser user = (BookstoreUser) getCurrentUser();
+        BookstoreUser updateUser = bookstoreUserRepository.getOne(userId);
+        if (!smsService.verifyCode(code.replaceAll("_", " ")) || updateUser == null || !user.getId().equals(currentUserId)) {
+            throw new WrongCredentialsException("confirmation code expired");
+        }
+        user.setName(updateUser.getName());
+        user.setEmail(updateUser.getEmail());
+        user.setPhone(updateUser.getPhone());
+        user.setPassword(updateUser.getPassword());
+        bookstoreUserRepository.save(user);
+        bookstoreUserRepository.delete(updateUser);
+    }
+
+    private boolean verifyPhone(String phone) throws WrongCredentialsException {
+        if (phone == null || phone.isEmpty()) {
+            throw new WrongCredentialsException("Incorrect phone");
+        }
+        return true;
+    }
+
+    private boolean verifyEmail(String email) throws WrongCredentialsException {
+        if (email == null || email.isEmpty() || !email.contains("@")) {
+            throw new WrongCredentialsException("Incorrect email");
+        }
+        return true;
+    }
+
+    private boolean verifyUserName(String name) throws WrongCredentialsException {
+        if (name == null || name.isEmpty() || name.length() < 2) {
+            throw new WrongCredentialsException("Incorrect name");
+        }
+        return true;
+    }
+
+    private boolean verifyPassword(String password, String passwordReply) throws WrongCredentialsException {
+        if (password == null || password.isEmpty() || password.length() < 6 || !password.equals(passwordReply)) {
+            throw new WrongCredentialsException("Incorrect password");
+        }
+        return true;
+    }
+
 }

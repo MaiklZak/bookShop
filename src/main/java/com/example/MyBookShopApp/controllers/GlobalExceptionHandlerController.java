@@ -2,7 +2,7 @@ package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.errs.EmptySearchException;
 import com.example.MyBookShopApp.errs.NoEnoughFundsForPayment;
-import com.example.MyBookShopApp.errs.PasswordNoConfirmed;
+import com.example.MyBookShopApp.errs.WrongCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -19,9 +19,9 @@ public class GlobalExceptionHandlerController {
         return "redirect:/";
     }
 
-    @ExceptionHandler(PasswordNoConfirmed.class)
-    public String handlePasswordNoConfirmed(PasswordNoConfirmed e, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("passwordError", e);
+    @ExceptionHandler(WrongCredentialsException.class)
+    public String handlePasswordNoConfirmed(WrongCredentialsException e, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("credentialsError", e);
         return "redirect:/profile";
     }
 

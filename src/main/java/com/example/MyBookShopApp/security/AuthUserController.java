@@ -2,6 +2,7 @@ package com.example.MyBookShopApp.security;
 
 import com.example.MyBookShopApp.data.model.SmsCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
@@ -27,6 +28,9 @@ public class AuthUserController {
         this.smsService = smsService;
         this.javaMailSender = javaMailSender;
     }
+
+    @Value("${appEmail.email}")
+    private String email;
 
     @GetMapping("/signin")
     public String handleSignIn() {
@@ -58,7 +62,7 @@ public class AuthUserController {
     public ContactConfirmationResponse handleRequestEmailConfirmation(@RequestBody ContactConfirmationPayload payload) {
         ContactConfirmationResponse response = new ContactConfirmationResponse();
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("mthompso@mail.ru");
+        message.setFrom(email);
         message.setTo(payload.getContact());
         SmsCode smsCode = new SmsCode(smsService.generateCode(), 300); //5 minutes
         smsService.saveNewCode(smsCode);

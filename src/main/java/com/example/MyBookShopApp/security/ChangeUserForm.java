@@ -3,7 +3,7 @@ package com.example.MyBookShopApp.security;
 public class ChangeUserForm {
 
     private String name;
-    private String email;
+    private String mail;
     private String phone;
     private String password;
     private String passwordReply;
@@ -16,12 +16,12 @@ public class ChangeUserForm {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public String getMail() {
+        return mail;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     public String getPhone() {
@@ -48,4 +48,14 @@ public class ChangeUserForm {
         this.passwordReply = passwordReply;
     }
 
+    @Override
+    public String toString() {
+        return "ChangeUserForm{" +
+                "name='" + name + '\'' +
+                ", mail='" + mail + '\'' +
+                ", phone='" + phone + '\'' +
+                ", password='" + password + '\'' +
+                ", passwordReply='" + passwordReply + '\'' +
+                '}';
+    }
 }

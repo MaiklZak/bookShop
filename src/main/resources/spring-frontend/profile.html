@@ -236,9 +236,9 @@ p.error-browser
                                                     </button>
                                                 </div>
                                                 <div class="Profile-success" style="color: red"
-                                                     th:if="${passwordError}">Пароли не совподают
+                                                     th:if="${credentialsError}" th:text="${credentialsError.message}">Пароли не совподают
                                                 </div>
-                                                <div class="Profile-success" th:unless="${passwordError}">Профиль
+                                                <div class="Profile-success" th:if="${credentialsSuccess}" th:text="${credentialsSuccess}">Профиль
                                                     успешно сохранен
                                                 </div>
                                             </div>
