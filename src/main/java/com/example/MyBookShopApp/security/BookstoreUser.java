@@ -16,7 +16,7 @@ public class BookstoreUser {
     private String password;
 
     @Column(columnDefinition="INT default '0'")
-    private Integer balance;
+    private Integer balance = 0;
 
     public Integer getBalance() {
         return balance;

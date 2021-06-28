@@ -39,9 +39,20 @@ public class BookShopCartController {
     @GetMapping("/cart")
     public String handleCartRequest(@AuthenticationPrincipal BookstoreUserDetails user,
                                     @CookieValue(value = "cartContents", required = false) String cartContents,
+                                    HttpServletResponse response,
                                     Model model) {
 
         if (user != null) {
+            if (cartContents != null && !cartContents.equals("")) {
+                cartContents = cartContents.startsWith("/") ? cartContents.substring(1) : cartContents;
+                cartContents = cartContents.endsWith("/") ? cartContents.substring(0, cartContents.length() - 1) : cartContents;
+                String[] cookieSlugs = cartContents.split("/");
+                List<Book> booksFromCookieSlugs = bookRepository.findBooksBySlugIn(cookieSlugs);
+                for (Book book : booksFromCookieSlugs) {
+                    bookService.changeBookStatusForUser(BookUserType.CART, book.getSlug());
+                }
+                response.addCookie(new Cookie("cartContents", ""));
+            }
             List<Book> booksByUser = bookRepository.findBooksByUserAndType(user.getBookstoreUser(), BookUserType.CART);
             model.addAttribute("isCartEmpty", booksByUser.isEmpty());
             model.addAttribute("bookCart", booksByUser);
