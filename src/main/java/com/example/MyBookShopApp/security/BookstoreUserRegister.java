@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class BookstoreUserRegister {
 
@@ -98,7 +100,7 @@ public class BookstoreUserRegister {
     }
 
     public void updateUser(ChangeUserForm changeUserForm) throws WrongCredentialsException {
-        BookstoreUser bookstoreUser = (BookstoreUser) getCurrentUser();
+        BookstoreUser currentUser = (BookstoreUser) getCurrentUser();
         BookstoreUser updateUser = new BookstoreUser();
         if (verifyPassword(changeUserForm.getPassword(), changeUserForm.getPasswordReply())) {
             updateUser.setPassword(passwordEncoder.encode(changeUserForm.getPassword()));
@@ -115,29 +117,29 @@ public class BookstoreUserRegister {
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(email);
-        message.setTo(bookstoreUser.getEmail());
+        message.setTo(currentUser.getEmail());
         SmsCode smsCode = new SmsCode(smsService.generateCode(), 300); //5 minutes
         smsService.saveNewCode(smsCode);
         message.setSubject("Changing credentials!");
         message.setText("Please, visit next link: http://localhost:8080/changeCredentials/"
                 + bookstoreUserRepository.save(updateUser).getId() + "/"
-                + bookstoreUser.getId() + "/"
+                + currentUser.getId() + "/"
                 + smsCode.getCode().replaceAll(" ", "_"));
         javaMailSender.send(message);
     }
 
-    public void approveCredentials(Integer userId, Integer currentUserId, String code) throws WrongCredentialsException {
+    public void approveCredentials(Integer updateUserId, Integer currentUserId, String code) throws WrongCredentialsException {
         BookstoreUser user = (BookstoreUser) getCurrentUser();
-        BookstoreUser updateUser = bookstoreUserRepository.getOne(userId);
-        if (!smsService.verifyCode(code.replaceAll("_", " ")) || updateUser == null || !user.getId().equals(currentUserId)) {
-            throw new WrongCredentialsException("confirmation code expired");
+        Optional<BookstoreUser> updateUser = bookstoreUserRepository.findById(updateUserId);
+        if (!smsService.verifyCode(code.replaceAll("_", " ")) || !updateUser.isPresent() || !user.getId().equals(currentUserId)) {
+            throw new WrongCredentialsException(!updateUser.isPresent() ? "Changes already confirmed" : "Confirmation code expired");
         }
-        user.setName(updateUser.getName());
-        user.setEmail(updateUser.getEmail());
-        user.setPhone(updateUser.getPhone());
-        user.setPassword(updateUser.getPassword());
+        user.setName(updateUser.get().getName());
+        user.setEmail(updateUser.get().getEmail());
+        user.setPhone(updateUser.get().getPhone());
+        user.setPassword(updateUser.get().getPassword());
         bookstoreUserRepository.save(user);
-        bookstoreUserRepository.delete(updateUser);
+        bookstoreUserRepository.delete(updateUser.get());
     }
 
     private boolean verifyPhone(String phone) throws WrongCredentialsException {

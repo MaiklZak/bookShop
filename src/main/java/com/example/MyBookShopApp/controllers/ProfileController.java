@@ -60,13 +60,13 @@ public class ProfileController {
         return new RedirectView(paymentUrl);
     }
 
-    @GetMapping("/changeCredentials/{userId}/{currentUserId}/{code}")
-    public String approveCredentials(@PathVariable Integer userId,
+    @GetMapping("/changeCredentials/{updateUserId}/{currentUserId}/{code}")
+    public String approveCredentials(@PathVariable Integer updateUserId,
                                      @PathVariable Integer currentUserId,
                                      @PathVariable String code,
                                      Model model) throws WrongCredentialsException {
 
-        userRegister.approveCredentials(userId, currentUserId, code);
+        userRegister.approveCredentials(updateUserId, currentUserId, code);
         BookstoreUser user = (BookstoreUser) userRegister.getCurrentUser();
         model.addAttribute("curUsr", user);
         model.addAttribute("transactions", balanceTransactionService.findTransactionsByUser(user));
