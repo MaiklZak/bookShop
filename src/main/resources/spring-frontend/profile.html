@@ -302,6 +302,9 @@ p.error-browser
                                             </button>
                                         </div>
                                     </div>
+                                    <div class="Profile-success" style="color: red"
+                                         th:if="${amountError}" th:text="${amountError.message}">Пароли не совподают
+                                    </div>
                                 </div>
                             </form>
                         </div>

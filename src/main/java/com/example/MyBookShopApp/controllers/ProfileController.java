@@ -2,6 +2,7 @@ package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.BalanceTransactionService;
 import com.example.MyBookShopApp.data.PaymentService;
+import com.example.MyBookShopApp.errs.IncorrectAmountToEnterException;
 import com.example.MyBookShopApp.errs.NoEnoughFundsForPayment;
 import com.example.MyBookShopApp.errs.WrongCredentialsException;
 import com.example.MyBookShopApp.security.BookstoreUser;
@@ -55,7 +56,10 @@ public class ProfileController {
 
     @PostMapping("/payment")
     public RedirectView handlePayment(@AuthenticationPrincipal BookstoreUserDetails user,
-                                      @RequestParam Integer sum) throws NoSuchAlgorithmException {
+                                      @RequestParam(required = false) Integer sum) throws NoSuchAlgorithmException, IncorrectAmountToEnterException {
+        if (sum == null || sum <= 0) {
+            throw new IncorrectAmountToEnterException("Amount to enter must be more 0");
+        }
         String paymentUrl = paymentService.deposit(user, sum);
         return new RedirectView(paymentUrl);
     }

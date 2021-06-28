@@ -129,16 +129,16 @@ public class BookstoreUserRegister {
     }
 
     public void approveCredentials(Integer updateUserId, Integer currentUserId, String code) throws WrongCredentialsException {
-        BookstoreUser user = (BookstoreUser) getCurrentUser();
+        BookstoreUser currentUser = (BookstoreUser) getCurrentUser();
         Optional<BookstoreUser> updateUser = bookstoreUserRepository.findById(updateUserId);
-        if (!smsService.verifyCode(code.replaceAll("_", " ")) || !updateUser.isPresent() || !user.getId().equals(currentUserId)) {
+        if (!smsService.verifyCode(code.replaceAll("_", " ")) || !updateUser.isPresent() || !currentUser.getId().equals(currentUserId)) {
             throw new WrongCredentialsException(!updateUser.isPresent() ? "Changes already confirmed" : "Confirmation code expired");
         }
-        user.setName(updateUser.get().getName());
-        user.setEmail(updateUser.get().getEmail());
-        user.setPhone(updateUser.get().getPhone());
-        user.setPassword(updateUser.get().getPassword());
-        bookstoreUserRepository.save(user);
+        currentUser.setName(updateUser.get().getName());
+        currentUser.setEmail(updateUser.get().getEmail());
+        currentUser.setPhone(updateUser.get().getPhone());
+        currentUser.setPassword(updateUser.get().getPassword());
+        bookstoreUserRepository.save(currentUser);
         bookstoreUserRepository.delete(updateUser.get());
     }
 

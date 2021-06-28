@@ -1,6 +1,7 @@
 package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.errs.EmptySearchException;
+import com.example.MyBookShopApp.errs.IncorrectAmountToEnterException;
 import com.example.MyBookShopApp.errs.NoEnoughFundsForPayment;
 import com.example.MyBookShopApp.errs.WrongCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -29,5 +30,11 @@ public class GlobalExceptionHandlerController {
     public String handleNoEnoughFundsForPayment(NoEnoughFundsForPayment e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("fundsError", e);
         return "redirect:/books/cart";
+    }
+
+    @ExceptionHandler(IncorrectAmountToEnterException.class)
+    public String handleIncorrectAmountToEnter(IncorrectAmountToEnterException e, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("amountError", e);
+        return "redirect:/profile?part=topupPart";
     }
 }
