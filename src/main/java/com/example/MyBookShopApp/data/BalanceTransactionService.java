@@ -4,6 +4,10 @@ import com.example.MyBookShopApp.data.model.BalanceTransaction;
 import com.example.MyBookShopApp.data.repositories.BalanceTransactionRepository;
 import com.example.MyBookShopApp.security.BookstoreUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +22,8 @@ public class BalanceTransactionService {
         this.balanceTransactionRepository = balanceTransactionRepository;
     }
 
-    public List<BalanceTransaction> findTransactionsByUser(BookstoreUser user) {
-        return balanceTransactionRepository.findBalanceTransactionByUser(user);
+    public Page<BalanceTransaction> getTransactionsByUserPage(BookstoreUser user, Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit, Sort.by("time").descending());
+        return balanceTransactionRepository.findBalanceTransactionByUser(user, nextPage);
     }
 }
