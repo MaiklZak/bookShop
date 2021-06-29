@@ -7,16 +7,15 @@ import com.example.MyBookShopApp.data.model.BalanceTransaction;
 import com.example.MyBookShopApp.errs.IncorrectAmountToEnterException;
 import com.example.MyBookShopApp.errs.NoEnoughFundsForPayment;
 import com.example.MyBookShopApp.errs.WrongCredentialsException;
-import com.example.MyBookShopApp.security.BookstoreUser;
-import com.example.MyBookShopApp.security.BookstoreUserDetails;
-import com.example.MyBookShopApp.security.BookstoreUserRegister;
-import com.example.MyBookShopApp.security.ChangeUserForm;
+import com.example.MyBookShopApp.security.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
@@ -33,17 +32,18 @@ public class ProfileController {
         this.userRegister = userRegister;
     }
 
-    @ModelAttribute("transactions")
-    public List<BalanceTransaction> balanceTransactionList() {
-        BookstoreUser user = (BookstoreUser) userRegister.getCurrentUser();
-        return balanceTransactionService.getTransactionsByUserPage(user, 0, 50).getContent();
-    }
+//    @ModelAttribute("transactions")
+//    public List<BalanceTransaction> balanceTransactionList() {
+//        BookstoreUser user = (BookstoreUser) userRegister.getCurrentUser();
+//        return balanceTransactionService.getTransactionsByUserPage(user, 0, 50).getContent();
+//    }
 
     @GetMapping("/profile")
     public String handleProfile(@RequestParam(name = "part", required = false) String part, Model model) {
         BookstoreUser user = (BookstoreUser) userRegister.getCurrentUser();
         model.addAttribute("curUsr", user);
         model.addAttribute("part", part);
+        model.addAttribute("transactions", balanceTransactionService.getTransactionsByUserPage(user, 0, 50).getContent());
         return "profile";
     }
 
@@ -51,6 +51,13 @@ public class ProfileController {
     public String handleChangeProfile(ChangeUserForm changeUserForm) throws WrongCredentialsException {
         userRegister.updateUser(changeUserForm);
         return "redirect:/profile";
+    }
+
+    @GetMapping("/transactions")
+    @ResponseBody
+    public BalanceTransactionDto getNextPageTransactions(@RequestParam("offset") Integer offset, @RequestParam("limit") Integer limit) {
+        BookstoreUser user = (BookstoreUser) userRegister.getCurrentUser();
+        return new BalanceTransactionDto(balanceTransactionService.getTransactionsByUserPage(user, offset, limit).getContent());
     }
 
     @GetMapping("/pay")
@@ -73,21 +80,18 @@ public class ProfileController {
     public String approveCredentials(@PathVariable Integer updateUserId,
                                      @PathVariable Integer currentUserId,
                                      @PathVariable String code,
+                                     HttpServletResponse response,
                                      Model model) throws WrongCredentialsException {
 
-        userRegister.approveCredentials(updateUserId, currentUserId, code);
+        String token = userRegister.approveCredentials(updateUserId, currentUserId, code);
         BookstoreUser user = (BookstoreUser) userRegister.getCurrentUser();
+        userRegister.authenticateUpdatedUser(user, token);
+        response.addCookie(new Cookie("token", token));
         model.addAttribute("curUsr", user);
         model.addAttribute("part", null);
         model.addAttribute("credentialsSuccess", "Профиль успешно сохранен");
+        model.addAttribute("transactions", balanceTransactionService.getTransactionsByUserPage(user, 0, 50).getContent());
         return "/profile";
-    }
-
-    @GetMapping("/transactions")
-    @ResponseBody
-    public BalanceTransactionDto getNextPageTransactions(@RequestParam("offset") Integer offset, @RequestParam("limit") Integer limit) {
-        BookstoreUser user = (BookstoreUser) userRegister.getCurrentUser();
-        return new BalanceTransactionDto(balanceTransactionService.getTransactionsByUserPage(user, offset, limit).getContent());
     }
 
 }

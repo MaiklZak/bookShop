@@ -103,7 +103,7 @@ public class BookstoreUserRegister {
         BookstoreUser currentUser = (BookstoreUser) getCurrentUser();
         BookstoreUser updateUser = new BookstoreUser();
         if (verifyPassword(changeUserForm.getPassword(), changeUserForm.getPasswordReply())) {
-            updateUser.setPassword(passwordEncoder.encode(changeUserForm.getPassword()));
+            updateUser.setPassword(changeUserForm.getPassword());
         }
         if (verifyUserName(changeUserForm.getName())) {
             updateUser.setName(changeUserForm.getName());
@@ -128,8 +128,8 @@ public class BookstoreUserRegister {
         javaMailSender.send(message);
     }
 
-    public void approveCredentials(Integer updateUserId, Integer currentUserId, String code) throws WrongCredentialsException {
-        BookstoreUser currentUser = (BookstoreUser) getCurrentUser();
+    public String approveCredentials(Integer updateUserId, Integer currentUserId, String code) throws WrongCredentialsException {
+        BookstoreUser currentUser = bookstoreUserRepository.getOne(currentUserId);
         Optional<BookstoreUser> updateUser = bookstoreUserRepository.findById(updateUserId);
         if (!smsService.verifyCode(code.replaceAll("_", " ")) || !updateUser.isPresent() || !currentUser.getId().equals(currentUserId)) {
             throw new WrongCredentialsException(!updateUser.isPresent() ? "Changes already confirmed" : "Confirmation code expired");
@@ -137,9 +137,17 @@ public class BookstoreUserRegister {
         currentUser.setName(updateUser.get().getName());
         currentUser.setEmail(updateUser.get().getEmail());
         currentUser.setPhone(updateUser.get().getPhone());
-        currentUser.setPassword(updateUser.get().getPassword());
-        bookstoreUserRepository.save(currentUser);
+        currentUser.setPassword(passwordEncoder.encode(updateUser.get().getPassword()));
+
+        String password = updateUser.get().getPassword();
         bookstoreUserRepository.delete(updateUser.get());
+        bookstoreUserRepository.save(currentUser);
+
+        String token = generateTokenForUpdateUser(currentUser, password);
+
+        authenticateUpdatedUser(currentUser, token);
+
+        return token;
     }
 
     private boolean verifyPhone(String phone) throws WrongCredentialsException {
@@ -170,4 +178,21 @@ public class BookstoreUserRegister {
         return true;
     }
 
+    public String generateTokenForUpdateUser(BookstoreUser user, String pass) {
+        ContactConfirmationPayload payload = new ContactConfirmationPayload();
+        payload.setContact(user.getEmail());
+        payload.setCode(pass);
+        ContactConfirmationResponse response = jwtLogin(payload);
+        return response.getResult();
+    }
+
+    public void authenticateUpdatedUser(BookstoreUser user, String token) {
+            UserDetails userDetails = bookstoreUserDetailsService.loadUserByUsername(user.getEmail());
+            if (jwtUtil.validateToken(token, userDetails)) {
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        }
+    }
 }
