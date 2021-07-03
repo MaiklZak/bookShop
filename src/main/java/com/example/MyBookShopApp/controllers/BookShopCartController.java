@@ -94,26 +94,6 @@ public class BookShopCartController {
         return "redirect:/books/cart";
     }
 
-//    @PostMapping("/changeBookStatus/{slug}")
-//    public String handleChangeBookStatus(@PathVariable("slug") String slug, @CookieValue(name = "cartContents",
-//            required = false) String cartContents, HttpServletResponse response, Model model) {
-//
-//        if (cartContents == null || cartContents.equals("")) {
-//            Cookie cookie = new Cookie("cartContents", slug);
-//            cookie.setPath("/books");
-//            response.addCookie(cookie);
-//            model.addAttribute("isCartEmpty", false);
-//        } else if (!cartContents.contains(slug)) {
-//            StringJoiner stringJoiner = new StringJoiner("/");
-//            stringJoiner.add(cartContents).add(slug);
-//            Cookie cookie = new Cookie("cartContents", stringJoiner.toString());
-//            cookie.setPath("/books");
-//            response.addCookie(cookie);
-//            model.addAttribute("isCartEmpty", false);
-//        }
-//        return "redirect:/books/" + slug;
-//    }
-
     @PostMapping("/changeBookStatus/{slug}")
     public String handleChangeBookStatus(@AuthenticationPrincipal BookstoreUserDetails user,
                                          @PathVariable("slug") String slug,
@@ -138,16 +118,5 @@ public class BookShopCartController {
         }
         return "redirect:/books/" + slug;
     }
-
-//    @GetMapping("/pay")
-//    public RedirectView handlePay(@CookieValue(value = "cartContents", required = false) String cartContents) throws NoSuchAlgorithmException {
-//        cartContents = cartContents.startsWith("/") ? cartContents.substring(1) : cartContents;
-//        cartContents = cartContents.endsWith("/") ? cartContents.substring(0, cartContents.length() - 1) : cartContents;
-//        String[] cookieSlugs = cartContents.split("/");
-//        List<Book> booksFromCookieSlugs = bookRepository.findBooksBySlugIn(cookieSlugs);
-//        String paymentUrl = paymentService.getPaymentUrl(booksFromCookieSlugs);
-//        return new RedirectView(paymentUrl);
-//    }
-
 
 }

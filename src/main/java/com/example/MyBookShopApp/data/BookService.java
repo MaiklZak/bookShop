@@ -123,15 +123,19 @@ public class BookService {
     public void changeBookStatusForUser(BookUserType type, String slug) {
         Book book = bookRepository.findBookBySlug(slug);
         BookstoreUser user = (BookstoreUser) userRegister.getCurrentUser();
-        BookUser bookUser = bookUserRepository.findByBookAndUserAndType(book, user, type);
+        BookUser bookUser = bookUserRepository.findByBookAndUser(book, user);
         if (bookUser == null) {
             bookUserRepository.save(new BookUser(type, book, user));
+        } else if (bookUser.getType().equals(BookUserType.VIEWED)) {
+            bookUser.setType(BookUserType.CART);
+            bookUserRepository.save(bookUser);
         }
     }
 
     public void removeBookFromCartBySlag(BookstoreUser user, String slug) {
         Book book = bookRepository.findBookBySlug(slug);
         BookUser bookUser = bookUserRepository.findByBookAndUserAndType(book, user, BookUserType.CART);
-        bookUserRepository.delete(bookUser);
+        bookUser.setType(BookUserType.VIEWED);
+        bookUserRepository.save(bookUser);
     }
 }

@@ -1,13 +1,18 @@
 package com.example.MyBookShopApp.controllers;
 
-import com.example.MyBookShopApp.data.model.Book;
-import com.example.MyBookShopApp.data.repositories.BookRepository;
 import com.example.MyBookShopApp.data.ResourceStorage;
+import com.example.MyBookShopApp.data.model.Book;
+import com.example.MyBookShopApp.data.model.BookUser;
+import com.example.MyBookShopApp.data.model.BookUserType;
+import com.example.MyBookShopApp.data.repositories.BookRepository;
+import com.example.MyBookShopApp.data.repositories.BookUserRepository;
+import com.example.MyBookShopApp.security.BookstoreUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,18 +28,27 @@ public class BooksController {
 
     private final BookRepository bookRepository;
     private final ResourceStorage storage;
+    private final BookUserRepository bookUserRepository;
 
     @Autowired
-    public BooksController(BookRepository bookRepository, ResourceStorage storage) {
+    public BooksController(BookRepository bookRepository, ResourceStorage storage, BookUserRepository bookUserRepository) {
         this.bookRepository = bookRepository;
         this.storage = storage;
+        this.bookUserRepository = bookUserRepository;
     }
 
     @GetMapping("/{slug}")
-    public String bookPage(@PathVariable("slug") String slug, Model model) {
+    public String bookPage(@AuthenticationPrincipal BookstoreUserDetails user,
+                           @PathVariable("slug") String slug,
+                           Model model) {
         Book book = bookRepository.findBookBySlug(slug);
         if (book == null) {
             return "redirect:/index";
+        }
+        BookUser bookUser = bookUserRepository.findByBook(book);
+        if (bookUser == null && user != null) {
+            bookUser = new BookUser(BookUserType.VIEWED, book, user.getBookstoreUser());
+            bookUserRepository.save(bookUser);
         }
         model.addAttribute("slugBook", book);
         return "/books/slug";
