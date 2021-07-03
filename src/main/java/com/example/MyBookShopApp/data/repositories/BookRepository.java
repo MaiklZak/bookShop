@@ -41,4 +41,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     @Query("SELECT b FROM Book b, BookUser bu WHERE b.id = bu.book.id AND bu.user = :user AND bu.type = :type")
     List<Book> findBooksByUserAndType(BookstoreUser user, BookUserType type);
+
+    @Query("SELECT b FROM Book b, BookUser bu WHERE b.id = bu.book.id AND bu.user = :user")
+    List<Book> findBooksByUser(BookstoreUser user);
 }

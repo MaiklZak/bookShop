@@ -120,9 +120,8 @@ public class BookService {
         return list;
     }
 
-    public void changeBookStatusForUser(BookUserType type, String slug) {
+    public void changeBookStatusToCartForUser(BookUserType type, String slug, BookstoreUser user) {
         Book book = bookRepository.findBookBySlug(slug);
-        BookstoreUser user = (BookstoreUser) userRegister.getCurrentUser();
         BookUser bookUser = bookUserRepository.findByBookAndUser(book, user);
         if (bookUser == null) {
             bookUserRepository.save(new BookUser(type, book, user));
@@ -137,5 +136,15 @@ public class BookService {
         BookUser bookUser = bookUserRepository.findByBookAndUserAndType(book, user, BookUserType.CART);
         bookUser.setType(BookUserType.VIEWED);
         bookUserRepository.save(bookUser);
+    }
+
+    public boolean changeBookStatusForUser(Book book, BookstoreUser user, BookUserType type) {
+        BookUser bookUser = bookUserRepository.findByBookAndUser(book, user);
+        if (bookUser == null) {
+            bookUser = new BookUser(type, book, user);
+            bookUserRepository.save(bookUser);
+            return true;
+        }
+        return false;
     }
 }

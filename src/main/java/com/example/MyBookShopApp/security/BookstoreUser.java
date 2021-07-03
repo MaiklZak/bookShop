@@ -14,6 +14,7 @@ public class BookstoreUser {
     private String email;
     private String phone;
     private String password;
+    private String hash;
 
     @Column(columnDefinition="INT default '0'")
     private Integer balance = 0;
@@ -64,5 +65,13 @@ public class BookstoreUser {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 }
