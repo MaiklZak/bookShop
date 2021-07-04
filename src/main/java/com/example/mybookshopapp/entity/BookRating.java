@@ -1,6 +1,6 @@
-package com.example.MyBookShopApp.data.model;
+package com.example.mybookshopapp.entity;
 
-import com.example.MyBookShopApp.security.BookstoreUser;
+import com.example.mybookshopapp.entity.security.BookstoreUser;
 
 import javax.persistence.*;
 

@@ -1,9 +1,9 @@
-package com.example.MyBookShopApp.controllers;
+package com.example.mybookshopapp.controller;
 
-import com.example.MyBookShopApp.data.BookService;
-import com.example.MyBookShopApp.data.dto.BooksPageDto;
-import com.example.MyBookShopApp.data.dto.SearchWordDto;
-import com.example.MyBookShopApp.data.model.Book;
+import com.example.mybookshopapp.dto.BooksPageDto;
+import com.example.mybookshopapp.dto.SearchWordDto;
+import com.example.mybookshopapp.entity.Book;
+import com.example.mybookshopapp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;

@@ -1,10 +1,14 @@
 package com.example.mybookshopapp.controller;
 
 import com.example.mybookshopapp.entity.Book;
+import com.example.mybookshopapp.entity.Tag;
 import com.example.mybookshopapp.service.BookService;
 import com.example.mybookshopapp.dto.BooksPageDto;
 import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.errs.EmptySearchException;
+
+
+import com.example.mybookshopapp.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,11 +16,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class MainPageController {
 
     private final BookService bookService;
+
+    private final TagService tagService;
 
     @ModelAttribute("recommendedBooks")
     public List<Book> recommendedBooks() {
@@ -38,9 +45,15 @@ public class MainPageController {
         return new ArrayList<>();
     }
 
+    @ModelAttribute("tags")
+    public Map<Tag, Integer> tagsOfBooks() {
+        return tagService.getTagsAndCount();
+    }
+
     @Autowired
-    public MainPageController(BookService bookService) {
+    public MainPageController(BookService bookService, TagService tagService) {
         this.bookService = bookService;
+        this.tagService = tagService;
     }
 
     @GetMapping("/")
