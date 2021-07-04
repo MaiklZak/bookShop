@@ -23,6 +23,11 @@ public class MainPageController {
         return bookService.getPageOfRecommendedBooks(0, 6).getContent();
     }
 
+    @ModelAttribute("popularBooks")
+    public List<Book> popularBooks() {
+        return bookService.getPageOfPopularBooks(0, 6);
+    }
+
     @ModelAttribute("searchWordDto")
     public SearchWordDto searchWordDto() {
         return new SearchWordDto();

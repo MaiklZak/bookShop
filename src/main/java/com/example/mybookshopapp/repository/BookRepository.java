@@ -44,4 +44,20 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     @Query("SELECT b FROM Book b, BookUser bu WHERE b.id = bu.book.id AND bu.user = :user")
     List<Book> findBooksByUser(BookstoreUser user);
+
+    @Query(value = "SELECT id, description, image, is_bestseller, discount, price, pub_date, slug, title, author_id " +
+            "FROM books INNER JOIN " +
+            "(SELECT book_id, SUM(popul) AS popular " +
+            "FROM (SELECT book_id, " +
+            "bu.type, " +
+            "CASE " +
+            "WHEN bu.type = 'PAID' THEN COUNT(*) " +
+            "WHEN bu.type = 'CART' THEN COUNT(*) * 0.7 " +
+            "WHEN bu.type = 'KEPT' THEN COUNT(*) * 0.4 " +
+            "ELSE 0 END as popul " +
+            "FROM book2user bu GROUP BY 1, 2) AS tab1 " +
+            "GROUP BY 1 ORDER BY 2 DESC) AS tab2 " +
+            "ON books.id = tab2.book_id " +
+            "ORDER BY popular DESC", nativeQuery = true)
+    List<Book> findPopularBooks(Pageable nextPage);
 }

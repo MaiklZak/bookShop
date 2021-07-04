@@ -80,6 +80,11 @@ public class BookService {
         return bookRepository.findAll(nextPage);
     }
 
+    public List<Book> getPageOfPopularBooks(int offset, int limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return bookRepository.findPopularBooks(nextPage);
+    }
+
     public Page<Book> getPageOfSearchResultBooks(String searchWord, Integer offset, Integer limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
         return bookRepository.findBookByTitleContaining(searchWord, nextPage);
