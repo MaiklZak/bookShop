@@ -112,6 +112,18 @@ public class Book {
     @JsonIgnore
     private Set<Tag> tags = new HashSet<>();
 
+    @ManyToMany(mappedBy = "books")
+    @JsonIgnore
+    private Set<Genre> genres = new HashSet<>();
+
+    public Set<Genre> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(Set<Genre> genres) {
+        this.genres = genres;
+    }
+
     public Set<Tag> getTags() {
         return tags;
     }

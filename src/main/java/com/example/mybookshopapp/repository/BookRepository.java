@@ -63,9 +63,11 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     List<Book> findPopularBooks(Pageable nextPage);
 
     @Query(value = "SELECT b.id, description, image, is_bestseller, discount, price, pub_date, slug, title, author_id " +
-            "FROM books b INNER JOIN book_tag bt ON b.id = bt.book_id " +
+            "FROM books b INNER JOIN book2tag bt ON b.id = bt.book_id " +
             "INNER JOIN tags t ON t.id = bt.tag_id " +
             "WHERE t.id = :tagId", nativeQuery = true)
     Page<Book> findBooksByTagId(@Param(value = "tagId") Integer id, Pageable nextPage);
 
+    @Query("SELECT b FROM Book b JOIN b.genres g WHERE g.id = :id")
+    List<Book> findBooksByGenreId(@Param("id") Integer id, Pageable nextPage);
 }

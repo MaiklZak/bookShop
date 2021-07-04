@@ -5,19 +5,23 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "tags")
-@NamedEntityGraph(name = "tag.books",
-        attributeNodes = @NamedAttributeNode(value = "books"))
-public class Tag {
+@Table(name = "genres")
+@NamedEntityGraph(name = "Genre.books", attributeNodes = @NamedAttributeNode(value = "books"))
+public class Genre {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "parent_id")
+    private Integer parentId;
+
+    private String slug;
+
     private String name;
 
     @ManyToMany
-    @JoinTable(name = "book2tag", joinColumns = @JoinColumn(name = "tag_id"),
+    @JoinTable(name = "book2genre", joinColumns = @JoinColumn(name = "genre_id"),
             inverseJoinColumns = @JoinColumn(name = "book_id"))
     private Set<Book> books = new HashSet<>();
 
@@ -27,6 +31,22 @@ public class Tag {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
     public String getName() {
@@ -47,8 +67,9 @@ public class Tag {
 
     @Override
     public String toString() {
-        return "Tag{" +
+        return "Genre{" +
                 "id=" + id +
+                ", parent_id=" + parentId +
                 ", name='" + name + '\'' +
                 '}';
     }

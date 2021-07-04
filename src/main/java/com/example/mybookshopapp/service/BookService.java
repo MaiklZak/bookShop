@@ -90,6 +90,11 @@ public class BookService {
         return bookRepository.findBooksByTagId(id, nextPage).getContent();
     }
 
+    public List<Book> getBooksByGenreId(Integer offset, Integer limit, Integer id) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return bookRepository.findBooksByGenreId(id, nextPage);
+    }
+
     public Page<Book> getPageOfSearchResultBooks(String searchWord, Integer offset, Integer limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
         return bookRepository.findBookByTitleContaining(searchWord, nextPage);
