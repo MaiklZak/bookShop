@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 public class BookUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "seq_book_user", sequenceName = "seq_book_user", initialValue = 1001, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_book_user")
     private Integer id;
 
     @Column(columnDefinition = "TIMESTAMP")

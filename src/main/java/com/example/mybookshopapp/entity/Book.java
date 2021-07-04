@@ -9,7 +9,9 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "books")
@@ -65,6 +67,33 @@ public class Book {
     @Column(name = "discount")
     @JsonProperty("discount value for book")
     private Double price;
+
+    @OneToMany(mappedBy = "book")
+    @JsonIgnore
+    private Set<BookRating> bookRatings = new HashSet<>();
+
+    public long getCountRating(int value) {
+        return bookRatings.stream()
+                .filter(rat -> rat.getValue() == value)
+                .count();
+    }
+
+    public Integer getAverageRating() {
+        if (bookRatings.size() == 0) {
+            return 0;
+        }
+        return Math.round(bookRatings
+                .stream()
+                .mapToInt(br -> br.getValue()).sum() / bookRatings.size());
+    }
+
+    public Set<BookRating> getBookRatings() {
+        return bookRatings;
+    }
+
+    public void setBookRatings(Set<BookRating> bookRatings) {
+        this.bookRatings = bookRatings;
+    }
 
     @JsonProperty
     public Integer discountPrice() {

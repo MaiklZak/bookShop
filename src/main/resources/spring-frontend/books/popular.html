@@ -59,10 +59,10 @@ p.error-browser
         <div class="Cards Cards_refresh">
           <th:block th:each="book : ${popularBooks}">
             <div class="Card">
-              <div class="Card-picture"><a href="#"><img th:src="${book.image}" alt="card.jpg"/></a>
+              <div class="Card-picture"><a href="#" th:href="@{'/books/' + ${book.slug}}"><img th:src="${book.image}" alt="card.jpg"/></a>
               </div>
               <div class="Card-content">
-                <strong class="Card-title"><a th:href="@{/books/slug(id=${book.id})}" th:text="${book.title}">Техника</a>
+                <strong class="Card-title"><a th:href="@{'/books/' + ${book.slug}}" th:text="${book.title}">Техника</a>
                 </strong>
                 <div class="Card-description" th:text="${book.author}">Кондратенко Александр Петрович
                 </div>
