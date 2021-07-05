@@ -68,8 +68,7 @@ public class Book {
 
     @JsonProperty
     public Integer discountPrice() {
-        Integer discountedPriceInt = priceOld - Math.toIntExact(Math.round(price * priceOld));
-        return discountedPriceInt;
+        return priceOld - Math.toIntExact(Math.round(price * priceOld));
     }
 
     public List<BookFile> getBookFileList() {

@@ -10,7 +10,6 @@ import com.example.MyBookShopApp.repository.BookRepository;
 import com.example.MyBookShopApp.repository.BookUserRepository;
 import com.example.MyBookShopApp.errs.BookstoreApiWrongParameterException;
 import com.example.MyBookShopApp.security.entity.BookstoreUser;
-import com.example.MyBookShopApp.security.service.BookstoreUserRegister;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -28,14 +27,12 @@ public class BookService {
     private final BookRepository bookRepository;
     private final RestTemplate restTemplate;
     private final BookUserRepository bookUserRepository;
-    private final BookstoreUserRegister userRegister;
 
     @Autowired
-    public BookService(BookRepository bookRepository, RestTemplate restTemplate, BookUserRepository bookUserRepository, BookstoreUserRegister userRegister) {
+    public BookService(BookRepository bookRepository, RestTemplate restTemplate, BookUserRepository bookUserRepository) {
         this.bookRepository = bookRepository;
         this.restTemplate = restTemplate;
         this.bookUserRepository = bookUserRepository;
-        this.userRegister = userRegister;
     }
 
     public List<Book> getBookData() {

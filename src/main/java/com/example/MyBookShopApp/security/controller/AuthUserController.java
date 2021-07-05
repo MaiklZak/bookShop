@@ -127,18 +127,4 @@ public class AuthUserController {
         model.addAttribute("curUsr", userRegister.getCurrentUser());
         return "my";
     }
-
-//    @GetMapping("/logout")
-//    public String handleLogout(HttpServletRequest request) {
-//        HttpSession session = request.getSession();
-//        SecurityContextHolder.clearContext();
-//        if (session != null) {
-//            session.invalidate();
-//        }
-//
-//        for (Cookie cookie : request.getCookies()) {
-//            cookie.setMaxAge(0);
-//        }
-//        return "redirect:/";
-//    }
 }

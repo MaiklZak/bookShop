@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface BookRepository extends JpaRepository<Book, Integer> {
 
-    List<Book> findBooksByAuthor_FirstName(String name);
+    List<Book> findBooksByAuthorFirstName(String name);
 
     @Query("FROM Book")
     List<Book> customFindAllBooks();

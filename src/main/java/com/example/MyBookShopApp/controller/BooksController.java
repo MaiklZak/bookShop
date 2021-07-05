@@ -5,7 +5,6 @@ import com.example.MyBookShopApp.service.ResourceStorage;
 import com.example.MyBookShopApp.entity.Book;
 import com.example.MyBookShopApp.entity.BookUserType;
 import com.example.MyBookShopApp.repository.BookRepository;
-import com.example.MyBookShopApp.repository.BookUserRepository;
 import com.example.MyBookShopApp.security.entity.BookstoreUser;
 import com.example.MyBookShopApp.security.entity.BookstoreUserDetails;
 import com.example.MyBookShopApp.security.repository.BookstoreUserRepository;
@@ -33,15 +32,13 @@ public class BooksController {
 
     private final BookRepository bookRepository;
     private final ResourceStorage storage;
-    private final BookUserRepository bookUserRepository;
     private final BookstoreUserRepository bookstoreUserRepository;
     private final BookService bookService;
 
     @Autowired
-    public BooksController(BookRepository bookRepository, ResourceStorage storage, BookUserRepository bookUserRepository, BookstoreUserRepository bookstoreUserRepository, BookService bookService) {
+    public BooksController(BookRepository bookRepository, ResourceStorage storage, BookstoreUserRepository bookstoreUserRepository, BookService bookService) {
         this.bookRepository = bookRepository;
         this.storage = storage;
-        this.bookUserRepository = bookUserRepository;
         this.bookstoreUserRepository = bookstoreUserRepository;
         this.bookService = bookService;
     }
@@ -88,7 +85,7 @@ public class BooksController {
     @GetMapping("/download/{hash}")
     public ResponseEntity<ByteArrayResource> bookFile(@PathVariable("hash") String hash) throws IOException {
         Path path = storage.getBookFilePath(hash);
-        Logger.getLogger(this.getClass().getSimpleName()).info("book file path: " + path);
+        Logger.getLogger(this.getClass().getSimpleName()).info("book file path: {0}" + path);
 
         MediaType mediaType = storage.getBookFileMime(hash);
         Logger.getLogger(this.getClass().getSimpleName()).info("book file mime type: " + mediaType);

@@ -28,14 +28,14 @@ class BookRepositoryTests {
     @Test
     void findBooksByAuthor_FirstName() {
         String token = "Kendal";
-        List<Book> bookListByAuthorFirstName = bookRepository.findBooksByAuthor_FirstName(token);
+        List<Book> bookListByAuthorFirstName = bookRepository.findBooksByAuthorFirstName(token);
 
         assertNotNull(bookListByAuthorFirstName);
         assertFalse(bookListByAuthorFirstName.isEmpty());
 
         for (Book book : bookListByAuthorFirstName) {
             Logger.getLogger(this.getClass().getSimpleName()).info(book.toString());
-            assertThat(book.getAuthor().getFirstName().contains(token));
+            assertThat(book.getAuthor().getFirstName()).contains(token);
         }
     }
 
@@ -47,7 +47,7 @@ class BookRepositoryTests {
         assertFalse(bookListByTitleContaining.isEmpty());
         for (Book book : bookListByTitleContaining) {
             Logger.getLogger(this.getClass().getSimpleName()).info(book.toString());
-            assertThat(book.getTitle().contains(token));
+            assertThat(book.getTitle()).contains(token);
         }
     }
 
