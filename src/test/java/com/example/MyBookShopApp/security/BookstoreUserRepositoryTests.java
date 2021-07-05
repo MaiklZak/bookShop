@@ -1,5 +1,7 @@
 package com.example.MyBookShopApp.security;
 
+import com.example.MyBookShopApp.security.entity.BookstoreUser;
+import com.example.MyBookShopApp.security.repository.BookstoreUserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,5 +1,9 @@
 package com.example.MyBookShopApp.security;
 
+import com.example.MyBookShopApp.security.dto.RegistrationForm;
+import com.example.MyBookShopApp.security.entity.BookstoreUser;
+import com.example.MyBookShopApp.security.repository.BookstoreUserRepository;
+import com.example.MyBookShopApp.security.service.BookstoreUserRegister;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
