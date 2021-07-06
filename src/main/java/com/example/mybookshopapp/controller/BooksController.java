@@ -68,6 +68,7 @@ public class BooksController {
                 bookService.changeBookStatusForUser(book, defaultUser, BookUserType.VIEWED);
 
                 Cookie cookie = new Cookie("userHash", defaultUser.getHash());
+                cookie.setPath("/");
                 response.addCookie(cookie);
             }
         }

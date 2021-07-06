@@ -79,12 +79,12 @@ public class Book {
     }
 
     public Integer getAverageRating() {
-        if (bookRatings.size() == 0) {
+        if (bookRatings.isEmpty()) {
             return 0;
         }
-        return Math.round(bookRatings
-                .stream()
-                .mapToInt(br -> br.getValue()).sum() / bookRatings.size());
+        return Math.toIntExact(
+                Math.round(
+                        bookRatings.stream().mapToInt(BookRating::getValue).average().getAsDouble()));
     }
 
     public Set<BookRating> getBookRatings() {
