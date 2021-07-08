@@ -129,9 +129,26 @@ public class BookService {
 
     }
 
-    public List<Book> getPageOfPopularBooks(int offset, int limit) {
+    /* if cookie 'userHash' is not exists return popular books for everyone
+           else retrieves user by hash and return list of popular books for him */
+    public List<Book> getPageOfPopularBooksForNotAuthenticatedUser(String userHash, Integer offset, Integer limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
+        if (userHash != null && !userHash.equals("")) {
+            BookstoreUser user = bookstoreUserRepository.findBookstoreUserByHash(userHash);
+            if (user != null) {
+                return getPageOfPopularBooksForUser(user, offset, limit);
+            }
+        }
         return bookRepository.findPopularBooks(nextPage);
+    }
+
+    /* return popular books for user considering recently viewed (less than a month) */
+    public List<Book> getPageOfPopularBooksForUser(BookstoreUser user, Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+
+        removeBookStatusViewedForUserLongerThanMonth(user);
+
+        return bookRepository.findPopularBooksForUser(user, nextPage);
     }
 
     public List<Book> getBookByTag(Integer offset, Integer limit, Integer id) {
@@ -233,5 +250,4 @@ public class BookService {
             response.addCookie(new Cookie("userHash", ""));
         }
     }
-
 }

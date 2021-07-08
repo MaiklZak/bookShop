@@ -1,5 +1,6 @@
 package com.example.mybookshopapp.controller;
 
+import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.service.BookService;
 import com.example.mybookshopapp.service.ResourceStorage;
 import com.example.mybookshopapp.entity.Book;
@@ -43,6 +44,11 @@ public class BooksController {
         this.storage = storage;
         this.bookstoreUserRepository = bookstoreUserRepository;
         this.bookService = bookService;
+    }
+
+    @ModelAttribute("searchWordDto")
+    public SearchWordDto searchWordDto() {
+        return new SearchWordDto();
     }
 
     @GetMapping("/{slug}")

@@ -3,14 +3,13 @@ package com.example.mybookshopapp.controller;
 import com.example.mybookshopapp.dto.BooksPageDto;
 import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.entity.Book;
+import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
 import com.example.mybookshopapp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,8 +29,12 @@ public class PopularPageController {
     }
 
     @ModelAttribute("popularBooks")
-    public List<Book> popularBooks() {
-        return bookService.getPageOfPopularBooks(0, 20);
+    public List<Book> popularBooks(@AuthenticationPrincipal BookstoreUserDetails userDetails,
+                                   @CookieValue(value = "userHash", required = false) String userHash) {
+        if (userDetails != null) {
+            return bookService.getPageOfPopularBooksForUser(userDetails.getBookstoreUser(), 0, 20);
+        }
+        return bookService.getPageOfPopularBooksForNotAuthenticatedUser(userHash, 0, 20);
     }
 
     @GetMapping(value = "/books/popular", produces = MediaType.TEXT_HTML_VALUE)
@@ -41,7 +44,14 @@ public class PopularPageController {
 
     @GetMapping(value = "/books/popular", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public BooksPageDto getPopularBooksPage(@RequestParam("offset") Integer offset, @RequestParam("limit") Integer limit) {
-        return new BooksPageDto(bookService.getPageOfPopularBooks(offset, limit));
+    public BooksPageDto getPopularBooksPage(@AuthenticationPrincipal BookstoreUserDetails userDetails,
+                                            @RequestParam("offset") Integer offset,
+                                            @RequestParam("limit") Integer limit,
+                                            @CookieValue(value = "userHash", required = false) String userHash) {
+
+        if (userDetails != null) {
+            return new BooksPageDto(bookService.getPageOfPopularBooksForUser(userDetails.getBookstoreUser(), offset, limit));
+        }
+        return new BooksPageDto(bookService.getPageOfPopularBooksForNotAuthenticatedUser(userHash, offset, limit));
     }
 }

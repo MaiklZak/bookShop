@@ -27,8 +27,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.filter = filter;
     }
 
-
     @Bean
+    @SuppressWarnings("squid:S5344")
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

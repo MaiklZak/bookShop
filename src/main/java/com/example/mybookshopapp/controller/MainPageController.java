@@ -27,11 +27,6 @@ public class MainPageController {
     private final BookService bookService;
     private final TagService tagService;
 
-    @ModelAttribute("popularBooks")
-    public List<Book> popularBooks() {
-        return bookService.getPageOfPopularBooks(0, 6);
-    }
-
     @ModelAttribute("searchWordDto")
     public SearchWordDto searchWordDto() {
         return new SearchWordDto();
@@ -62,9 +57,13 @@ public class MainPageController {
             bookService.moveBooksFromUserHashToCurrentUser(userHash, user, response);
             model.addAttribute("recommendedBooks",
                     bookService.getPageOfRecommendedBooksForUser(user.getBookstoreUser(), 0, 6));
+            model.addAttribute("popularBooks",
+                    bookService.getPageOfPopularBooksForUser(user.getBookstoreUser(), 0, 6));
         } else {
             model.addAttribute("recommendedBooks",
                     bookService.getPageOfRecommendedBooksForNotAuthenticatedUser(userHash, 0, 6));
+            model.addAttribute("popularBooks",
+                    bookService.getPageOfPopularBooksForNotAuthenticatedUser(userHash, 0, 6));
         }
         return "index";
     }
