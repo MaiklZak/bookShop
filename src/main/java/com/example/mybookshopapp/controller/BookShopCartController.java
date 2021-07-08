@@ -1,5 +1,6 @@
 package com.example.mybookshopapp.controller;
 
+import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.entity.Book;
 import com.example.mybookshopapp.entity.BookUserType;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
@@ -23,11 +24,6 @@ import java.util.UUID;
 @RequestMapping("/books")
 public class BookShopCartController {
 
-    @ModelAttribute(name = "bookCart")
-    public List<Book> bookCart() {
-        return new ArrayList<>();
-    }
-
     private static final String IS_CART_EMPTY = "isCartEmpty";
 
     private final BookRepository bookRepository;
@@ -39,6 +35,24 @@ public class BookShopCartController {
         this.bookRepository = bookRepository;
         this.bookService = bookService;
         this.bookstoreUserRepository = bookstoreUserRepository;
+    }
+
+    @ModelAttribute(name = "bookCart")
+    public List<Book> bookCart() {
+        return new ArrayList<>();
+    }
+
+    @ModelAttribute("searchWordDto")
+    public SearchWordDto searchWordDto() {
+        return new SearchWordDto();
+    }
+
+    @ModelAttribute("curUsr")
+    public BookstoreUser getCurrentUser(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
+        if (userDetails != null) {
+            return userDetails.getBookstoreUser();
+        }
+        return null;
     }
 
     @GetMapping("/cart")

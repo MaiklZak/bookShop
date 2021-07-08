@@ -2,6 +2,7 @@ package com.example.mybookshopapp.controller;
 
 import com.example.mybookshopapp.entity.Book;
 import com.example.mybookshopapp.entity.Tag;
+import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
 import com.example.mybookshopapp.service.BookService;
 import com.example.mybookshopapp.dto.BooksPageDto;
@@ -40,6 +41,14 @@ public class MainPageController {
     @ModelAttribute("tags")
     public Map<Tag, Integer> tagsOfBooks() {
         return tagService.getTagsAndCount();
+    }
+
+    @ModelAttribute("curUsr")
+    public BookstoreUser getCurrentUser(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
+        if (userDetails != null) {
+            return userDetails.getBookstoreUser();
+        }
+        return null;
     }
 
     @Autowired

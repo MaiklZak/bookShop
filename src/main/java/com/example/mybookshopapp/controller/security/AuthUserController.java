@@ -1,9 +1,10 @@
 package com.example.mybookshopapp.controller.security;
 
-import com.example.mybookshopapp.entity.SmsCode;
 import com.example.mybookshopapp.dto.ContactConfirmationPayload;
 import com.example.mybookshopapp.dto.ContactConfirmationResponse;
 import com.example.mybookshopapp.dto.RegistrationForm;
+import com.example.mybookshopapp.dto.SearchWordDto;
+import com.example.mybookshopapp.entity.SmsCode;
 import com.example.mybookshopapp.service.security.BookstoreUserRegister;
 import com.example.mybookshopapp.service.security.SmsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,11 @@ public class AuthUserController {
 
     @Value("${appEmail.email}")
     private String email;
+
+    @ModelAttribute("searchWordDto")
+    public SearchWordDto searchWordDto() {
+        return new SearchWordDto();
+    }
 
     @GetMapping("/signin")
     public String handleSignIn() {

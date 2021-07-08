@@ -51,6 +51,14 @@ public class BooksController {
         return new SearchWordDto();
     }
 
+    @ModelAttribute("curUsr")
+    public BookstoreUser getCurrentUser(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
+        if (userDetails != null) {
+            return userDetails.getBookstoreUser();
+        }
+        return null;
+    }
+
     @GetMapping("/{slug}")
     public String bookPage(@AuthenticationPrincipal BookstoreUserDetails user,
                            @PathVariable("slug") String slug,
