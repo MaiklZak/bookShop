@@ -250,4 +250,10 @@ public class BookService {
             response.addCookie(new Cookie("userHash", ""));
         }
     }
+
+    public List<Book> getPageOfViewedBooksByUser(BookstoreUser user, Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        removeBookStatusViewedForUserLongerThanMonth(user);
+        return bookRepository.findBooksByUserAndType(user, BookUserType.VIEWED, nextPage);
+    }
 }
