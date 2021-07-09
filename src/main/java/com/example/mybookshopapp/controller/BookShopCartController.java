@@ -66,6 +66,8 @@ public class BookShopCartController {
             List<Book> booksByUser = bookRepository.findBooksByUserAndType(user.getBookstoreUser(), BookUserType.CART);
             model.addAttribute(IS_CART_EMPTY, booksByUser.isEmpty());
             model.addAttribute("bookCart", booksByUser);
+            model.addAttribute("allPriceOld", booksByUser.stream().mapToInt(Book::getPriceOld).sum());
+            model.addAttribute("allPrice", booksByUser.stream().mapToInt(Book::discountPrice).sum());
             return "cart";
         }
         if (userHash == null || userHash.equals("")) {
@@ -75,6 +77,8 @@ public class BookShopCartController {
             List<Book> booksFromCookieUser = bookRepository.findBooksByUserAndType(bookstoreUserByHash, BookUserType.CART);
             model.addAttribute(IS_CART_EMPTY, booksFromCookieUser.isEmpty());
             model.addAttribute("bookCart", booksFromCookieUser);
+            model.addAttribute("allPriceOld", booksFromCookieUser.stream().mapToInt(Book::getPriceOld).sum());
+            model.addAttribute("allPrice", booksFromCookieUser.stream().mapToInt(Book::discountPrice).sum());
         }
         return "cart";
     }

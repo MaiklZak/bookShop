@@ -1,6 +1,7 @@
 package com.example.mybookshopapp.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -8,7 +9,7 @@ import java.util.Set;
 @Table(name = "tags")
 @NamedEntityGraph(name = "tag.books",
         attributeNodes = @NamedAttributeNode(value = "books"))
-public class Tag {
+public class Tag implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

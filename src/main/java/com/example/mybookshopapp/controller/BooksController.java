@@ -1,10 +1,15 @@
 package com.example.mybookshopapp.controller;
 
+import com.example.mybookshopapp.dto.RatingBookDto;
+import com.example.mybookshopapp.dto.ReviewDto;
+import com.example.mybookshopapp.dto.ReviewLikeDto;
 import com.example.mybookshopapp.dto.SearchWordDto;
+import com.example.mybookshopapp.entity.*;
+import com.example.mybookshopapp.repository.BookRatingRepository;
+import com.example.mybookshopapp.repository.BookReviewLikeRepository;
+import com.example.mybookshopapp.repository.BookReviewRepository;
 import com.example.mybookshopapp.service.BookService;
 import com.example.mybookshopapp.service.ResourceStorage;
-import com.example.mybookshopapp.entity.Book;
-import com.example.mybookshopapp.entity.BookUserType;
 import com.example.mybookshopapp.repository.BookRepository;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
@@ -24,22 +29,30 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Controller
 @RequestMapping("/books")
 public class BooksController {
 
+    private static final String REDIRECT_BOOKS_URL = "redirect:/books/";
+
     Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
+    private final BookRatingRepository bookRatingRepository;
+    private final BookReviewLikeRepository bookReviewLikeRepository;
+    private final BookReviewRepository bookReviewRepository;
     private final BookRepository bookRepository;
     private final ResourceStorage storage;
     private final BookstoreUserRepository bookstoreUserRepository;
     private final BookService bookService;
 
     @Autowired
-    public BooksController(BookRepository bookRepository, ResourceStorage storage, BookstoreUserRepository bookstoreUserRepository, BookService bookService) {
+    public BooksController(BookRatingRepository bookRatingRepository, BookReviewLikeRepository bookReviewLikeRepository, BookReviewRepository bookReviewRepository, BookRepository bookRepository, ResourceStorage storage, BookstoreUserRepository bookstoreUserRepository, BookService bookService) {
+        this.bookRatingRepository = bookRatingRepository;
+        this.bookReviewLikeRepository = bookReviewLikeRepository;
+        this.bookReviewRepository = bookReviewRepository;
         this.bookRepository = bookRepository;
         this.storage = storage;
         this.bookstoreUserRepository = bookstoreUserRepository;
@@ -71,6 +84,7 @@ public class BooksController {
         }
         if (user != null) {
             bookService.changeBookStatusForUser(book, user.getBookstoreUser(), BookUserType.VIEWED);
+            model.addAttribute("ratingBook", bookRatingRepository.findByBookAndUser(book, user.getBookstoreUser()));
         } else {
             BookstoreUser bookstoreUserByHash = bookstoreUserRepository.findBookstoreUserByHash(userHash);
             if (userHash != null && !userHash.equals("") && bookstoreUserByHash != null) {
@@ -86,6 +100,9 @@ public class BooksController {
                 response.addCookie(cookie);
             }
         }
+        List<BookReview> bookReviewList = bookReviewRepository.findAllByBookSlug(slug);
+        bookReviewList.sort(Comparator.comparing(br -> br.getDisLikes() - br.getLikes()));
+        model.addAttribute("reviewsOfBook", bookReviewList);
         model.addAttribute("slugBook", book);
         return "/books/slug";
     }
@@ -96,7 +113,7 @@ public class BooksController {
         Book bookToUpdate = bookRepository.findBookBySlug(slug);
         bookToUpdate.setImage(savePath);
         bookRepository.save(bookToUpdate); //save new path in db here
-        return ("redirect:/books/" + slug);
+        return REDIRECT_BOOKS_URL + slug;
     }
 
     @GetMapping("/download/{hash}")
@@ -115,5 +132,51 @@ public class BooksController {
                 .contentType(mediaType)
                 .contentLength(data.length)
                 .body(new ByteArrayResource(data));
+    }
+
+    @PostMapping("/bookReview")
+    public String addReview(@AuthenticationPrincipal BookstoreUserDetails userDetails,
+                            @RequestBody ReviewDto payload) {
+        Book book = bookRepository.getOne(payload.getBookId());
+        BookReview bookReview = new BookReview(
+                userDetails.getBookstoreUser(), book, payload.getText());
+        bookReviewRepository.save(bookReview);
+        return REDIRECT_BOOKS_URL + book.getSlug();
+    }
+
+    @PostMapping("/{slug}/rateBookReview")
+    public String rateBookReview(@AuthenticationPrincipal BookstoreUserDetails userDetails,
+                                 @PathVariable String slug,
+                                 @RequestBody ReviewLikeDto payload) {
+        BookReview bookReview = bookReviewRepository.getOne(payload.getReviewid());
+
+        BookReviewLike likeByReviewAndUser = bookReviewLikeRepository.findByBookReviewAndUser(bookReview, userDetails.getBookstoreUser());
+        if (likeByReviewAndUser != null) {
+            if (!likeByReviewAndUser.getValue().equals(payload.getValue())) {
+                BookReviewLike newBookReviewLike = new BookReviewLike(userDetails.getBookstoreUser(), bookReview, payload.getValue());
+                bookReviewLikeRepository.save(newBookReviewLike);
+            }
+            bookReviewLikeRepository.delete(likeByReviewAndUser);
+        } else {
+            BookReviewLike bookReviewLike = new BookReviewLike(userDetails.getBookstoreUser(), bookReview, payload.getValue());
+            bookReviewLikeRepository.save(bookReviewLike);
+        }
+        return REDIRECT_BOOKS_URL + slug;
+    }
+
+    @PostMapping("/toRating")
+    public String toRatingBook(@AuthenticationPrincipal BookstoreUserDetails userDetails,
+                               @RequestBody RatingBookDto payload) {
+
+        Book book = bookRepository.getOne(payload.getBookId());
+        BookRating ratingByBookAndUser = bookRatingRepository.findByBookAndUser(book, userDetails.getBookstoreUser());
+        if (ratingByBookAndUser != null) {
+            ratingByBookAndUser.setValue(payload.getValue());
+            bookRatingRepository.save(ratingByBookAndUser);
+        } else {
+            BookRating newBookRating = new BookRating(userDetails.getBookstoreUser(), book, payload.getValue());
+            bookRatingRepository.save(newBookRating);
+        }
+        return REDIRECT_BOOKS_URL + book.getSlug();
     }
 }

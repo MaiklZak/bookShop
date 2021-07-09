@@ -1,13 +1,14 @@
 package com.example.mybookshopapp.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "genres")
 @NamedEntityGraph(name = "Genre.books", attributeNodes = @NamedAttributeNode(value = "books"))
-public class Genre {
+public class Genre implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

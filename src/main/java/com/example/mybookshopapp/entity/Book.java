@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,7 +17,7 @@ import java.util.Set;
 @Entity
 @Table(name = "books")
 @ApiModel(description = "entity representing a book")
-public class Book {
+public class Book implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,6 +73,23 @@ public class Book {
     @JsonIgnore
     private Set<BookRating> bookRatings = new HashSet<>();
 
+    @ManyToMany(mappedBy = "books")
+    @JsonIgnore
+    private Set<Tag> tags = new HashSet<>();
+
+    @ManyToMany(mappedBy = "books")
+    @JsonIgnore
+    private Set<Genre> genres = new HashSet<>();
+
+    @OneToMany(mappedBy = "book")
+    @JsonIgnore
+    private Set<BookReview> bookReviews = new HashSet<>();
+
+    @JsonProperty
+    public Integer discountPrice() {
+        return priceOld - Math.toIntExact(Math.round(price * priceOld));
+    }
+
     public long getCountRating(int value) {
         return bookRatings.stream()
                 .filter(rat -> rat.getValue() == value)
@@ -95,9 +113,12 @@ public class Book {
         this.bookRatings = bookRatings;
     }
 
-    @JsonProperty
-    public Integer discountPrice() {
-        return priceOld - Math.toIntExact(Math.round(price * priceOld));
+    public Set<BookReview> getBookReviews() {
+        return bookReviews;
+    }
+
+    public void setBookReviews(Set<BookReview> bookReviews) {
+        this.bookReviews = bookReviews;
     }
 
     public List<BookFile> getBookFileList() {
@@ -107,14 +128,6 @@ public class Book {
     public void setBookFileList(List<BookFile> bookFileList) {
         this.bookFileList = bookFileList;
     }
-
-    @ManyToMany(mappedBy = "books")
-    @JsonIgnore
-    private Set<Tag> tags = new HashSet<>();
-
-    @ManyToMany(mappedBy = "books")
-    @JsonIgnore
-    private Set<Genre> genres = new HashSet<>();
 
     public Set<Genre> getGenres() {
         return genres;
