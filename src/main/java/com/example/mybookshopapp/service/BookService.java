@@ -51,7 +51,7 @@ public class BookService {
     //NEW BOOK SERVICE METHOD
 
     public List<Book> getBooksByAuthor(String authorName) {
-        return bookRepository.findBooksByAuthorFirstNameContaining(authorName);
+        return bookRepository.findBooksByAuthorNameContaining(authorName);
     }
 
     public List<Book> getBooksByTitle(String title) throws BookstoreApiWrongParameterException {

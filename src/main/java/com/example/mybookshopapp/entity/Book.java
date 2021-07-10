@@ -28,16 +28,6 @@ public class Book implements Serializable {
     @ApiModelProperty("date of book publication")
     private Date pubDate;
 
-    @ManyToOne()
-    @JoinColumn(name = "author_id", referencedColumnName = "id")
-    @JsonIgnore
-    private Author author;
-
-    @JsonGetter("authors")
-    public String authorFullName() {
-        return author.toString();
-    }
-
     @Column(name = "is_bestseller")
     @ApiModelProperty("if isBestseller = 1 so the book is considered to be bestseller and if 0 the book is not a " +
             "bestseller")
@@ -69,6 +59,11 @@ public class Book implements Serializable {
     @JsonProperty("discount value for book")
     private Double price;
 
+    @ManyToOne()
+    @JoinColumn(name = "author_id", referencedColumnName = "id")
+    @JsonIgnore
+    private Author author;
+
     @OneToMany(mappedBy = "book")
     @JsonIgnore
     private Set<BookRating> bookRatings = new HashSet<>();
@@ -84,6 +79,11 @@ public class Book implements Serializable {
     @OneToMany(mappedBy = "book")
     @JsonIgnore
     private Set<BookReview> bookReviews = new HashSet<>();
+
+    @JsonGetter("authors")
+    public String authorFullName() {
+        return author.toString();
+    }
 
     @JsonProperty
     public Integer discountPrice() {

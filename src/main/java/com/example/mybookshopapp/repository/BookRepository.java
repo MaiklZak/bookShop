@@ -12,14 +12,8 @@ import java.util.List;
 
 public interface BookRepository extends JpaRepository<Book, Integer> {
 
-    List<Book> findBooksByAuthorFirstName(String name);
-
-    @Query("FROM Book")
-    List<Book> customFindAllBooks();
-
-    //NEW BOOK REST REPOSITORY COMMANDS
-
-    List<Book> findBooksByAuthorFirstNameContaining(String authorFirstName);
+    @Query("SELECT b FROM Book b WHERE  b.author.name LIKE :authorName")
+    List<Book> findBooksByAuthorNameContaining(String authorName);
 
     List<Book> findBooksByTitleContaining(String bookTitle);
 
