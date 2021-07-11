@@ -33,11 +33,17 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     List<Book> findBooksBySlugIn(String[] slugs);
 
-    @Query("SELECT b FROM Book b, BookUser bu WHERE b.id = bu.book.id AND bu.user = :user AND bu.type = :type")
-    List<Book> findBooksByUserAndType(BookstoreUser user, BookUserType type);
+    @Query("SELECT b FROM Book b, BookUser bu, BookUserType t " +
+            "WHERE b.id = bu.book.id AND bu.user = :user AND bu.type.id = t.id AND t.code = :type")
+    List<Book> findBooksByUserAndType(BookstoreUser user, TypeBookToUser type);
 
-    @Query("SELECT b FROM Book b, BookUser bu WHERE b.id = bu.book.id AND bu.user = :user AND bu.type = :type")
-    List<Book> findBooksByUserAndType(BookstoreUser user, BookUserType type, Pageable nextPage);
+    @Query("SELECT b FROM Book b, BookUser bu, BookUserType t " +
+            "WHERE b.id = bu.book.id AND bu.user = :user AND bu.type.id = t.id AND t.code = :type")
+    List<Book> findBooksByUserAndType(BookstoreUser user, TypeBookToUser type, Pageable nextPage);
+
+    @Query("SELECT b FROM Book b, BookUser bu, BookUserType t " +
+            "WHERE b.id = bu.book.id AND bu.user = :user AND bu.type.id = t.id AND t.code IN :types")
+    List<Book> findBooksByUserAndTypeIn(BookstoreUser user, TypeBookToUser[] types);
 
     @Query("SELECT b FROM Book b, BookUser bu WHERE b.id = bu.book.id AND bu.user = :user")
     List<Book> findBooksByUser(BookstoreUser user);
@@ -60,9 +66,6 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
             "        ORDER BY rating DESC, books.pub_date DESC", nativeQuery = true)
     List<Book> findRecommendedBooksSortRatingAndRecent(Pageable nextPage);
 
-    @Query("SELECT b FROM Book b, BookUser bu WHERE b.id = bu.book.id AND bu.user = :user AND bu.type IN :types")
-    List<Book> findBooksByUserAndTypeIn(BookstoreUser user, BookUserType[] types);
-
     @Query(value =
             "SELECT * FROM books INNER JOIN " +
             "       (SELECT b.id bid, COUNT(*) n FROM books b " +
@@ -72,8 +75,9 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
             "               INNER JOIN book2tag bt   ON bt.book_id = b.id " +
             "               INNER JOIN tags t        ON t.id = bt.tag_id " +
             "         WHERE b.id NOT IN (SELECT bi.id FROM books bi " +
-            "                                         INNER JOIN book2user bu ON bi.id = bu.book_id " +
-            "                             WHERE bu.user_id = :userId AND bu.type IN ('CART', 'PAID', 'KEPT')) " +
+            "                                         INNER JOIN book2user bu        ON bi.id = bu.book_id " +
+            "                                         INNER JOIN book2user_type b2ut ON bu.type_id = b2ut.id " +
+            "                             WHERE bu.user_id = :userId AND b2ut.code IN ('CART', 'PAID', 'KEPT')) " +
             "                    AND (a.id IN :authors OR g.id IN :genres OR t.id IN :tags) " +
             "         GROUP BY 1) tab_1 ON books.id = tab_1.bid " +
             " ORDER BY n DESC, pub_date DESC", nativeQuery = true)
@@ -85,13 +89,13 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
             "       INNER JOIN " +
             "       (SELECT book_id, SUM(popul) AS popular " +
             "          FROM (SELECT book_id, " +
-            "                       bu.type, " +
+            "                       b2ut.code, " +
             "                       CASE " +
-            "                       WHEN bu.type = 'PAID' THEN COUNT(*) " +
-            "                       WHEN bu.type = 'CART' THEN COUNT(*) * 0.7 " +
-            "                       WHEN bu.type = 'KEPT' THEN COUNT(*) * 0.4 " +
+            "                       WHEN b2ut.code = 'PAID' THEN COUNT(*) " +
+            "                       WHEN b2ut.code = 'CART' THEN COUNT(*) * 0.7 " +
+            "                       WHEN b2ut.code = 'KEPT' THEN COUNT(*) * 0.4 " +
             "                       ELSE 0 END as popul " +
-            "                  FROM book2user bu GROUP BY 1, 2) AS tab1 " +
+            "                  FROM book2user bu INNER JOIN book2user_type b2ut ON bu.type_id = b2ut.id GROUP BY 1, 2) AS tab1 " +
             "         GROUP BY 1 ORDER BY 2 DESC) AS tab2 " +
             "       ON books.id = tab2.book_id " +
             " ORDER BY popular DESC", nativeQuery = true)
@@ -99,7 +103,10 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     @Query(value =
             "WITH tab_view_for_user AS " +
-                    "(SELECT b2u.book_id as book_id FROM book2user b2u WHERE type = 'VIEWED' AND b2u.user_id = :user) " +
+                    "(SELECT b2u.book_id as book_id " +
+                    "   FROM book2user b2u" +
+                    "        INNER JOIN book2user_type b2ut ON b2u.type_id = b2ut.id " +
+                    "  WHERE b2ut.code = 'VIEWED' AND b2u.user_id = :user) " +
                     "SELECT id, description, image, is_bestseller, discount, price, pub_date, slug, title, author_id " +
                     "  FROM books " +
                     "       INNER JOIN (SELECT book_id, " +
@@ -108,13 +115,13 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
                     "                          ELSE pop END as popular " +
                     "                     FROM (SELECT book_id, SUM(popul) AS pop " +
                     "                             FROM (SELECT book_id, " +
-                    "                                          bu.type, " +
+                    "                                          b2ut.code, " +
                     "                                          CASE " +
-                    "                                          WHEN bu.type = 'PAID' THEN COUNT(*) " +
-                    "                                          WHEN bu.type = 'CART' THEN COUNT(*) * 0.7 " +
-                    "                                          WHEN bu.type = 'KEPT' THEN COUNT(*) * 0.4 " +
+                    "                                          WHEN b2ut.code = 'PAID' THEN COUNT(*) " +
+                    "                                          WHEN b2ut.code = 'CART' THEN COUNT(*) * 0.7 " +
+                    "                                          WHEN b2ut.code = 'KEPT' THEN COUNT(*) * 0.4 " +
                     "                                          ELSE 0 END as popul " +
-                    "                                     FROM book2user bu " +
+                    "                                     FROM book2user bu INNER JOIN book2user_type b2ut ON bu.type_id = b2ut.id " +
                     "                                    GROUP BY 1, 2) AS tab_popular " +
                     "                    GROUP BY 1 ORDER BY 2 DESC) as tab_popular_all) as tab_popular_user " +
                     "        ON books.id = tab_popular_user.book_id " +

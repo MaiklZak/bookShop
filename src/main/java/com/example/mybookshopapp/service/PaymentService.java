@@ -3,13 +3,14 @@ package com.example.mybookshopapp.service;
 import com.example.mybookshopapp.entity.BalanceTransaction;
 import com.example.mybookshopapp.entity.Book;
 import com.example.mybookshopapp.entity.BookUser;
-import com.example.mybookshopapp.entity.BookUserType;
+import com.example.mybookshopapp.entity.TypeBookToUser;
 import com.example.mybookshopapp.repository.BalanceTransactionRepository;
 import com.example.mybookshopapp.repository.BookRepository;
 import com.example.mybookshopapp.repository.BookUserRepository;
 import com.example.mybookshopapp.errs.NoEnoughFundsForPayment;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
+import com.example.mybookshopapp.repository.BookUserTypeRepository;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,12 +34,14 @@ public class PaymentService {
     private final BookstoreUserRepository bookstoreUserRepository;
     private final BalanceTransactionRepository balanceTransactionRepository;
     private final BookUserRepository bookUserRepository;
+    private final BookUserTypeRepository bookUserTypeRepository;
 
-    public PaymentService(BookRepository bookRepository, BookstoreUserRepository bookstoreUserRepository, BalanceTransactionRepository balanceTransactionRepository, BookUserRepository bookUserRepository) {
+    public PaymentService(BookRepository bookRepository, BookstoreUserRepository bookstoreUserRepository, BalanceTransactionRepository balanceTransactionRepository, BookUserRepository bookUserRepository, BookUserTypeRepository bookUserTypeRepository) {
         this.bookRepository = bookRepository;
         this.bookstoreUserRepository = bookstoreUserRepository;
         this.balanceTransactionRepository = balanceTransactionRepository;
         this.bookUserRepository = bookUserRepository;
+        this.bookUserTypeRepository = bookUserTypeRepository;
     }
 
     public String getPaymentUrl(Integer sum, Integer invId) throws NoSuchAlgorithmException {
@@ -56,7 +59,7 @@ public class PaymentService {
 
     @Transactional(rollbackFor = NoEnoughFundsForPayment.class)
     public Boolean buyBooksByUser(BookstoreUser user) throws NoEnoughFundsForPayment {
-        List<Book> bookListBuy = bookRepository.findBooksByUserAndType(user, BookUserType.CART);
+        List<Book> bookListBuy = bookRepository.findBooksByUserAndType(user, TypeBookToUser.CART);
         Integer sumBooks = bookListBuy.stream()
                 .map(book -> balanceTransactionRepository.save(new BalanceTransaction(user,
                         book,
@@ -69,8 +72,8 @@ public class PaymentService {
         user.setBalance(user.getBalance() - sumBooks);
         bookstoreUserRepository.save(user);
         for (Book book : bookListBuy) {
-            BookUser bookUser = bookUserRepository.findByBookAndUserAndType(book, user, BookUserType.CART);
-            bookUser.setType(BookUserType.PAID);
+            BookUser bookUser = bookUserRepository.findByBookAndUserAndType(book, user, bookUserTypeRepository.findByCode(TypeBookToUser.CART));
+            bookUser.setType(bookUserTypeRepository.findByCode(TypeBookToUser.PAID));
             bookUserRepository.save(bookUser);
         }
         return true;

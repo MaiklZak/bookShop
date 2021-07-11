@@ -17,7 +17,8 @@ public class BookUser {
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime time;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JoinColumn(name = "type_id")
     private BookUserType type;
 
     @ManyToOne

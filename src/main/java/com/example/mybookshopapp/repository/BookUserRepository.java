@@ -20,5 +20,5 @@ public interface BookUserRepository extends JpaRepository<BookUser, Integer> {
 
     @Transactional
     @Modifying
-    void deleteByUserAndTypeAndTimeBefore(BookstoreUser user, BookUserType type ,LocalDateTime time);
+    void deleteByUserAndTypeAndTimeBefore(BookstoreUser user, BookUserType type, LocalDateTime time);
 }

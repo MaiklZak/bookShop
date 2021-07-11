@@ -7,6 +7,7 @@ import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
 import com.example.mybookshopapp.errs.BookstoreApiWrongParameterException;
 import com.example.mybookshopapp.repository.*;
+import com.example.mybookshopapp.repository.BookUserTypeRepository;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,9 +33,10 @@ public class BookService {
     private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
     private final TagRepository tagRepository;
+    private final BookUserTypeRepository bookUserTypeRepository;
 
     @Autowired
-    public BookService(BookRepository bookRepository, RestTemplate restTemplate, BookUserRepository bookUserRepository, BookstoreUserRepository bookstoreUserRepository, AuthorRepository authorRepository, GenreRepository genreRepository, TagRepository tagRepository) {
+    public BookService(BookRepository bookRepository, RestTemplate restTemplate, BookUserRepository bookUserRepository, BookstoreUserRepository bookstoreUserRepository, AuthorRepository authorRepository, GenreRepository genreRepository, TagRepository tagRepository, BookUserTypeRepository bookUserTypeRepository) {
         this.bookRepository = bookRepository;
         this.restTemplate = restTemplate;
         this.bookUserRepository = bookUserRepository;
@@ -42,6 +44,7 @@ public class BookService {
         this.authorRepository = authorRepository;
         this.genreRepository = genreRepository;
         this.tagRepository = tagRepository;
+        this.bookUserTypeRepository = bookUserTypeRepository;
     }
 
     public List<Book> getBookData() {
@@ -89,7 +92,7 @@ public class BookService {
         return bookRepository.findAll(nextPage);
     }
 
-    /* returns a list of books where each book has genre or tag or author matches with user's books with type PAID,
+    /* returns a list of books where each book has genre or tag or author matches with user's books with typeBookToUser PAID,
        CART, KEPT or VIEWED in the order sorted by count of matches and date but without those books that user has,
        if this list is empty return books by rating and recency */
     public List<Book> getPageOfRecommendedBooksForUser(BookstoreUser user, Integer offset, Integer limit) {
@@ -98,7 +101,7 @@ public class BookService {
         removeBookStatusViewedForUserLongerThanMonth(user);
 
         List<Book> bookListByUser = bookRepository.findBooksByUserAndTypeIn(user,
-                new BookUserType[]{BookUserType.CART, BookUserType.KEPT, BookUserType.PAID, BookUserType.VIEWED});
+                new TypeBookToUser[]{TypeBookToUser.CART, TypeBookToUser.KEPT, TypeBookToUser.PAID, TypeBookToUser.VIEWED});
 
         List<Author> authorList = authorRepository.findByBookIn(bookListByUser);
         List<Genre> genreList = genreRepository.findByBooksIn(bookListByUser);
@@ -198,37 +201,39 @@ public class BookService {
         return list;
     }
 
-    public void changeBookStatusToCartForUser(BookUserType type, String slug, BookstoreUser user) {
+    public void changeBookStatusToCartForUser(TypeBookToUser typeBookToUser, String slug, BookstoreUser user) {
         Book book = bookRepository.findBookBySlug(slug);
         BookUser bookUser = bookUserRepository.findByBookAndUser(book, user);
+        BookUserType type = bookUserTypeRepository.findByCode(typeBookToUser);
         if (bookUser == null) {
             bookUserRepository.save(new BookUser(type, book, user));
-        } else if (bookUser.getType().equals(BookUserType.VIEWED)) {
-            bookUser.setType(BookUserType.CART);
+        } else if (bookUser.getType().equals(bookUserTypeRepository.findByCode(TypeBookToUser.VIEWED))) {
+            bookUser.setType(type);
             bookUserRepository.save(bookUser);
         }
     }
 
     public void removeBookFromCartBySlag(BookstoreUser user, String slug) {
         Book book = bookRepository.findBookBySlug(slug);
-        BookUser bookUser = bookUserRepository.findByBookAndUserAndType(book, user, BookUserType.CART);
-        bookUser.setType(BookUserType.VIEWED);
+        BookUser bookUser = bookUserRepository.findByBookAndUserAndType(book, user, bookUserTypeRepository.findByCode(TypeBookToUser.CART));
+        bookUser.setType(bookUserTypeRepository.findByCode(TypeBookToUser.VIEWED));
         bookUserRepository.save(bookUser);
     }
 
-    public boolean changeBookStatusForUser(Book book, BookstoreUser user, BookUserType type) {
+    public boolean changeBookStatusForUser(Book book, BookstoreUser user, TypeBookToUser type) {
         BookUser bookUser = bookUserRepository.findByBookAndUser(book, user);
         if (bookUser == null) {
-            bookUser = new BookUser(type, book, user);
+            bookUser = new BookUser(bookUserTypeRepository.findByCode(type), book, user);
             bookUserRepository.save(bookUser);
             return true;
         }
         return false;
     }
 
-    /* deletes items from BookUser for user where type = VIEWED and time more then a month */
+    /* deletes items from BookUser for user where typeBookToUser = VIEWED and time more then a month */
     public void removeBookStatusViewedForUserLongerThanMonth(BookstoreUser user) {
-        bookUserRepository.deleteByUserAndTypeAndTimeBefore(user, BookUserType.VIEWED, LocalDateTime.now().minusMonths(1));
+        BookUserType type = bookUserTypeRepository.findByCode(TypeBookToUser.VIEWED);
+        bookUserRepository.deleteByUserAndTypeAndTimeBefore(user, type, LocalDateTime.now().minusMonths(1));
     }
 
     /* moves books from user retrieved by hash to authenticated user and delete user away with hash from cookie */
@@ -254,6 +259,6 @@ public class BookService {
     public List<Book> getPageOfViewedBooksByUser(BookstoreUser user, Integer offset, Integer limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
         removeBookStatusViewedForUserLongerThanMonth(user);
-        return bookRepository.findBooksByUserAndType(user, BookUserType.VIEWED, nextPage);
+        return bookRepository.findBooksByUserAndType(user, TypeBookToUser.VIEWED, nextPage);
     }
 }

@@ -83,17 +83,17 @@ public class BooksController {
             return "redirect:/index";
         }
         if (user != null) {
-            bookService.changeBookStatusForUser(book, user.getBookstoreUser(), BookUserType.VIEWED);
+            bookService.changeBookStatusForUser(book, user.getBookstoreUser(), TypeBookToUser.VIEWED);
             model.addAttribute("ratingBook", bookRatingRepository.findByBookAndUser(book, user.getBookstoreUser()));
         } else {
             BookstoreUser bookstoreUserByHash = bookstoreUserRepository.findBookstoreUserByHash(userHash);
             if (userHash != null && !userHash.equals("") && bookstoreUserByHash != null) {
-                bookService.changeBookStatusForUser(book, bookstoreUserByHash, BookUserType.VIEWED);
+                bookService.changeBookStatusForUser(book, bookstoreUserByHash, TypeBookToUser.VIEWED);
             } else {
                 BookstoreUser defaultUser = new BookstoreUser();
                 defaultUser.setHash(UUID.randomUUID().toString());
                 defaultUser = bookstoreUserRepository.save(defaultUser);
-                bookService.changeBookStatusForUser(book, defaultUser, BookUserType.VIEWED);
+                bookService.changeBookStatusForUser(book, defaultUser, TypeBookToUser.VIEWED);
 
                 Cookie cookie = new Cookie("userHash", defaultUser.getHash());
                 cookie.setPath("/");
@@ -117,7 +117,11 @@ public class BooksController {
     }
 
     @GetMapping("/download/{hash}")
-    public ResponseEntity<ByteArrayResource> bookFile(@PathVariable("hash") String hash) throws IOException {
+    public ResponseEntity<ByteArrayResource> bookFile(@AuthenticationPrincipal BookstoreUserDetails userDetails,
+                                                      @PathVariable("hash") String hash) throws IOException {
+
+        storage.setCountDownloadBookForUser(userDetails.getBookstoreUser(), hash);
+
         Path path = storage.getBookFilePath(hash);
         logger.info(() -> "book file path: {}" + path);
 
