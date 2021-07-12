@@ -103,8 +103,8 @@ p.error-browser
             </h2>
             <div class="Tags" id="tags">
                 <th:block th:each="tag : ${tags}">
-                    <div class="Tag Tag_xs"
-                         th:class="${tag.value <= 8 ? 'Tag Tag_xs' : (tag.value <= 16 ? 'Tag Tag_sm' : (tag.value <= 24 ? 'Tag' : (tag.value <= 32 ? 'Tag Tag_md' : 'Tag Tag_lg')))}">
+                    <div class="Tag Tag_xs" th:with="factor = ${maxBooksByTag / 5}"
+                         th:class="${tag.value <= factor ? 'Tag Tag_xs' : (tag.value <= factor * 2 ? 'Tag Tag_sm' : (tag.value <= factor * 3 ? 'Tag' : (tag.value <= factor * 4 ? 'Tag Tag_md' : 'Tag Tag_lg')))}">
                         <a href="/tags/index.html" th:href="@{/tags(tag=${tag.key.id})}" th:text="${tag.key.name}">современная
                             литература</a>
                         <!--                        th:href="@{/bookshop/authors/slug(id=${author.id})}"-->

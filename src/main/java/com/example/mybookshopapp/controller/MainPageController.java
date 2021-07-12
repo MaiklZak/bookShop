@@ -79,6 +79,7 @@ public class MainPageController {
             model.addAttribute("popularBooks",
                     bookService.getPageOfPopularBooksForNotAuthenticatedUser(userHash, 0, 6));
         }
+        model.addAttribute("maxBooksByTag", tagService.getMaxCountTagsByBook());
         return "index";
     }
 

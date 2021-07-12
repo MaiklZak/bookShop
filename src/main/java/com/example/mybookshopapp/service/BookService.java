@@ -267,4 +267,12 @@ public class BookService {
         removeBookStatusViewedForUserLongerThanMonth(user);
         return bookRepository.findBooksByUserAndType(user, TypeBookToUser.VIEWED, nextPage);
     }
+
+    public List<Book> getPaidBooksForUser(BookstoreUser user) {
+        return bookRepository.findBooksByUserAndType(user, TypeBookToUser.PAID);
+    }
+
+    public List<Book> getArchivedBooksForUser(BookstoreUser user) {
+        return bookRepository.findBooksByUserAndType(user, TypeBookToUser.ARCHIVED);
+    }
 }

@@ -26,4 +26,10 @@ public class TagService {
     public Tag getById(Integer id) {
         return tagRepository.getOne(id);
     }
+
+    public Integer getMaxCountTagsByBook() {
+        List<Tag> tags = tagRepository.findAll();
+        return tags.stream()
+                .map(tag -> tag.getBooks().size()).max(Integer::compare).orElse(0);
+    }
 }

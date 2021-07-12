@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class GenrePageController {
 
-
     private final GenreService genreService;
     private final BookService bookService;
 
