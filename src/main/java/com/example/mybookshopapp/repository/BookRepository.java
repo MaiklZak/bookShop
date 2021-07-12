@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.sql.Date;
 import java.util.List;
 
 public interface BookRepository extends JpaRepository<Book, Integer> {
@@ -128,4 +129,10 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
                     "  ORDER BY popular DESC",
             nativeQuery = true)
     List<Book> findPopularBooksForUser(BookstoreUser user, Pageable nextPage);
+
+    List<Book> findBooksByPubDateGreaterThanEqualAndPubDateLessThanEqual(Date from, Date to, Pageable nextPage);
+
+    List<Book> findBooksByPubDateLessThanEqual(Date to, Pageable nextPage);
+
+    List<Book> findBooksByPubDateGreaterThanEqual(Date from, Pageable nextPage);
 }

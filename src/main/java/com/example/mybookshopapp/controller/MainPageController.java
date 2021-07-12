@@ -28,6 +28,12 @@ public class MainPageController {
     private final BookService bookService;
     private final TagService tagService;
 
+    @Autowired
+    public MainPageController(BookService bookService, TagService tagService) {
+        this.bookService = bookService;
+        this.tagService = tagService;
+    }
+
     @ModelAttribute("searchWordDto")
     public SearchWordDto searchWordDto() {
         return new SearchWordDto();
@@ -51,10 +57,9 @@ public class MainPageController {
         return null;
     }
 
-    @Autowired
-    public MainPageController(BookService bookService, TagService tagService) {
-        this.bookService = bookService;
-        this.tagService = tagService;
+    @ModelAttribute("recentBooks")
+    public List<Book> recentBooks() {
+        return bookService.getPageOfRecentBooks(0, 6).getContent();
     }
 
     @GetMapping("/")

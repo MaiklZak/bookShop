@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -47,12 +48,6 @@ public class BookService {
         this.bookUserTypeRepository = bookUserTypeRepository;
     }
 
-    public List<Book> getBookData() {
-        return bookRepository.findAll();
-    }
-
-    //NEW BOOK SERVICE METHOD
-
     public List<Book> getBooksByAuthor(String authorName) {
         return bookRepository.findBooksByAuthorNameContaining(authorName);
     }
@@ -75,10 +70,6 @@ public class BookService {
         return bookRepository.findBooksByPriceOldBetween(min, max);
     }
 
-    public List<Book> getBooksWithPrice(Integer price) {
-        return bookRepository.findBooksByPriceOldIs(price);
-    }
-
     public List<Book> getBooksWithMaxPrice() {
         return bookRepository.getBooksWithMaxDiscount();
     }
@@ -87,10 +78,25 @@ public class BookService {
         return bookRepository.getBestsellers();
     }
 
-    public Page<Book> getPageOfRecommendedBooks(Integer offset, Integer limit) {
-        Pageable nextPage = PageRequest.of(offset, limit);
+    public Page<Book> getPageOfRecentBooks(int offset, int limit) {
+        Pageable nextPage = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "pubDate", "title"));
         return bookRepository.findAll(nextPage);
     }
+
+    public List<Book> getPageOfRecentBooks(java.util.Date from, java.util.Date to, int offset, int limit) {
+        if (from == null && to == null) {
+            return getPageOfRecentBooks(offset, limit).getContent();
+        }
+        Pageable nextPage = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "pubDate", "title"));
+        if (from == null) {
+            return bookRepository.findBooksByPubDateLessThanEqual(new java.sql.Date(to.getTime()), nextPage);
+        }
+        if (to == null) {
+            return bookRepository.findBooksByPubDateGreaterThanEqual(new java.sql.Date(from.getTime()), nextPage);
+        }
+        return bookRepository.findBooksByPubDateGreaterThanEqualAndPubDateLessThanEqual(new java.sql.Date(from.getTime()), new java.sql.Date(to.getTime()), nextPage);
+    }
+
 
     /* returns a list of books where each book has genre or tag or author matches with user's books with typeBookToUser PAID,
        CART, KEPT or VIEWED in the order sorted by count of matches and date but without those books that user has,
