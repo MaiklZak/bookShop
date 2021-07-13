@@ -448,7 +448,7 @@ p.error-browser
                             <!--    +Amount._product-->
                             <div class="ProductCard-cartElement">
                                 <button class="btn btn_primary btn_outline" data-sendstatus="KEPT" data-bookid="[1111]"
-                                        th:attr="data-bookid = ${'postpone/' + slugBook.slug}"
+                                        th:attr="data-bookid = ${slugBook.slug},data-path = ${'postpone/'}"
                                         data-btntype="check" data-btnradio="buyblock" data-check="false"
                                         data-alttext="Отложена"><span class="btn-icon"><img
                                         src="/assets/img/icons/heart.svg" alt="heart.svg"/></span><span
@@ -457,7 +457,7 @@ p.error-browser
                             </div>
                             <div class="ProductCard-cartElement">
                                 <button class="btn btn_primary btn_outline" data-sendstatus="CART" data-bookid="[1111]"
-                                        th:attr="data-bookid = ${slugBook.slug}" data-btntype="check"
+                                        th:attr="data-bookid = ${slugBook.slug},data-path = ${'cart/'}" data-btntype="check"
                                         data-btnradio="buyblock" data-check="false"
                                         data-alttext="В корзине"><span class="btn-icon"><img
                                         src="/assets/img/icons/shopping-basket.svg"

@@ -37,7 +37,9 @@
                           style="color: red"></span>
                 </div>
                 <div class="row-block Header-cart">
-                    <div class="CartBlock"><a class="CartBlock-block" href="/postponed.html">
+                    <div class="CartBlock"><a class="CartBlock-block"
+                                              href="/postponed.html"
+                                              th:href="@{/postponed}">
                         <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" height="23" width="23"
                              viewBox="0 0 512 512">
                             <g>
@@ -48,7 +50,7 @@
                             </g>
                         </svg>
                         <span class="CartBlock-amount">0</span></a><a class="CartBlock-block"
-                                                                      th:href="@{/books/cart}"
+                                                                      th:href="@{/cart}"
                                                                       href="/cart.html">
                         <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" width="30" height="23"
                              viewBox="0 0 30 23">

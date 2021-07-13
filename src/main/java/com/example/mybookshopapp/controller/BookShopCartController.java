@@ -1,5 +1,6 @@
 package com.example.mybookshopapp.controller;
 
+import com.example.mybookshopapp.dto.ChangeStatusPayload;
 import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.entity.Book;
 import com.example.mybookshopapp.entity.TypeBookToUser;
@@ -7,34 +8,31 @@ import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
 import com.example.mybookshopapp.repository.BookRepository;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
-import com.example.mybookshopapp.service.BookService;
+import com.example.mybookshopapp.service.BookUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Controller
-@RequestMapping("/books")
 public class BookShopCartController {
 
     private static final String IS_CART_EMPTY = "isCartEmpty";
 
     private final BookRepository bookRepository;
-    private final BookService bookService;
     private final BookstoreUserRepository bookstoreUserRepository;
+    private final BookUserService bookUserService;
 
     @Autowired
-    public BookShopCartController(BookRepository bookRepository, BookService bookService, BookstoreUserRepository bookstoreUserRepository) {
+    public BookShopCartController(BookRepository bookRepository, BookstoreUserRepository bookstoreUserRepository, BookUserService bookUserService) {
         this.bookRepository = bookRepository;
-        this.bookService = bookService;
         this.bookstoreUserRepository = bookstoreUserRepository;
+        this.bookUserService = bookUserService;
     }
 
     @ModelAttribute(name = "bookCart")
@@ -60,70 +58,56 @@ public class BookShopCartController {
                                     @CookieValue(value = "userHash", required = false) String userHash,
                                     HttpServletResponse response,
                                     Model model) {
+        List<Book> booksCart;
 
         if (user != null) {
-            bookService.moveBooksFromUserHashToCurrentUser(userHash, user, response);
-            List<Book> booksByUser = bookRepository.findBooksByUserAndType(user.getBookstoreUser(), TypeBookToUser.CART);
-            model.addAttribute(IS_CART_EMPTY, booksByUser.isEmpty());
-            model.addAttribute("bookCart", booksByUser);
-            model.addAttribute("allPriceOld", booksByUser.stream().mapToInt(Book::getPriceOld).sum());
-            model.addAttribute("allPrice", booksByUser.stream().mapToInt(Book::discountPrice).sum());
+            bookUserService.moveBooksFromUserHashToCurrentUser(userHash, user, response);
+            booksCart = bookRepository.findBooksByUserAndType(user.getBookstoreUser(), TypeBookToUser.CART);
+        } else if (userHash != null && !userHash.equals("")) {
+            BookstoreUser bookstoreUserByHash = bookstoreUserRepository.findBookstoreUserByHash(userHash);
+            booksCart = bookRepository.findBooksByUserAndType(bookstoreUserByHash, TypeBookToUser.CART);
+        } else {
+            model.addAttribute(IS_CART_EMPTY, true);
             return "cart";
         }
-        if (userHash == null || userHash.equals("")) {
-            model.addAttribute(IS_CART_EMPTY, true);
-        } else {
-            BookstoreUser bookstoreUserByHash = bookstoreUserRepository.findBookstoreUserByHash(userHash);
-            List<Book> booksFromCookieUser = bookRepository.findBooksByUserAndType(bookstoreUserByHash, TypeBookToUser.CART);
-            model.addAttribute(IS_CART_EMPTY, booksFromCookieUser.isEmpty());
-            model.addAttribute("bookCart", booksFromCookieUser);
-            model.addAttribute("allPriceOld", booksFromCookieUser.stream().mapToInt(Book::getPriceOld).sum());
-            model.addAttribute("allPrice", booksFromCookieUser.stream().mapToInt(Book::discountPrice).sum());
-        }
+
+        model.addAttribute(IS_CART_EMPTY, booksCart.isEmpty());
+        model.addAttribute("bookCart", booksCart);
+        model.addAttribute("allPriceOld", booksCart.stream().mapToInt(Book::getPriceOld).sum());
+        model.addAttribute("allPrice", booksCart.stream().mapToInt(Book::discountPrice).sum());
         return "cart";
     }
 
-    @PostMapping("/changeBookStatus/cart/remove/{slug}")
-    public String handleRemoveBookFromCartRequest(@AuthenticationPrincipal BookstoreUserDetails user,
-                                                  @PathVariable("slug") String slug,
-                                                  @CookieValue(name = "userHash", required = false) String userHash,
-                                                  Model model) {
-        if (user != null) {
-            bookService.removeBookFromCartBySlag(user.getBookstoreUser(), slug);
-            return "redirect:/books/cart";
-        }
-        if (userHash != null && !userHash.equals("")) {
-            BookstoreUser bookstoreUserByHash = bookstoreUserRepository.findBookstoreUserByHash(userHash);
-            bookService.removeBookFromCartBySlag(bookstoreUserByHash, slug);
-            model.addAttribute(IS_CART_EMPTY, bookRepository.findBooksByUserAndType(bookstoreUserByHash, TypeBookToUser.CART));
+    @PostMapping("/changeBookStatus/cart")
+    public String handleChangeBookStatus(@AuthenticationPrincipal BookstoreUserDetails userDetails,
+                                         @RequestBody ChangeStatusPayload payload,
+                                         @CookieValue(name = "userHash", required = false) String userHash,
+                                         HttpServletResponse response) {
+        bookUserService.changeBookStatus(payload, userDetails, userHash, response);
+        return "redirect:/books/" + payload.getBooksIds();
+    }
+
+    @PostMapping("/changeBookStatus/cart/remove/")
+    public String handleRemoveBookFromCartRequest(@AuthenticationPrincipal BookstoreUserDetails userDetails,
+                                                  @RequestBody ChangeStatusPayload payload,
+                                                  @CookieValue(name = "userHash", required = false) String userHash) {
+        TypeBookToUser type = TypeBookToUser.getTypeByString(payload.getStatus());
+        if (userDetails != null) {
+            bookUserService.changeBookStatusForUser(payload.getBooksIds(), userDetails.getBookstoreUser(), type);
         } else {
-            model.addAttribute(IS_CART_EMPTY, true);
+            BookstoreUser bookstoreUserByHash = bookstoreUserRepository.findBookstoreUserByHash(userHash);
+            bookUserService.changeBookStatusForUser(payload.getBooksIds(), bookstoreUserByHash, type);
         }
         return "redirect:/books/cart";
     }
 
-    @PostMapping("/changeBookStatus/{slug}")
-    public String handleChangeBookStatus(@AuthenticationPrincipal BookstoreUserDetails user,
-                                         @PathVariable("slug") String slug,
-                                         @CookieValue(name = "userHash", required = false) String userHash,
-                                         HttpServletResponse response) {
-        if (user != null) {
-            bookService.changeBookStatusToCartForUser(TypeBookToUser.CART, slug, user.getBookstoreUser());
-            return "redirect:/books/" + slug;
-        }
-        if (userHash != null && !userHash.equals("")) {
-            BookstoreUser bookstoreUserByHash = bookstoreUserRepository.findBookstoreUserByHash(userHash);
-            bookService.changeBookStatusToCartForUser(TypeBookToUser.CART, slug, bookstoreUserByHash);
-        } else {
-            BookstoreUser defaultUser = new BookstoreUser();
-            defaultUser.setHash(UUID.randomUUID().toString());
-            defaultUser = bookstoreUserRepository.save(defaultUser);
-            bookService.changeBookStatusForUser(bookRepository.findBookBySlug(slug), defaultUser, TypeBookToUser.CART);
-
-            Cookie cookie = new Cookie("userHash", defaultUser.getHash());
-            response.addCookie(cookie);
-        }
-        return "redirect:/books/" + slug;
+    @PostMapping("/changeBookStatus/cart/postpone/")
+    public String handlePostponedBookFromCartRequest(@AuthenticationPrincipal BookstoreUserDetails userDetails,
+                                                     @RequestBody ChangeStatusPayload payload,
+                                                     @CookieValue(name = "userHash", required = false) String userHash,
+                                                     HttpServletResponse response) {
+        bookUserService.changeBookStatus(payload, userDetails, userHash, response);
+        return "redirect:/books/cart";
     }
 
 }

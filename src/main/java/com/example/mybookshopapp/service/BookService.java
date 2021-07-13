@@ -4,10 +4,8 @@ import com.example.mybookshopapp.dto.google.api.books.Item;
 import com.example.mybookshopapp.dto.google.api.books.Root;
 import com.example.mybookshopapp.entity.*;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
-import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
 import com.example.mybookshopapp.errs.BookstoreApiWrongParameterException;
 import com.example.mybookshopapp.repository.*;
-import com.example.mybookshopapp.repository.BookUserTypeRepository;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,9 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,23 +24,21 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final RestTemplate restTemplate;
-    private final BookUserRepository bookUserRepository;
     private final BookstoreUserRepository bookstoreUserRepository;
     private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
     private final TagRepository tagRepository;
-    private final BookUserTypeRepository bookUserTypeRepository;
+    private final BookUserService bookUserService;
 
     @Autowired
-    public BookService(BookRepository bookRepository, RestTemplate restTemplate, BookUserRepository bookUserRepository, BookstoreUserRepository bookstoreUserRepository, AuthorRepository authorRepository, GenreRepository genreRepository, TagRepository tagRepository, BookUserTypeRepository bookUserTypeRepository) {
+    public BookService(BookRepository bookRepository, RestTemplate restTemplate, BookstoreUserRepository bookstoreUserRepository, AuthorRepository authorRepository, GenreRepository genreRepository, TagRepository tagRepository, BookUserService bookUserService) {
         this.bookRepository = bookRepository;
         this.restTemplate = restTemplate;
-        this.bookUserRepository = bookUserRepository;
         this.bookstoreUserRepository = bookstoreUserRepository;
         this.authorRepository = authorRepository;
         this.genreRepository = genreRepository;
         this.tagRepository = tagRepository;
-        this.bookUserTypeRepository = bookUserTypeRepository;
+        this.bookUserService = bookUserService;
     }
 
     public List<Book> getBooksByAuthor(String authorName) {
@@ -104,7 +97,7 @@ public class BookService {
     public List<Book> getPageOfRecommendedBooksForUser(BookstoreUser user, Integer offset, Integer limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
 
-        removeBookStatusViewedForUserLongerThanMonth(user);
+        bookUserService.removeBookStatusViewedForUserLongerThanMonth(user);
 
         List<Book> bookListByUser = bookRepository.findBooksByUserAndTypeIn(user,
                 new TypeBookToUser[]{TypeBookToUser.CART, TypeBookToUser.KEPT, TypeBookToUser.PAID, TypeBookToUser.VIEWED});
@@ -155,7 +148,7 @@ public class BookService {
     public List<Book> getPageOfPopularBooksForUser(BookstoreUser user, Integer offset, Integer limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
 
-        removeBookStatusViewedForUserLongerThanMonth(user);
+        bookUserService.removeBookStatusViewedForUserLongerThanMonth(user);
 
         return bookRepository.findPopularBooksForUser(user, nextPage);
     }
@@ -207,64 +200,9 @@ public class BookService {
         return list;
     }
 
-    public void changeBookStatusToCartForUser(TypeBookToUser typeBookToUser, String slug, BookstoreUser user) {
-        Book book = bookRepository.findBookBySlug(slug);
-        BookUser bookUser = bookUserRepository.findByBookAndUser(book, user);
-        BookUserType type = bookUserTypeRepository.findByCode(typeBookToUser);
-        if (bookUser == null) {
-            bookUserRepository.save(new BookUser(type, book, user));
-        } else if (bookUser.getType().equals(bookUserTypeRepository.findByCode(TypeBookToUser.VIEWED))) {
-            bookUser.setType(type);
-            bookUserRepository.save(bookUser);
-        }
-    }
-
-    public void removeBookFromCartBySlag(BookstoreUser user, String slug) {
-        Book book = bookRepository.findBookBySlug(slug);
-        BookUser bookUser = bookUserRepository.findByBookAndUserAndType(book, user, bookUserTypeRepository.findByCode(TypeBookToUser.CART));
-        bookUser.setType(bookUserTypeRepository.findByCode(TypeBookToUser.VIEWED));
-        bookUserRepository.save(bookUser);
-    }
-
-    public boolean changeBookStatusForUser(Book book, BookstoreUser user, TypeBookToUser type) {
-        BookUser bookUser = bookUserRepository.findByBookAndUser(book, user);
-        if (bookUser == null) {
-            bookUser = new BookUser(bookUserTypeRepository.findByCode(type), book, user);
-            bookUserRepository.save(bookUser);
-            return true;
-        }
-        return false;
-    }
-
-    /* deletes items from BookUser for user where typeBookToUser = VIEWED and time more then a month */
-    public void removeBookStatusViewedForUserLongerThanMonth(BookstoreUser user) {
-        BookUserType type = bookUserTypeRepository.findByCode(TypeBookToUser.VIEWED);
-        bookUserRepository.deleteByUserAndTypeAndTimeBefore(user, type, LocalDateTime.now().minusMonths(1));
-    }
-
-    /* moves books from user retrieved by hash to authenticated user and delete user away with hash from cookie */
-    public void moveBooksFromUserHashToCurrentUser(String userHash, BookstoreUserDetails user, HttpServletResponse response) {
-        BookstoreUser bookstoreUserByHash = bookstoreUserRepository.findBookstoreUserByHash(userHash);
-        if (userHash != null && !userHash.equals("") && bookstoreUserByHash != null) {
-            List<Book> booksFromCookieUser = bookRepository.findBooksByUser(bookstoreUserByHash);
-            for (Book book : booksFromCookieUser) {
-                BookUser bookUserFromCookieUser = bookUserRepository.findByBookAndUser(book, bookstoreUserByHash);
-                BookUser bookUserFromCurrentUser = bookUserRepository.findByBookAndUser(book, user.getBookstoreUser());
-                if (bookUserFromCurrentUser != null) {
-                    bookUserRepository.delete(bookUserFromCookieUser);
-                } else {
-                    bookUserFromCookieUser.setUser(user.getBookstoreUser());
-                    bookUserRepository.save(bookUserFromCookieUser);
-                }
-            }
-            bookstoreUserRepository.delete(bookstoreUserByHash);
-            response.addCookie(new Cookie("userHash", ""));
-        }
-    }
-
     public List<Book> getPageOfViewedBooksByUser(BookstoreUser user, Integer offset, Integer limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
-        removeBookStatusViewedForUserLongerThanMonth(user);
+        bookUserService.removeBookStatusViewedForUserLongerThanMonth(user);
         return bookRepository.findBooksByUserAndType(user, TypeBookToUser.VIEWED, nextPage);
     }
 

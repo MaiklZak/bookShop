@@ -3943,7 +3943,7 @@ insert into book_rating (id, value, book_id, user_id) values (331, 0, 603, 58);
 insert into book_rating (id, value, book_id, user_id) values (332, 2, 106, 5);
 insert into book_rating (id, value, book_id, user_id) values (333, 0, 519, 79);
 insert into book_rating (id, value, book_id, user_id) values (334, 3, 755, 62);
-insert into book_rating (id, value, book_id, user_id) values (335, 5, 596, 48);
+insert into book_rating (id, value, book_id, user_id) values (335, 3, 596, 48);
 insert into book_rating (id, value, book_id, user_id) values (336, 4, 318, 100);
 insert into book_rating (id, value, book_id, user_id) values (337, 4, 702, 44);
 insert into book_rating (id, value, book_id, user_id) values (338, 5, 981, 40);

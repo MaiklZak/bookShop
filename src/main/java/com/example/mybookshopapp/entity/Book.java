@@ -90,6 +90,10 @@ public class Book implements Serializable {
         return priceOld - Math.toIntExact(Math.round(price * priceOld));
     }
 
+    public Integer getDiscountPercent() {
+        return Math.toIntExact(Math.round(price * 100));
+    }
+
     public long getCountRating(int value) {
         return bookRatings.stream()
                 .filter(rat -> rat.getValue() == value)

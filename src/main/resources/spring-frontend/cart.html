@@ -100,12 +100,14 @@
                   </div>
                   <div class="Cart-buttons">
                     <div class="Cart-btn">
-                      <button class="btn btn_primary btn_outline" data-sendstatus="KEPT" data-bookid="[1133]"><span class="btn-icon"><img src="/assets/img/icons/heart.svg" alt="heart.svg"/></span><span class="btn-content">Отложить</span>
+                      <button class="btn btn_primary btn_outline" data-sendstatus="KEPT"
+                              th:attr="data-bookid = ${book.slug},data-path = ${'cart/postpone/'}"
+                              data-bookid="[1133]"><span class="btn-icon"><img src="/assets/img/icons/heart.svg" alt="heart.svg"/></span><span class="btn-content">Отложить</span>
                       </button>
                     </div>
                     <div class="Cart-btn">
                       <button class="btn btn_danger btn_outline" data-sendstatus="UNLINK"
-                              th:attr="data-bookid = ${'cart/remove/' + book.slug}"
+                              th:attr="data-bookid = ${book.slug},data-path = ${'cart/remove/'}"
                               data-bookid="[1133]"><span class="btn-icon"><img src="/assets/img/icons/trash.svg" alt="trash.svg"/></span><span class="btn-content">Удалить</span>
                       </button>
                     </div>
@@ -118,7 +120,7 @@
                   </div>
                   <div class="Cart-price" th:text="${book.discountPrice()}">100 р.
                   </div>
-                  <div class="Cart-sale" th:text="${'-' + book.price * 100}">-30%
+                  <div class="Cart-sale" th:text="${'-' + book.getDiscountPercent() + '%'}">-30%
                   </div>
                 </div>
               </div>

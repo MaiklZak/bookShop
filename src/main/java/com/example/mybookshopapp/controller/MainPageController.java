@@ -10,6 +10,7 @@ import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.errs.EmptySearchException;
 
 
+import com.example.mybookshopapp.service.BookUserService;
 import com.example.mybookshopapp.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,11 +28,13 @@ public class MainPageController {
 
     private final BookService bookService;
     private final TagService tagService;
+    private final BookUserService bookUserService;
 
     @Autowired
-    public MainPageController(BookService bookService, TagService tagService) {
+    public MainPageController(BookService bookService, TagService tagService, BookUserService bookUserService) {
         this.bookService = bookService;
         this.tagService = tagService;
+        this.bookUserService = bookUserService;
     }
 
     @ModelAttribute("searchWordDto")
@@ -68,7 +71,7 @@ public class MainPageController {
                            HttpServletResponse response,
                            Model model) {
         if (user != null) {
-            bookService.moveBooksFromUserHashToCurrentUser(userHash, user, response);
+            bookUserService.moveBooksFromUserHashToCurrentUser(userHash, user, response);
             model.addAttribute("recommendedBooks",
                     bookService.getPageOfRecommendedBooksForUser(user.getBookstoreUser(), 0, 6));
             model.addAttribute("popularBooks",

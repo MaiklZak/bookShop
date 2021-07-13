@@ -5,15 +5,15 @@ import com.example.mybookshopapp.dto.ReviewDto;
 import com.example.mybookshopapp.dto.ReviewLikeDto;
 import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.entity.*;
-import com.example.mybookshopapp.repository.BookRatingRepository;
-import com.example.mybookshopapp.repository.BookReviewLikeRepository;
-import com.example.mybookshopapp.repository.BookReviewRepository;
-import com.example.mybookshopapp.service.BookService;
-import com.example.mybookshopapp.service.ResourceStorage;
-import com.example.mybookshopapp.repository.BookRepository;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
+import com.example.mybookshopapp.repository.BookRatingRepository;
+import com.example.mybookshopapp.repository.BookRepository;
+import com.example.mybookshopapp.repository.BookReviewLikeRepository;
+import com.example.mybookshopapp.repository.BookReviewRepository;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
+import com.example.mybookshopapp.service.BookUserService;
+import com.example.mybookshopapp.service.ResourceStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +29,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @Controller
@@ -46,17 +48,17 @@ public class BooksController {
     private final BookRepository bookRepository;
     private final ResourceStorage storage;
     private final BookstoreUserRepository bookstoreUserRepository;
-    private final BookService bookService;
+    private final BookUserService bookUserService;
 
     @Autowired
-    public BooksController(BookRatingRepository bookRatingRepository, BookReviewLikeRepository bookReviewLikeRepository, BookReviewRepository bookReviewRepository, BookRepository bookRepository, ResourceStorage storage, BookstoreUserRepository bookstoreUserRepository, BookService bookService) {
+    public BooksController(BookRatingRepository bookRatingRepository, BookReviewLikeRepository bookReviewLikeRepository, BookReviewRepository bookReviewRepository, BookRepository bookRepository, ResourceStorage storage, BookstoreUserRepository bookstoreUserRepository, BookUserService bookUserService) {
         this.bookRatingRepository = bookRatingRepository;
         this.bookReviewLikeRepository = bookReviewLikeRepository;
         this.bookReviewRepository = bookReviewRepository;
         this.bookRepository = bookRepository;
         this.storage = storage;
         this.bookstoreUserRepository = bookstoreUserRepository;
-        this.bookService = bookService;
+        this.bookUserService = bookUserService;
     }
 
     @ModelAttribute("searchWordDto")
@@ -83,17 +85,17 @@ public class BooksController {
             return "redirect:/index";
         }
         if (user != null) {
-            bookService.changeBookStatusForUser(book, user.getBookstoreUser(), TypeBookToUser.VIEWED);
+            bookUserService.changeBookStatusToViewedForUser(slug, user.getBookstoreUser());
             model.addAttribute("ratingBook", bookRatingRepository.findByBookAndUser(book, user.getBookstoreUser()));
         } else {
             BookstoreUser bookstoreUserByHash = bookstoreUserRepository.findBookstoreUserByHash(userHash);
             if (userHash != null && !userHash.equals("") && bookstoreUserByHash != null) {
-                bookService.changeBookStatusForUser(book, bookstoreUserByHash, TypeBookToUser.VIEWED);
+                bookUserService.changeBookStatusToViewedForUser(slug, bookstoreUserByHash);
             } else {
                 BookstoreUser defaultUser = new BookstoreUser();
                 defaultUser.setHash(UUID.randomUUID().toString());
                 defaultUser = bookstoreUserRepository.save(defaultUser);
-                bookService.changeBookStatusForUser(book, defaultUser, TypeBookToUser.VIEWED);
+                bookUserService.changeBookStatusToViewedForUser(slug, defaultUser);
 
                 Cookie cookie = new Cookie("userHash", defaultUser.getHash());
                 cookie.setPath("/");
