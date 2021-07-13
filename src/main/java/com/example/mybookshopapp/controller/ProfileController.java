@@ -64,7 +64,7 @@ public class ProfileController {
     @GetMapping("/pay")
     public String handlePay(@AuthenticationPrincipal BookstoreUserDetails user) throws NoEnoughFundsForPayment {
         paymentService.buyBooksByUser(user.getBookstoreUser());
-        return "redirect:/books/cart";
+        return "redirect:/my";
     }
 
     @PostMapping("/payment")

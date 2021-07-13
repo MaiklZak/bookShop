@@ -80,32 +80,36 @@ public class BooksController {
                            @CookieValue(value = "userHash", required = false) String userHash,
                            HttpServletResponse response,
                            Model model) {
+        BookstoreUser currentUser;
         Book book = bookRepository.findBookBySlug(slug);
         if (book == null) {
             return "redirect:/index";
         }
         if (user != null) {
-            bookUserService.changeBookStatusToViewedForUser(slug, user.getBookstoreUser());
-            model.addAttribute("ratingBook", bookRatingRepository.findByBookAndUser(book, user.getBookstoreUser()));
+            currentUser = user.getBookstoreUser();
+            model.addAttribute("ratingBook", bookRatingRepository.findByBookAndUser(book, currentUser));
         } else {
             BookstoreUser bookstoreUserByHash = bookstoreUserRepository.findBookstoreUserByHash(userHash);
             if (userHash != null && !userHash.equals("") && bookstoreUserByHash != null) {
-                bookUserService.changeBookStatusToViewedForUser(slug, bookstoreUserByHash);
+                currentUser = bookstoreUserByHash;
             } else {
-                BookstoreUser defaultUser = new BookstoreUser();
-                defaultUser.setHash(UUID.randomUUID().toString());
-                defaultUser = bookstoreUserRepository.save(defaultUser);
-                bookUserService.changeBookStatusToViewedForUser(slug, defaultUser);
+                currentUser = new BookstoreUser();
+                currentUser.setHash(UUID.randomUUID().toString());
+                currentUser = bookstoreUserRepository.save(currentUser);
 
-                Cookie cookie = new Cookie("userHash", defaultUser.getHash());
+                Cookie cookie = new Cookie("userHash", currentUser.getHash());
                 cookie.setPath("/");
                 response.addCookie(cookie);
             }
         }
+        bookUserService.changeBookStatusToViewedForUser(slug, currentUser);
+
         List<BookReview> bookReviewList = bookReviewRepository.findAllByBookSlug(slug);
         bookReviewList.sort(Comparator.comparing(br -> br.getDisLikes() - br.getLikes()));
-        model.addAttribute("reviewsOfBook", bookReviewList);
+
         model.addAttribute("slugBook", book);
+        model.addAttribute("reviewsOfBook", bookReviewList);
+        model.addAttribute("statusOfSlugBook", bookUserService.getStatusOfBookForUser(book, currentUser).toString());
         return "/books/slug";
     }
 

@@ -73,7 +73,7 @@ public class BookShopPostponedController {
                                                  @RequestBody ChangeStatusPayload payload,
                                                  @CookieValue(name = "userHash", required = false) String userHash,
                                                  HttpServletResponse response) {
-        bookUserService.changeBookStatus(payload, userDetails, userHash, response);
+        bookUserService.changeBookStatusToPostponedForUser(payload, userDetails, userHash, response);
         return "redirect:/books/" + payload.getBooksIds();
     }
 

@@ -56,19 +56,6 @@ public class BookUserService {
         }
     }
 
-    /* if book is not linked to user, then creates link with specified type
-       else sets specified type */
-    public void changeBookStatusForUser(String slug, BookstoreUser user, TypeBookToUser type) {
-        Book book = bookRepository.findBookBySlug(slug);
-        BookUser bookUser = bookUserRepository.findByBookAndUser(book, user);
-        if (bookUser == null) {
-            bookUser = new BookUser(bookUserTypeRepository.findByCode(type), book, user);
-        } else {
-            bookUser.setType(bookUserTypeRepository.findByCode(type));
-        }
-        bookUserRepository.save(bookUser);
-    }
-
     /* deletes items from BookUser for user where typeBookToUser = VIEWED and time more then a month */
     public void removeBookStatusViewedForUserLongerThanMonth(BookstoreUser user) {
         BookUserType type = bookUserTypeRepository.findByCode(TypeBookToUser.VIEWED);
@@ -83,6 +70,41 @@ public class BookUserService {
             bookUser = new BookUser(bookUserTypeRepository.findByCode(TypeBookToUser.VIEWED), book, user);
             bookUserRepository.save(bookUser);
         }
+    }
+
+    /* if book already has status 'KEPT' then sets status 'VIEWED'
+       else sets status 'KEPT' */
+    public void changeBookStatusToPostponedForUser(ChangeStatusPayload payload,
+                                                   BookstoreUserDetails userDetails,
+                                                   String userHash,
+                                                   HttpServletResponse response) {
+        BookUserType type;
+        BookstoreUser currentUser;
+        Book book = bookRepository.findBookBySlug(payload.getBooksIds());
+        if (userDetails != null) {
+            currentUser = userDetails.getBookstoreUser();
+        } else {
+            currentUser = bookstoreUserRepository.findBookstoreUserByHash(userHash);
+        }
+        type = bookUserTypeRepository.findByBookAndUser(book, currentUser);
+        if (type.getCode().equals(TypeBookToUser.getTypeByString(payload.getStatus()))) {
+            changeBookStatusForUser(book.getSlug(), currentUser, TypeBookToUser.VIEWED);
+        } else {
+            changeBookStatus(payload, userDetails, userHash, response);
+        }
+    }
+
+    /* if book is not linked to user, then creates link with specified type
+   else sets specified type */
+    public void changeBookStatusForUser(String slug, BookstoreUser user, TypeBookToUser type) {
+        Book book = bookRepository.findBookBySlug(slug);
+        BookUser bookUser = bookUserRepository.findByBookAndUser(book, user);
+        if (bookUser == null) {
+            bookUser = new BookUser(bookUserTypeRepository.findByCode(type), book, user);
+        } else {
+            bookUser.setType(bookUserTypeRepository.findByCode(type));
+        }
+        bookUserRepository.save(bookUser);
     }
 
     /* if user is authenticated or user with hash from cookie exists then invokes changeBookStatusForUser() for him
@@ -119,5 +141,10 @@ public class BookUserService {
         BookUserType type = bookUserTypeRepository.findByCode(TypeBookToUser.CART);
         List<BookUser> bookUserListByUserAndStatus = bookUserRepository.findByUserAndType(user, TypeBookToUser.KEPT);
         bookUserRepository.updateStatusForBookUserOn(bookUserListByUserAndStatus, type);
+    }
+
+    public TypeBookToUser getStatusOfBookForUser(Book book, BookstoreUser user) {
+        BookUserType type = bookUserTypeRepository.findByBookAndUser(book, user);
+        return type.getCode();
     }
 }
