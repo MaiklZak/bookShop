@@ -1,5 +1,6 @@
 package com.example.mybookshopapp.entity;
 
+import com.example.mybookshopapp.dto.MessageDto;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 
 import javax.persistence.*;
@@ -29,6 +30,27 @@ public class Message implements Serializable {
 
     @Column(columnDefinition = "TEXT")
     private String text;
+
+    public Message(BookstoreUser user, MessageDto messageDto) {
+        this();
+        this.user = user;
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.subject = messageDto.getSubject();
+        this.text = messageDto.getText();
+    }
+
+    public Message(MessageDto messageDto) {
+        this();
+        this.name = messageDto.getName();
+        this.email = messageDto.getEmail();
+        this.subject = messageDto.getSubject();
+        this.text = messageDto.getText();
+    }
+
+    public Message() {
+        time = LocalDateTime.now();
+    }
 
     public Integer getId() {
         return id;

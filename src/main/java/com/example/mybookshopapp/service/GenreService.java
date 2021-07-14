@@ -37,4 +37,8 @@ public class GenreService {
     public Genre getGenreById(Integer id) {
         return genreRepository.getOne(id);
     }
+
+    public Genre getGenreBySlug(String slug) {
+        return genreRepository.findBySlug(slug);
+    }
 }

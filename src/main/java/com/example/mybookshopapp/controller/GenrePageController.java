@@ -1,6 +1,7 @@
 package com.example.mybookshopapp.controller;
 
 import com.example.mybookshopapp.dto.BooksPageDto;
+import com.example.mybookshopapp.entity.Genre;
 import com.example.mybookshopapp.service.BookService;
 import com.example.mybookshopapp.service.GenreService;
 import org.springframework.stereotype.Controller;
@@ -28,16 +29,29 @@ public class GenrePageController {
         return "genres/index";
     }
 
-    @GetMapping("/genres/slug")
-    public String getGenreSlugPage(@RequestParam("id") Integer id, Model model) {
-        model.addAttribute("genre", genreService.getGenreById(id));
-        model.addAttribute("books", bookService.getBooksByGenreId(0, 20, id));
+    @GetMapping("/genres/{slug}")
+    public String getGenreSlugPage(@PathVariable String slug, Model model) {
+        Genre genre = genreService.getGenreBySlug(slug);
+        Genre firstParent = null;
+        Genre secondParent = null;
+        if (genre.getParentId() != null) {
+            firstParent = genreService.getGenreById(genre.getParentId());
+        }
+        if (firstParent != null && firstParent.getParentId() != null) {
+            secondParent = genreService.getGenreById(firstParent.getParentId());
+        }
+        model.addAttribute("genre", genre);
+        model.addAttribute("books", bookService.getBooksByGenreId(0, 20, genre.getId()));
+        model.addAttribute("firstParent", firstParent);
+        model.addAttribute("secondParent", secondParent);
         return "genres/slug";
     }
 
     @GetMapping("/books/genre/{id}")
     @ResponseBody
-    public BooksPageDto getBooksByGenre(Integer offset, Integer limit, @PathVariable("id") Integer id) {
+    public BooksPageDto getBooksByGenre(@RequestParam("offset") Integer offset,
+                                        @RequestParam("limit") Integer limit,
+                                        @PathVariable("id") Integer id) {
         return new BooksPageDto(bookService.getBooksByGenreId(offset, limit, id));
     }
 }
