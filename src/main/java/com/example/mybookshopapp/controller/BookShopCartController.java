@@ -1,7 +1,6 @@
 package com.example.mybookshopapp.controller;
 
 import com.example.mybookshopapp.dto.ChangeStatusPayload;
-import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.entity.Book;
 import com.example.mybookshopapp.entity.TypeBookToUser;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
@@ -38,19 +37,6 @@ public class BookShopCartController {
     @ModelAttribute(name = "bookCart")
     public List<Book> bookCart() {
         return new ArrayList<>();
-    }
-
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
-    }
-
-    @ModelAttribute("curUsr")
-    public BookstoreUser getCurrentUser(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
-        if (userDetails != null) {
-            return userDetails.getBookstoreUser();
-        }
-        return null;
     }
 
     @GetMapping("/cart")

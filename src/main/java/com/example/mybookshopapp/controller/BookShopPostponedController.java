@@ -1,7 +1,6 @@
 package com.example.mybookshopapp.controller;
 
 import com.example.mybookshopapp.dto.ChangeStatusPayload;
-import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.entity.Book;
 import com.example.mybookshopapp.entity.TypeBookToUser;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
@@ -27,11 +26,6 @@ public class BookShopPostponedController {
     private final BookRepository bookRepository;
     private final BookstoreUserRepository bookstoreUserRepository;
     private final BookUserService bookUserService;
-
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
-    }
 
     @ModelAttribute(name = "bookPostponed")
     public List<Book> bookCart() {

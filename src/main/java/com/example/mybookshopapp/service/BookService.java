@@ -5,7 +5,10 @@ import com.example.mybookshopapp.dto.google.api.books.Root;
 import com.example.mybookshopapp.entity.*;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.errs.BookstoreApiWrongParameterException;
-import com.example.mybookshopapp.repository.*;
+import com.example.mybookshopapp.repository.AuthorRepository;
+import com.example.mybookshopapp.repository.BookRepository;
+import com.example.mybookshopapp.repository.GenreRepository;
+import com.example.mybookshopapp.repository.TagRepository;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -212,5 +215,13 @@ public class BookService {
 
     public List<Book> getArchivedBooksForUser(BookstoreUser user) {
         return bookRepository.findBooksByUserAndType(user, TypeBookToUser.ARCHIVED);
+    }
+
+    public List<Book> getCartBooksForUser(BookstoreUser user) {
+        return bookRepository.findBooksByUserAndType(user, TypeBookToUser.CART);
+    }
+
+    public List<Book> getPostponedBooksForUser(BookstoreUser user) {
+        return bookRepository.findBooksByUserAndType(user, TypeBookToUser.KEPT);
     }
 }

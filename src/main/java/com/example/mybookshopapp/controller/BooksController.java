@@ -3,7 +3,6 @@ package com.example.mybookshopapp.controller;
 import com.example.mybookshopapp.dto.RatingBookDto;
 import com.example.mybookshopapp.dto.ReviewDto;
 import com.example.mybookshopapp.dto.ReviewLikeDto;
-import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.entity.Book;
 import com.example.mybookshopapp.entity.BookReview;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
@@ -60,19 +59,6 @@ public class BooksController {
         this.bookstoreUserRepository = bookstoreUserRepository;
         this.bookUserService = bookUserService;
         this.ratingService = ratingService;
-    }
-
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
-    }
-
-    @ModelAttribute("curUsr")
-    public BookstoreUser getCurrentUser(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
-        if (userDetails != null) {
-            return userDetails.getBookstoreUser();
-        }
-        return null;
     }
 
     @GetMapping("/{slug}")

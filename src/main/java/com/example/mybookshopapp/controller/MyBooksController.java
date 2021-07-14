@@ -1,10 +1,8 @@
 package com.example.mybookshopapp.controller;
 
 import com.example.mybookshopapp.dto.ChangeStatusPayload;
-import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.entity.Book;
 import com.example.mybookshopapp.entity.TypeBookToUser;
-import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
 import com.example.mybookshopapp.service.BookService;
 import com.example.mybookshopapp.service.BookUserService;
@@ -12,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Controller
@@ -25,19 +24,6 @@ public class MyBooksController {
         this.bookUserService = bookUserService;
     }
 
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
-    }
-
-    @ModelAttribute("curUsr")
-    public BookstoreUser getCurrentUser(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
-        if (userDetails != null) {
-            return userDetails.getBookstoreUser();
-        }
-        return null;
-    }
-
     @ModelAttribute("paidBooks")
     public List<Book> paidBooks(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
         return bookService.getPaidBooksForUser(userDetails.getBookstoreUser());
@@ -49,7 +35,10 @@ public class MyBooksController {
     }
 
     @GetMapping("/my")
-    public String handleMy() {
+    public String handleMy(@AuthenticationPrincipal BookstoreUserDetails userDetails,
+                           @CookieValue(value = "userHash", required = false) String userHash,
+                           HttpServletResponse response) {
+        bookUserService.moveBooksFromUserHashToCurrentUser(userHash, userDetails, response);
         return "my";
     }
 

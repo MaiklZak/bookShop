@@ -1,17 +1,16 @@
 package com.example.mybookshopapp.controller;
 
-import com.example.mybookshopapp.dto.SearchWordDto;
-import com.example.mybookshopapp.service.BalanceTransactionService;
-import com.example.mybookshopapp.service.PaymentService;
 import com.example.mybookshopapp.dto.BalanceTransactionDto;
+import com.example.mybookshopapp.dto.ChangeUserForm;
+import com.example.mybookshopapp.entity.security.BookstoreUser;
+import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
 import com.example.mybookshopapp.errs.IncorrectAmountToEnterException;
 import com.example.mybookshopapp.errs.NoEnoughFundsForPayment;
 import com.example.mybookshopapp.errs.WrongCredentialsException;
-import com.example.mybookshopapp.entity.security.BookstoreUser;
-import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
+import com.example.mybookshopapp.service.BalanceTransactionService;
+import com.example.mybookshopapp.service.PaymentService;
 import com.example.mybookshopapp.service.RatingService;
 import com.example.mybookshopapp.service.security.BookstoreUserRegister;
-import com.example.mybookshopapp.dto.ChangeUserForm;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,15 +36,9 @@ public class ProfileController {
         this.ratingService = ratingService;
     }
 
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
-    }
-
     @GetMapping("/profile")
     public String handleProfile(@RequestParam(name = "part", required = false) String part, Model model) {
         BookstoreUser user = (BookstoreUser) userRegister.getCurrentUser();
-        model.addAttribute("curUsr", user);
         model.addAttribute("part", part);
         model.addAttribute("transactions", balanceTransactionService.getTransactionsByUserPage(user, 0, 50).getContent());
         model.addAttribute("ratingUser", ratingService.getRatingByUser(user));

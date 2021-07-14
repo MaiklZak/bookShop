@@ -1,7 +1,6 @@
 package com.example.mybookshopapp.controller;
 
 import com.example.mybookshopapp.dto.BooksPageDto;
-import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.entity.Book;
 import com.example.mybookshopapp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +23,6 @@ public class RecentPageController {
     @Autowired
     public RecentPageController(BookService bookService) {
         this.bookService = bookService;
-    }
-
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
     }
 
     @ModelAttribute("recentBooks")

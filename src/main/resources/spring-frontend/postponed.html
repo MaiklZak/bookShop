@@ -9,7 +9,7 @@
 <html class="ie9" lang="ru">
 <![endif]-->
 <!--[if gt IE 9]><!-->
-<html lang="ru" xmlns:th="http://www.thymeleaf.org"> <!--<![endif]-->
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"> <!--<![endif]-->
 <head>
     <title>Тут название страницы написать</title>
     <meta name="description" content="Описание страницы">
@@ -40,7 +40,8 @@ p.error-browser
         | браузера здесь&nbsp;
     | для правильного отображения сайта.
 -->
-<header th:replace="~{fragments/header_fragment :: headFragment}"></header>
+<header sec:authorize="!isAuthenticated()" th:replace="~{fragments/header_fragment :: headFragment}"></header>
+<header sec:authorize="isAuthenticated()" th:replace="~{fragments/header_auth_fragment :: headFragment}"></header>
 <div class="Middle">
     <div class="wrap">
         <main class="Middle-main">

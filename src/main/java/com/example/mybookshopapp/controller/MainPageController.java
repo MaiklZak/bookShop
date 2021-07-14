@@ -1,15 +1,12 @@
 package com.example.mybookshopapp.controller;
 
-import com.example.mybookshopapp.entity.Book;
-import com.example.mybookshopapp.entity.Tag;
-import com.example.mybookshopapp.entity.security.BookstoreUser;
-import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
-import com.example.mybookshopapp.service.BookService;
 import com.example.mybookshopapp.dto.BooksPageDto;
 import com.example.mybookshopapp.dto.SearchWordDto;
+import com.example.mybookshopapp.entity.Book;
+import com.example.mybookshopapp.entity.Tag;
+import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
 import com.example.mybookshopapp.errs.EmptySearchException;
-
-
+import com.example.mybookshopapp.service.BookService;
 import com.example.mybookshopapp.service.BookUserService;
 import com.example.mybookshopapp.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +34,6 @@ public class MainPageController {
         this.bookUserService = bookUserService;
     }
 
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
-    }
-
     @ModelAttribute("searchResult")
     public List<Book> searchResult() {
         return new ArrayList<>();
@@ -50,14 +42,6 @@ public class MainPageController {
     @ModelAttribute("tags")
     public Map<Tag, Integer> tagsOfBooks() {
         return tagService.getTagsAndCount();
-    }
-
-    @ModelAttribute("curUsr")
-    public BookstoreUser getCurrentUser(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
-        if (userDetails != null) {
-            return userDetails.getBookstoreUser();
-        }
-        return null;
     }
 
     @ModelAttribute("recentBooks")
