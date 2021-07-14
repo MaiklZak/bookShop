@@ -4,15 +4,16 @@ import com.example.mybookshopapp.dto.RatingBookDto;
 import com.example.mybookshopapp.dto.ReviewDto;
 import com.example.mybookshopapp.dto.ReviewLikeDto;
 import com.example.mybookshopapp.dto.SearchWordDto;
-import com.example.mybookshopapp.entity.*;
+import com.example.mybookshopapp.entity.Book;
+import com.example.mybookshopapp.entity.BookReview;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
 import com.example.mybookshopapp.repository.BookRatingRepository;
 import com.example.mybookshopapp.repository.BookRepository;
-import com.example.mybookshopapp.repository.BookReviewLikeRepository;
 import com.example.mybookshopapp.repository.BookReviewRepository;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
 import com.example.mybookshopapp.service.BookUserService;
+import com.example.mybookshopapp.service.RatingService;
 import com.example.mybookshopapp.service.ResourceStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -43,22 +44,22 @@ public class BooksController {
     Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     private final BookRatingRepository bookRatingRepository;
-    private final BookReviewLikeRepository bookReviewLikeRepository;
     private final BookReviewRepository bookReviewRepository;
     private final BookRepository bookRepository;
     private final ResourceStorage storage;
     private final BookstoreUserRepository bookstoreUserRepository;
     private final BookUserService bookUserService;
+    private final RatingService ratingService;
 
     @Autowired
-    public BooksController(BookRatingRepository bookRatingRepository, BookReviewLikeRepository bookReviewLikeRepository, BookReviewRepository bookReviewRepository, BookRepository bookRepository, ResourceStorage storage, BookstoreUserRepository bookstoreUserRepository, BookUserService bookUserService) {
+    public BooksController(BookRatingRepository bookRatingRepository, BookReviewRepository bookReviewRepository, BookRepository bookRepository, ResourceStorage storage, BookstoreUserRepository bookstoreUserRepository, BookUserService bookUserService, RatingService ratingService) {
         this.bookRatingRepository = bookRatingRepository;
-        this.bookReviewLikeRepository = bookReviewLikeRepository;
         this.bookReviewRepository = bookReviewRepository;
         this.bookRepository = bookRepository;
         this.storage = storage;
         this.bookstoreUserRepository = bookstoreUserRepository;
         this.bookUserService = bookUserService;
+        this.ratingService = ratingService;
     }
 
     @ModelAttribute("searchWordDto")
@@ -158,19 +159,7 @@ public class BooksController {
     public String rateBookReview(@AuthenticationPrincipal BookstoreUserDetails userDetails,
                                  @PathVariable String slug,
                                  @RequestBody ReviewLikeDto payload) {
-        BookReview bookReview = bookReviewRepository.getOne(payload.getReviewid());
-
-        BookReviewLike likeByReviewAndUser = bookReviewLikeRepository.findByBookReviewAndUser(bookReview, userDetails.getBookstoreUser());
-        if (likeByReviewAndUser != null) {
-            if (!likeByReviewAndUser.getValue().equals(payload.getValue())) {
-                BookReviewLike newBookReviewLike = new BookReviewLike(userDetails.getBookstoreUser(), bookReview, payload.getValue());
-                bookReviewLikeRepository.save(newBookReviewLike);
-            }
-            bookReviewLikeRepository.delete(likeByReviewAndUser);
-        } else {
-            BookReviewLike bookReviewLike = new BookReviewLike(userDetails.getBookstoreUser(), bookReview, payload.getValue());
-            bookReviewLikeRepository.save(bookReviewLike);
-        }
+        ratingService.rateBookReview(userDetails.getBookstoreUser(), payload);
         return REDIRECT_BOOKS_URL + slug;
     }
 
@@ -179,14 +168,7 @@ public class BooksController {
                                @RequestBody RatingBookDto payload) {
 
         Book book = bookRepository.getOne(payload.getBookId());
-        BookRating ratingByBookAndUser = bookRatingRepository.findByBookAndUser(book, userDetails.getBookstoreUser());
-        if (ratingByBookAndUser != null) {
-            ratingByBookAndUser.setValue(payload.getValue());
-            bookRatingRepository.save(ratingByBookAndUser);
-        } else {
-            BookRating newBookRating = new BookRating(userDetails.getBookstoreUser(), book, payload.getValue());
-            bookRatingRepository.save(newBookRating);
-        }
+        ratingService.rateBook(userDetails.getBookstoreUser(), book, payload);
         return REDIRECT_BOOKS_URL + book.getSlug();
     }
 }
