@@ -1,5 +1,6 @@
 package com.example.mybookshopapp.service;
 
+import com.example.mybookshopapp.dto.BookWithAuthorsDto;
 import com.example.mybookshopapp.dto.google.api.books.Item;
 import com.example.mybookshopapp.dto.google.api.books.Root;
 import com.example.mybookshopapp.entity.*;
@@ -20,10 +21,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
+
+    private static final String PUB_DATE = "pubDate";
+    private static final String TITLE = "title";
 
     private final BookRepository bookRepository;
     private final RestTemplate restTemplate;
@@ -44,7 +50,7 @@ public class BookService {
         this.bookUserService = bookUserService;
     }
 
-    public List<Book> getBooksByAuthor(String authorName) {
+    public List<Book> getBooksByAuthorName(String authorName) {
         return bookRepository.findBooksByAuthorNameContaining(authorName);
     }
 
@@ -75,7 +81,7 @@ public class BookService {
     }
 
     public Page<Book> getPageOfRecentBooks(int offset, int limit) {
-        Pageable nextPage = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "pubDate", "title"));
+        Pageable nextPage = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, PUB_DATE, TITLE));
         return bookRepository.findAll(nextPage);
     }
 
@@ -83,7 +89,7 @@ public class BookService {
         if (from == null && to == null) {
             return getPageOfRecentBooks(offset, limit).getContent();
         }
-        Pageable nextPage = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "pubDate", "title"));
+        Pageable nextPage = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, PUB_DATE, TITLE));
         if (from == null) {
             return bookRepository.findBooksByPubDateLessThanEqual(new java.sql.Date(to.getTime()), nextPage);
         }
@@ -174,7 +180,7 @@ public class BookService {
     @Value("${google.books.api.key}")
     private String apiKey;
 
-    public List<Book> getPageOfGoogleBooksApiSearchResult(String searchWord, Integer offset, Integer limit) {
+    public List<BookWithAuthorsDto> getPageOfGoogleBooksApiSearchResult(String searchWord, Integer offset, Integer limit) {
         String requestUrl = "https://www.googleapis.com/books/v1/volumes" +
                 "?q=" + searchWord +
                 "&key=" + apiKey +
@@ -183,17 +189,17 @@ public class BookService {
                 "&maxResults=" + limit;
 
         Root root = restTemplate.getForEntity(requestUrl, Root.class).getBody();
-        ArrayList<Book> list = new ArrayList<>();
+        ArrayList<BookWithAuthorsDto> list = new ArrayList<>();
         if (root != null) {
             for (Item item : root.getItems()) {
-                Book book = new Book();
+                BookWithAuthorsDto book = new BookWithAuthorsDto();
                 if (item.getVolumeInfo() != null) {
-                    book.setAuthor(new Author(item.getVolumeInfo().getAuthors()));
+                    book.setAuthorList((Collections.singletonList(new Author(item.getVolumeInfo().getAuthors()))));
                     book.setTitle(item.getVolumeInfo().getTitle());
                     book.setImage(item.getVolumeInfo().getImageLinks().getThumbnail());
                 }
                 if (item.getSaleInfo() != null && item.getSaleInfo().getRetailPrice() != null) { // without (item.getSaleInfo().getRetailPrice() != null) throw exception
-                    book.setPrice(item.getSaleInfo().getRetailPrice().getAmount());
+                    book.setDiscountPrice((int) item.getSaleInfo().getRetailPrice().getAmount());
                     double oldPrice = item.getSaleInfo().getListPrice().getAmount();
                     book.setPriceOld((int) oldPrice);
                 }
@@ -223,5 +229,20 @@ public class BookService {
 
     public List<Book> getPostponedBooksForUser(BookstoreUser user) {
         return bookRepository.findBooksByUserAndType(user, TypeBookToUser.KEPT);
+    }
+
+    public List<BookWithAuthorsDto> getBookWithAuthorDtoList(List<Book> bookList) {
+        return bookList.stream()
+                .map(book -> new BookWithAuthorsDto(book, authorRepository.findByBook(book)))
+                .collect(Collectors.toList());
+    }
+
+    public List<Book> getBooksByAuthor(Author author) {
+        return bookRepository.findBooksByAuthor(author);
+    }
+
+    public List<Book> getBooksByAuthorPage(Author author, Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit, Sort.Direction.DESC, PUB_DATE, TITLE);
+        return bookRepository.findBooksByAuthor(author, nextPage);
     }
 }

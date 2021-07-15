@@ -1,5 +1,6 @@
 package com.example.mybookshopapp.controller;
 
+import com.example.mybookshopapp.dto.BookWithAuthorsDto;
 import com.example.mybookshopapp.dto.BooksPageDto;
 import com.example.mybookshopapp.entity.Book;
 import com.example.mybookshopapp.service.BookService;
@@ -26,8 +27,9 @@ public class RecentPageController {
     }
 
     @ModelAttribute("recentBooks")
-    public List<Book> recentBooks() {
-        return bookService.getPageOfRecentBooks(0, 20).getContent();
+    public List<BookWithAuthorsDto> recentBooks() {
+        List<Book> recentBooks = bookService.getPageOfRecentBooks(0, 20).getContent();
+        return bookService.getBookWithAuthorDtoList(recentBooks);
     }
 
     @GetMapping( value = "/books/recent", produces = MediaType.TEXT_HTML_VALUE)
@@ -41,7 +43,8 @@ public class RecentPageController {
                                            @RequestParam(value = "to", required = false) @DateTimeFormat(pattern = "dd.MM.yyyy") Date to,
                                            @RequestParam("offset") Integer offset,
                                            @RequestParam("limit") Integer limit) {
-        return new BooksPageDto(bookService.getPageOfRecentBooks(from, to, offset, limit));
+        List<Book> books = bookService.getPageOfRecentBooks(from, to, offset, limit);
+        return new BooksPageDto(bookService.getBookWithAuthorDtoList(books));
     }
 
 }

@@ -79,8 +79,11 @@ p.error-browser
                         <div class="ProductCard-header">
                             <h1 class="ProductCard-title" th:text="${slugBook.title}">Мара и морок
                             </h1>
-                            <div class="ProductCard-author"><span class="ProductCard-titleProp">Автор:</span>&#32;<a
-                                    href="#" th:text="${slugBook.author.toString()}">Лия Арден</a>
+                            <div class="ProductCard-author"><span class="ProductCard-titleProp">Автор:</span>&#32;
+                                <a href="#" th:if="${authorsOfBook.isEmpty()}" th:text="${'unknown'}"></a>
+                                <th:block th:unless="${authorsOfBook.isEmpty()}" th:each="author : ${authorsOfBook}">
+                                <a href="#" th:href="@{'/authors/' + ${author.slug}}" th:text="${author.name}">Лия Арден</a>
+                                </th:block>
                             </div>
                             <div class="ProductCard-rating"><span class="ProductCard-titleProp">Рейтинг:</span>
                                 <button class="trigger trigger_dropdown" type="button">
@@ -415,7 +418,8 @@ p.error-browser
                       <input name="rating" type="radio" value="5"/></span></span>
                             </div>
                             <div class="ProductCard-tags"><span class="ProductCard-titleProp">Тэги:</span>
-                                <th:block th:each="tag : ${slugBook.tags}">
+                                <a href="#" th:if="${slugBook.tags.isEmpty()}" th:text="${'do not have tags'}"></a>
+                                <th:block th:unless="${slugBook.tags.isEmpty()}" th:each="tag : ${slugBook.tags}">
                                     <a href="/tags/" th:href="@{/tags(tag=${tag.id})}"
                                        th:text="${tag.name}">Современные</a>&#32;
                                 </th:block>

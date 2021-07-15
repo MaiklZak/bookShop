@@ -11,6 +11,7 @@ import com.example.mybookshopapp.repository.BookRatingRepository;
 import com.example.mybookshopapp.repository.BookRepository;
 import com.example.mybookshopapp.repository.BookReviewRepository;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
+import com.example.mybookshopapp.service.AuthorService;
 import com.example.mybookshopapp.service.BookUserService;
 import com.example.mybookshopapp.service.RatingService;
 import com.example.mybookshopapp.service.ResourceStorage;
@@ -49,9 +50,10 @@ public class BooksController {
     private final BookstoreUserRepository bookstoreUserRepository;
     private final BookUserService bookUserService;
     private final RatingService ratingService;
+    private final AuthorService authorService;
 
     @Autowired
-    public BooksController(BookRatingRepository bookRatingRepository, BookReviewRepository bookReviewRepository, BookRepository bookRepository, ResourceStorage storage, BookstoreUserRepository bookstoreUserRepository, BookUserService bookUserService, RatingService ratingService) {
+    public BooksController(BookRatingRepository bookRatingRepository, BookReviewRepository bookReviewRepository, BookRepository bookRepository, ResourceStorage storage, BookstoreUserRepository bookstoreUserRepository, BookUserService bookUserService, RatingService ratingService, AuthorService authorService) {
         this.bookRatingRepository = bookRatingRepository;
         this.bookReviewRepository = bookReviewRepository;
         this.bookRepository = bookRepository;
@@ -59,6 +61,7 @@ public class BooksController {
         this.bookstoreUserRepository = bookstoreUserRepository;
         this.bookUserService = bookUserService;
         this.ratingService = ratingService;
+        this.authorService = authorService;
     }
 
     @GetMapping("/{slug}")
@@ -95,6 +98,7 @@ public class BooksController {
         bookReviewList.sort(Comparator.comparing(br -> br.getDisLikes() - br.getLikes()));
 
         model.addAttribute("slugBook", book);
+        model.addAttribute("authorsOfBook", authorService.getAuthorsByBook(book));
         model.addAttribute("reviewsOfBook", bookReviewList);
         model.addAttribute("statusOfSlugBook", bookUserService.getStatusOfBookForUser(book, currentUser).toString());
         return "/books/slug";

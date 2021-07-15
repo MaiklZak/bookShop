@@ -1,6 +1,5 @@
 package com.example.mybookshopapp.entity;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
@@ -59,11 +58,6 @@ public class Book implements Serializable {
     @JsonProperty("discount value for book")
     private Double price;
 
-    @ManyToOne()
-    @JoinColumn(name = "author_id", referencedColumnName = "id")
-    @JsonIgnore
-    private Author author;
-
     @OneToMany(mappedBy = "book")
     @JsonIgnore
     private Set<BookRating> bookRatings = new HashSet<>();
@@ -79,11 +73,6 @@ public class Book implements Serializable {
     @OneToMany(mappedBy = "book")
     @JsonIgnore
     private Set<BookReview> bookReviews = new HashSet<>();
-
-    @JsonGetter("authors")
-    public String authorFullName() {
-        return author.toString();
-    }
 
     @JsonProperty
     public Integer discountPrice() {
@@ -189,14 +178,6 @@ public class Book implements Serializable {
         this.description = description;
     }
 
-    public Author getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Author author) {
-        this.author = author;
-    }
-
     public Integer getId() {
         return id;
     }
@@ -233,7 +214,6 @@ public class Book implements Serializable {
     public String toString() {
         return "Book{" +
                 "id=" + id +
-                ", author=" + author +
                 ", title='" + title + '\'' +
                 ", priceOld='" + priceOld + '\'' +
                 ", price='" + price + '\'' +

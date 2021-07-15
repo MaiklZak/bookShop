@@ -6,5 +6,6 @@ import com.example.mybookshopapp.entity.security.BookstoreUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FileDownloadRepository extends JpaRepository<FileDownload, Integer> {
+
     FileDownload findByUserAndBook(BookstoreUser user, Book book);
 }

@@ -33,7 +33,7 @@ public class BooksRestApiController {
     @GetMapping("/books/by-author")
     @ApiOperation("operation to get book list of bookshop by passed author first name")
     public ResponseEntity<List<Book>> booksByAuthor(@RequestParam("author") String authorName) {
-        return ResponseEntity.ok(bookService.getBooksByAuthor(authorName));
+        return ResponseEntity.ok(bookService.getBooksByAuthorName(authorName));
     }
 
     @GetMapping("/books/by-title")

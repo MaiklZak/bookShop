@@ -1,5 +1,6 @@
 package com.example.mybookshopapp.controller;
 
+import com.example.mybookshopapp.dto.BookWithAuthorsDto;
 import com.example.mybookshopapp.dto.BooksPageDto;
 import com.example.mybookshopapp.entity.Book;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
@@ -23,8 +24,9 @@ public class ViewedPageController {
     }
 
     @ModelAttribute("viewedBooks")
-    public List<Book> viewedBooks(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
-        return bookService.getPageOfViewedBooksByUser(userDetails.getBookstoreUser(), 0, 20);
+    public List<BookWithAuthorsDto> viewedBooks(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
+        List<Book> viewedBooks = bookService.getPageOfViewedBooksByUser(userDetails.getBookstoreUser(), 0, 20);
+        return bookService.getBookWithAuthorDtoList(viewedBooks);
     }
 
     @GetMapping("/viewed")
@@ -37,6 +39,7 @@ public class ViewedPageController {
     public BooksPageDto getPopularBooksPage(@AuthenticationPrincipal BookstoreUserDetails userDetails,
                                             @RequestParam("offset") Integer offset,
                                             @RequestParam("limit") Integer limit) {
-        return new BooksPageDto(bookService.getPageOfViewedBooksByUser(userDetails.getBookstoreUser(), offset, limit));
+        List<Book> books = bookService.getPageOfViewedBooksByUser(userDetails.getBookstoreUser(), offset, limit);
+        return new BooksPageDto(bookService.getBookWithAuthorDtoList(books));
     }
 }

@@ -1,5 +1,6 @@
 package com.example.mybookshopapp.controller;
 
+import com.example.mybookshopapp.dto.BookWithAuthorsDto;
 import com.example.mybookshopapp.dto.ChangeStatusPayload;
 import com.example.mybookshopapp.entity.Book;
 import com.example.mybookshopapp.entity.TypeBookToUser;
@@ -25,13 +26,15 @@ public class MyBooksController {
     }
 
     @ModelAttribute("paidBooks")
-    public List<Book> paidBooks(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
-        return bookService.getPaidBooksForUser(userDetails.getBookstoreUser());
+    public List<BookWithAuthorsDto> paidBooks(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
+        List<Book> paidBooks = bookService.getPaidBooksForUser(userDetails.getBookstoreUser());
+        return bookService.getBookWithAuthorDtoList(paidBooks);
     }
 
     @ModelAttribute("archivedBooks")
-    public List<Book> archivedBooks(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
-        return bookService.getArchivedBooksForUser(userDetails.getBookstoreUser());
+    public List<BookWithAuthorsDto> archivedBooks(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
+        List<Book> archivedBooks = bookService.getArchivedBooksForUser(userDetails.getBookstoreUser());
+        return bookService.getBookWithAuthorDtoList(archivedBooks);
     }
 
     @GetMapping("/my")

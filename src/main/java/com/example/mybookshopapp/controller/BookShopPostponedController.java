@@ -1,12 +1,13 @@
 package com.example.mybookshopapp.controller;
 
+import com.example.mybookshopapp.dto.BookWithAuthorsDto;
 import com.example.mybookshopapp.dto.ChangeStatusPayload;
 import com.example.mybookshopapp.entity.Book;
 import com.example.mybookshopapp.entity.TypeBookToUser;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
-import com.example.mybookshopapp.repository.BookRepository;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
+import com.example.mybookshopapp.service.BookService;
 import com.example.mybookshopapp.service.BookUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,20 +24,20 @@ public class BookShopPostponedController {
 
     private static final String REDIRECT_POSTPONED_URL = "redirect:/postponed";
 
-    private final BookRepository bookRepository;
     private final BookstoreUserRepository bookstoreUserRepository;
     private final BookUserService bookUserService;
+    private final BookService bookService;
 
     @ModelAttribute(name = "bookPostponed")
-    public List<Book> bookCart() {
+    public List<BookWithAuthorsDto> bookCart() {
         return new ArrayList<>();
     }
 
     @Autowired
-    public BookShopPostponedController(BookRepository bookRepository, BookstoreUserRepository bookstoreUserRepository, BookUserService bookUserService) {
-        this.bookRepository = bookRepository;
+    public BookShopPostponedController(BookstoreUserRepository bookstoreUserRepository, BookUserService bookUserService, BookService bookService) {
         this.bookstoreUserRepository = bookstoreUserRepository;
         this.bookUserService = bookUserService;
+        this.bookService = bookService;
     }
 
     @GetMapping("/postponed")
@@ -48,17 +49,17 @@ public class BookShopPostponedController {
 
         if (userDetails != null) {
             bookUserService.moveBooksFromUserHashToCurrentUser(userHash, userDetails, response);
-            booksPostponed = bookRepository.findBooksByUserAndType(userDetails.getBookstoreUser(), TypeBookToUser.KEPT);
+            booksPostponed = bookService.getPostponedBooksForUser(userDetails.getBookstoreUser());
         } else if (userHash != null && !userHash.equals("")) {
             BookstoreUser bookstoreUserByHash = bookstoreUserRepository.findBookstoreUserByHash(userHash);
-            booksPostponed = bookRepository.findBooksByUserAndType(bookstoreUserByHash, TypeBookToUser.KEPT);
+            booksPostponed = bookService.getPostponedBooksForUser(bookstoreUserByHash);
         } else {
             model.addAttribute("isPostponedEmpty", true);
             return "postponed";
         }
 
         model.addAttribute("isPostponedEmpty", booksPostponed.isEmpty());
-        model.addAttribute("bookPostponed", booksPostponed);
+        model.addAttribute("bookPostponed", bookService.getBookWithAuthorDtoList(booksPostponed));
         return "postponed";
     }
 

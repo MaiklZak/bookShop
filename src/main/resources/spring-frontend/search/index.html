@@ -65,22 +65,7 @@ p.error-browser
                     </h2>
                 </header>
                 <div class="Cards Cards_search Cards_refresh">
-                    <div class="Card" th:each="book : ${searchResults}">
-                        <div class="Card-picture"><a href="#"><img
-                                th:src="${book.image}"
-                                src="/assets/img/content/main/card.jpg"
-                                alt="card.jpg"/></a>
-                        </div>
-                        <div class="Card-content">
-                            <strong class="Card-title"><a href="#" th:text="${book.title}">Техника</a>
-                            </strong>
-                            <div class="Card-description" th:text="${book.description}">Кондратенко Александр Петрович
-                            </div>
-                            <div class="Card-cost"><span class="Card-priceOld" th:text="${book.priceOld}">₽300.00</span>
-                                <span class="Card-price" th:text="${book.price}">₽190.00</span>
-                            </div>
-                        </div>
-                    </div>
+                    <th:block th:replace="~{fragments/books_list :: bookListCart(${searchResults})}"/>
                     <div class="Cards-footer Cards-footer_center">
                         <a class="btn btn_primary" href="#"
                            data-refreshshow="search" data-refreshoffset="0"

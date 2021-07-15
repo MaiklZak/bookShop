@@ -1,12 +1,10 @@
 package com.example.mybookshopapp.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,10 +30,6 @@ public class Author implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @OneToMany(mappedBy = "author")
-    @JsonIgnore
-    private List<Book> bookList = new ArrayList<>();
-
     public Author(List<String> authors) {
         if (authors != null) {
             this.name = authors.toString();
@@ -43,14 +37,6 @@ public class Author implements Serializable {
     }
 
     public Author() {
-    }
-
-    public List<Book> getBookList() {
-        return bookList;
-    }
-
-    public void setBookList(List<Book> bookList) {
-        this.bookList = bookList;
     }
 
     public Integer getId() {

@@ -13,8 +13,15 @@ import java.util.List;
 
 public interface BookRepository extends JpaRepository<Book, Integer> {
 
-    @Query("SELECT b FROM Book b WHERE  b.author.name LIKE :authorName")
+//    @Query("SELECT b FROM Book b WHERE  b.author.name LIKE :authorName")
+    @Query("SELECT b FROM Book b, BookAuthor ba WHERE ba.book = b AND ba.author.name = :authorName")
     List<Book> findBooksByAuthorNameContaining(String authorName);
+
+    @Query("SELECT b FROM Book b, BookAuthor ba WHERE b = ba.book AND ba.author = :author")
+    List<Book> findBooksByAuthor(Author author);
+
+    @Query("SELECT b FROM Book b, BookAuthor ba WHERE b = ba.book AND ba.author = :author")
+    List<Book> findBooksByAuthor(Author author, Pageable nextPage);
 
     List<Book> findBooksByTitleContaining(String bookTitle);
 
@@ -49,7 +56,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     @Query("SELECT b FROM Book b, BookUser bu WHERE b.id = bu.book.id AND bu.user = :user")
     List<Book> findBooksByUser(BookstoreUser user);
 
-    @Query(value = "SELECT b.id, description, image, is_bestseller, discount, price, pub_date, slug, title, author_id " +
+    @Query(value = "SELECT b.id, description, image, is_bestseller, discount, price, pub_date, slug, title " +
             "        FROM books b " +
             "             INNER JOIN book2tag bt ON b.id = bt.book_id " +
             "             INNER JOIN tags t ON t.id = bt.tag_id " +
@@ -70,7 +77,8 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     @Query(value =
             "SELECT * FROM books INNER JOIN " +
             "       (SELECT b.id bid, COUNT(*) n FROM books b " +
-            "               INNER JOIN authors a     ON b.author_id = a.id " +
+            "               INNER JOIN book2author ba ON ba.book_id = b.id " +
+            "               INNER JOIN authors a     ON ba.author_id = a.id " +
             "               INNER JOIN book2genre bg ON b.id = bg.book_id " +
             "               INNER JOIN genres g      ON bg.genre_id = g.id " +
             "               INNER JOIN book2tag bt   ON bt.book_id = b.id " +
@@ -85,7 +93,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     Page<Book> findBooksByAuthorInOrGenresInOrTagsInAndBookUserNotIn(List<Author> authors, List<Genre> genres, List<Tag> tags, Integer userId, Pageable nextPage);
 
     @Query(value =
-            "SELECT id, description, image, is_bestseller, discount, price, pub_date, slug, title, author_id " +
+            "SELECT id, description, image, is_bestseller, discount, price, pub_date, slug, title " +
             "  FROM books " +
             "       INNER JOIN " +
             "       (SELECT book_id, SUM(popul) AS popular " +
@@ -108,7 +116,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
                     "   FROM book2user b2u" +
                     "        INNER JOIN book2user_type b2ut ON b2u.type_id = b2ut.id " +
                     "  WHERE b2ut.code = 'VIEWED' AND b2u.user_id = :user) " +
-                    "SELECT id, description, image, is_bestseller, discount, price, pub_date, slug, title, author_id " +
+                    "SELECT id, description, image, is_bestseller, discount, price, pub_date, slug, title " +
                     "  FROM books " +
                     "       INNER JOIN (SELECT book_id, " +
                     "                          CASE WHEN book_id IN (SELECT book_id FROM tab_view_for_user) " +

@@ -1,5 +1,6 @@
 package com.example.mybookshopapp.controller;
 
+import com.example.mybookshopapp.dto.BookWithAuthorsDto;
 import com.example.mybookshopapp.dto.BooksPageDto;
 import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.entity.Book;
@@ -45,8 +46,9 @@ public class MainPageController {
     }
 
     @ModelAttribute("recentBooks")
-    public List<Book> recentBooks() {
-        return bookService.getPageOfRecentBooks(0, 6).getContent();
+    public List<BookWithAuthorsDto> recentBooks() {
+        List<Book> recentBooks = bookService.getPageOfRecentBooks(0, 6).getContent();
+        return bookService.getBookWithAuthorDtoList(recentBooks);
     }
 
     @GetMapping("/")
@@ -54,18 +56,18 @@ public class MainPageController {
                            @CookieValue(value = "userHash", required = false) String userHash,
                            HttpServletResponse response,
                            Model model) {
+        List<Book> recommendedBooks;
+        List<Book> popularBooks;
         if (user != null) {
             bookUserService.moveBooksFromUserHashToCurrentUser(userHash, user, response);
-            model.addAttribute("recommendedBooks",
-                    bookService.getPageOfRecommendedBooksForUser(user.getBookstoreUser(), 0, 6));
-            model.addAttribute("popularBooks",
-                    bookService.getPageOfPopularBooksForUser(user.getBookstoreUser(), 0, 6));
+            recommendedBooks = bookService.getPageOfRecommendedBooksForUser(user.getBookstoreUser(), 0, 6);
+            popularBooks = bookService.getPageOfPopularBooksForUser(user.getBookstoreUser(), 0, 6);
         } else {
-            model.addAttribute("recommendedBooks",
-                    bookService.getPageOfRecommendedBooksForNotAuthenticatedUser(userHash, 0, 6));
-            model.addAttribute("popularBooks",
-                    bookService.getPageOfPopularBooksForNotAuthenticatedUser(userHash, 0, 6));
+            recommendedBooks = bookService.getPageOfRecommendedBooksForNotAuthenticatedUser(userHash, 0, 6);
+            popularBooks = bookService.getPageOfPopularBooksForNotAuthenticatedUser(userHash, 0, 6);
         }
+        model.addAttribute("recommendedBooks", bookService.getBookWithAuthorDtoList(recommendedBooks));
+        model.addAttribute("popularBooks", bookService.getBookWithAuthorDtoList(popularBooks));
         model.addAttribute("maxBooksByTag", tagService.getMaxCountTagsByBook());
         return "index";
     }
@@ -76,19 +78,22 @@ public class MainPageController {
                                      @CookieValue(value = "userHash", required = false) String userHash,
                                      @RequestParam("offset") Integer offset,
                                      @RequestParam("limit") Integer limit) {
+        List<Book> books;
         if (userDetails != null) {
-            return new BooksPageDto(bookService.getPageOfRecommendedBooksForUser(userDetails.getBookstoreUser(), offset, limit));
+            books = bookService.getPageOfRecommendedBooksForUser(userDetails.getBookstoreUser(), offset, limit);
+        } else {
+            books = bookService.getPageOfRecommendedBooksForNotAuthenticatedUser(userHash, offset, limit);
         }
-        return new BooksPageDto(bookService.getPageOfRecommendedBooksForNotAuthenticatedUser(userHash, offset, limit));
+        return new BooksPageDto(bookService.getBookWithAuthorDtoList(books));
     }
 
     @GetMapping(value = {"/search", "/search/{searchWord}"})
     public String getSearchResult(@PathVariable(value = "searchWord", required = false) SearchWordDto searchWordDto,
                                   Model model) throws EmptySearchException {
         if (searchWordDto != null) {
+            List<BookWithAuthorsDto> bookList = bookService.getPageOfGoogleBooksApiSearchResult(searchWordDto.getExample(), 0, 5);
             model.addAttribute("searchWordDto", searchWordDto);
-            model.addAttribute("searchResults",
-                    bookService.getPageOfGoogleBooksApiSearchResult(searchWordDto.getExample(), 0, 5));
+            model.addAttribute("searchResults", bookList);
             return "/search/index";
         } else {
             throw new EmptySearchException("Поиск по null невозможен");
@@ -99,6 +104,7 @@ public class MainPageController {
     @ResponseBody
     public BooksPageDto getNextSearchPage(@RequestParam("offset") Integer offset, @RequestParam("limit") Integer limit,
                                           @PathVariable(value = "searchWord", required = false) SearchWordDto searchWordDto) {
-        return new BooksPageDto(bookService.getPageOfGoogleBooksApiSearchResult(searchWordDto.getExample(), offset, limit));
+        List<BookWithAuthorsDto> books = bookService.getPageOfGoogleBooksApiSearchResult(searchWordDto.getExample(), offset, limit);
+        return new BooksPageDto(books);
     }
 }
