@@ -5,7 +5,6 @@ public class RegistrationForm {
     private String name;
     private String email;
     private String phone;
-    private String pass;
 
     public String getName() {
         return name;
@@ -29,13 +28,5 @@ public class RegistrationForm {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public String getPass() {
-        return pass;
-    }
-
-    public void setPass(String pass) {
-        this.pass = pass;
     }
 }

@@ -3,9 +3,11 @@ package com.example.mybookshopapp.controller;
 import com.example.mybookshopapp.dto.MessageDto;
 import com.example.mybookshopapp.entity.Message;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
+import com.example.mybookshopapp.entity.security.ContactType;
 import com.example.mybookshopapp.repository.DocumentRepository;
 import com.example.mybookshopapp.repository.FaqRepository;
 import com.example.mybookshopapp.repository.MessageRepository;
+import com.example.mybookshopapp.repository.UserContactRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -21,11 +23,13 @@ public class FooterController {
     private final DocumentRepository documentRepository;
     private final FaqRepository faqRepository;
     private final MessageRepository messageRepository;
+    private final UserContactRepository userContactRepository;
 
-    public FooterController(DocumentRepository documentRepository, FaqRepository faqRepository, MessageRepository messageRepository) {
+    public FooterController(DocumentRepository documentRepository, FaqRepository faqRepository, MessageRepository messageRepository, UserContactRepository userContactRepository) {
         this.documentRepository = documentRepository;
         this.faqRepository = faqRepository;
         this.messageRepository = messageRepository;
+        this.userContactRepository = userContactRepository;
     }
 
     @GetMapping("/documents")
@@ -62,7 +66,8 @@ public class FooterController {
                                     @ModelAttribute MessageDto messageDto) {
         Message message;
         if (userDetails != null) {
-            message = new Message(userDetails.getBookstoreUser(), messageDto);
+            String emailByUser = userContactRepository.findByUserAndType(userDetails.getBookstoreUser(), ContactType.EMAIL).getContact();
+            message = new Message(userDetails.getBookstoreUser(), messageDto, emailByUser);
         } else {
             message = new Message(messageDto);
         }

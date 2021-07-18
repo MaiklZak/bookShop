@@ -2,11 +2,15 @@ package com.example.mybookshopapp.controller;
 
 import com.example.mybookshopapp.dto.BalanceTransactionDto;
 import com.example.mybookshopapp.dto.ChangeUserForm;
+import com.example.mybookshopapp.dto.UserWithContactsDto;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
+import com.example.mybookshopapp.entity.security.ContactType;
+import com.example.mybookshopapp.entity.security.UserContact;
 import com.example.mybookshopapp.errs.IncorrectAmountToEnterException;
 import com.example.mybookshopapp.errs.NoEnoughFundsForPayment;
 import com.example.mybookshopapp.errs.WrongCredentialsException;
+import com.example.mybookshopapp.repository.UserContactRepository;
 import com.example.mybookshopapp.service.BalanceTransactionService;
 import com.example.mybookshopapp.service.PaymentService;
 import com.example.mybookshopapp.service.RatingService;
@@ -28,12 +32,14 @@ public class ProfileController {
     private final BalanceTransactionService balanceTransactionService;
     private final BookstoreUserRegister userRegister;
     private final RatingService ratingService;
+    private final UserContactRepository userContactRepository;
 
-    public ProfileController(PaymentService paymentService, BalanceTransactionService balanceTransactionService, BookstoreUserRegister userRegister, RatingService ratingService) {
+    public ProfileController(PaymentService paymentService, BalanceTransactionService balanceTransactionService, BookstoreUserRegister userRegister, RatingService ratingService, UserContactRepository userContactRepository) {
         this.paymentService = paymentService;
         this.balanceTransactionService = balanceTransactionService;
         this.userRegister = userRegister;
         this.ratingService = ratingService;
+        this.userContactRepository = userContactRepository;
     }
 
     @GetMapping("/profile")
@@ -83,12 +89,15 @@ public class ProfileController {
 
         String token = userRegister.approveCredentials(updateUserId, currentUserId, code);
         BookstoreUser user = (BookstoreUser) userRegister.getCurrentUser();
-        userRegister.authenticateUpdatedUser(user, token);
+        UserContact userContactEmail = userContactRepository.findByUserAndType(user, ContactType.EMAIL);
+        UserContact userContactPhone = userContactRepository.findByUserAndType(user, ContactType.PHONE);
         response.addCookie(new Cookie("token", token));
-        model.addAttribute("curUsr", user);
+        model.addAttribute("curUsr", new UserWithContactsDto(user.getHash(), user.getBalance(), user.getName(),
+                userContactEmail.getContact(), userContactPhone.getContact()));
         model.addAttribute("part", null);
         model.addAttribute("credentialsSuccess", "Профиль успешно сохранен");
         model.addAttribute("transactions", balanceTransactionService.getTransactionsByUserPage(user, 0, 50).getContent());
+        model.addAttribute("ratingUser", ratingService.getRatingByUser(user));
         return "/profile";
     }
 

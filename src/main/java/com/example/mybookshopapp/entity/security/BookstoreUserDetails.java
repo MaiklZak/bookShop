@@ -11,12 +11,20 @@ public class BookstoreUserDetails implements UserDetails {
 
     private final BookstoreUser bookstoreUser;
 
-    public BookstoreUserDetails(BookstoreUser bookstoreUser) {
+    private final UserContact userContact;
+
+    public BookstoreUserDetails(BookstoreUser bookstoreUser, UserContact userContact) {
         this.bookstoreUser = bookstoreUser;
+        this.userContact = userContact;
     }
 
     public BookstoreUser getBookstoreUser() {
         return bookstoreUser;
+    }
+
+
+    public UserContact getUserContact() {
+        return userContact;
     }
 
     @Override
@@ -26,12 +34,12 @@ public class BookstoreUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return bookstoreUser.getPassword();
+        return userContact.getCode();
     }
 
     @Override
     public String getUsername() {
-        return bookstoreUser.getEmail();
+        return userContact.getContact();
     }
 
     @Override

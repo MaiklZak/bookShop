@@ -4,6 +4,7 @@ import com.example.mybookshopapp.errs.EmptySearchException;
 import com.example.mybookshopapp.errs.IncorrectAmountToEnterException;
 import com.example.mybookshopapp.errs.NoEnoughFundsForPayment;
 import com.example.mybookshopapp.errs.WrongCredentialsException;
+import com.example.mybookshopapp.errs.security.NotFoundUserWithContactException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -36,5 +37,11 @@ public class GlobalExceptionHandlerController {
     public String handleIncorrectAmountToEnter(IncorrectAmountToEnterException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("amountError", e);
         return "redirect:/profile?part=topupPart";
+    }
+
+    @ExceptionHandler(NotFoundUserWithContactException.class)
+    public String handleNotFoundUserWithContactException(NotFoundUserWithContactException e, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("authError", e);
+        return "redirect:/signin";
     }
 }

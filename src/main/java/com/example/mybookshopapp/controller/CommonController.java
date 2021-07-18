@@ -1,8 +1,12 @@
 package com.example.mybookshopapp.controller;
 
 import com.example.mybookshopapp.dto.SearchWordDto;
+import com.example.mybookshopapp.dto.UserWithContactsDto;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
+import com.example.mybookshopapp.entity.security.ContactType;
+import com.example.mybookshopapp.entity.security.UserContact;
+import com.example.mybookshopapp.repository.UserContactRepository;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
 import com.example.mybookshopapp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +20,13 @@ public class CommonController {
 
     private final BookService bookService;
     private final BookstoreUserRepository bookstoreUserRepository;
+    private final UserContactRepository userContactRepository;
 
     @Autowired
-    public CommonController(BookService bookService, BookstoreUserRepository bookstoreUserRepository) {
+    public CommonController(BookService bookService, BookstoreUserRepository bookstoreUserRepository, UserContactRepository userContactRepository) {
         this.bookService = bookService;
         this.bookstoreUserRepository = bookstoreUserRepository;
+        this.userContactRepository = userContactRepository;
     }
 
 
@@ -30,9 +36,13 @@ public class CommonController {
     }
 
     @ModelAttribute("curUsr")
-    public BookstoreUser getCurrentUser(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
+    public UserWithContactsDto getCurrentUser(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
         if (userDetails != null) {
-            return userDetails.getBookstoreUser();
+            BookstoreUser user = userDetails.getBookstoreUser();
+            UserContact userContactEmail = userContactRepository.findByUserAndType(user, ContactType.EMAIL);
+            UserContact userContactPhone = userContactRepository.findByUserAndType(user, ContactType.PHONE);
+            return new UserWithContactsDto(user.getHash(), user.getBalance(), user.getName(),
+                    userContactEmail.getContact(), userContactPhone.getContact());
         }
         return null;
     }
