@@ -1,11 +1,12 @@
-package com.example.mybookshopapp.security;
+package com.example.mybookshopapp.repository.security;
 
 import com.example.mybookshopapp.entity.security.BookstoreUser;
-import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -20,14 +21,12 @@ class BookstoreUserRepositoryTests {
         this.bookstoreUserRepository = bookstoreUserRepository;
     }
 
-//    @Test
-//    void testAddNewUser() {
-//        BookstoreUser user = new BookstoreUser();
-//        user.setPassword("123456");
-//        user.setPhone("1231231212");
-//        user.setName("Tester");
-//        user.setEmail("test@mail.org");
-//
-//        assertNotNull(bookstoreUserRepository.save(user));
-//    } //TODO
+    @Test
+    void testAddNewUser() {
+        BookstoreUser user = new BookstoreUser();
+        user.setHash(UUID.randomUUID().toString());
+        user.setName("Tester");
+
+        assertNotNull(bookstoreUserRepository.save(user));
+    }
 }

@@ -13,25 +13,25 @@
 <!--<![endif]-->
 <head>
     <title>Тут название страницы написать</title>
-    <meta name="description" content="Описание страницы">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <meta name="description" content="Описание страницы"/>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
     <!--meta( http-equiv="cache-control" content="no-cache")-->
     <!--meta( http-equiv="expires" content="0")-->
     <!--link(rel="preload" href="assets/css/extra.min.css?v=" + version as="style" crossorigin="anonymous")-->
-    <link href="favicon.ico" rel="shortcut icon">
-    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin="anonymous">
-    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Light.woff2" as="font" crossorigin="anonymous">
-    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Medium.woff2" as="font" crossorigin="anonymous">
-    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-ExtraBold.woff2" as="font" crossorigin="anonymous">
-    <link rel="stylesheet" href="/assets/css/fonts.min.css?v=87821122">
-    <link rel="stylesheet" href="/assets/css/basic.min.css?v=87821122">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="/assets/css/extra.min.css?v=87821122">
-    <link rel="stylesheet" href="/assets/css/DownloadBookWindowStyle.css">
+    <link href="favicon.ico" rel="shortcut icon"/>
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin="anonymous"/>
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Light.woff2" as="font" crossorigin="anonymous"/>
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Medium.woff2" as="font" crossorigin="anonymous"/>
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-ExtraBold.woff2" as="font" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="/assets/css/fonts.min.css?v=87821122"/>
+    <link rel="stylesheet" href="/assets/css/basic.min.css?v=87821122"/>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
+    <link rel="stylesheet" href="/assets/css/extra.min.css?v=87821122"/>
+    <link rel="stylesheet" href="/assets/css/DownloadBookWindowStyle.css"/>
     <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-    <script defer src="/assets/js/scripts.min.js?v=87821122"></script>
+
     <style>
         .divLike {
             display: inline;
@@ -72,7 +72,7 @@ p.error-browser
                                     src="/assets/img/content/main/card.jpg"
                                     alt="card.jpg"/>
                             </div>
-                            <input type="file" name="file" id="dialog" style="display: none" accept="image/*">
+                            <input type="file" name="file" id="dialog" style="display: none" accept="image/*"/>
                         </form>
                     </div>
                     <div class="ProductCard-desc">
@@ -183,7 +183,7 @@ p.error-browser
                                     </g>
                                   </g>
                                 </svg></span></span><span class="Rating-title"
-                                                          th:text="${slugBook.getCountRating(5)}">1</span></span><br><span
+                                                          th:text="${slugBook.getCountRating(5)}">1</span></span><br/><span
                                                     class="Rating"><span class="Rating-stars"><span
                                                     class="Rating-star Rating-star_view">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
@@ -226,7 +226,7 @@ p.error-browser
                                     </g>
                                   </g>
                                 </svg></span></span><span class="Rating-title"
-                                                          th:text="${slugBook.getCountRating(4)}">4</span></span><br><span
+                                                          th:text="${slugBook.getCountRating(4)}">4</span></span><br/><span
                                                     class="Rating"><span class="Rating-stars"><span
                                                     class="Rating-star Rating-star_view">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
@@ -269,7 +269,7 @@ p.error-browser
                                     </g>
                                   </g>
                                 </svg></span></span><span class="Rating-title"
-                                                          th:text="${slugBook.getCountRating(3)}">0</span></span><br><span
+                                                          th:text="${slugBook.getCountRating(3)}">0</span></span><br/><span
                                                     class="Rating"><span class="Rating-stars"><span
                                                     class="Rating-star Rating-star_view">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
@@ -311,7 +311,7 @@ p.error-browser
                                             d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
                                     </g>
                                   </g>
-                                </svg></span></span><span class="Rating-title" th:text="${slugBook.getCountRating(2)}">10</span></span><br><span
+                                </svg></span></span><span class="Rating-title" th:text="${slugBook.getCountRating(2)}">10</span></span><br/><span
                                                     class="Rating"><span
                                                     class="Rating-stars"><span class="Rating-star Rating-star_view">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
@@ -376,7 +376,7 @@ p.error-browser
                           </g>
                         </svg></span>
                       <input name="rating" type="radio" value="1"/><span
-                                            th:class="${ratingBook != null and ratingBook.value >= 2 ? 'Rating-star Rating-star_view' : 'Rating-star'}">
+                                            th:class="${ratingBook != null and ratingBook.value >= 2 ? 'Rating-star Rating-star_view' : 'Rating-star'}"/>
                         <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
                           <g>
                             <g>
@@ -386,7 +386,7 @@ p.error-browser
                           </g>
                         </svg></span>
                       <input name="rating" type="radio" value="2"/><span
-                                            th:class="${ratingBook != null and ratingBook.value >= 3 ? 'Rating-star Rating-star_view' : 'Rating-star'} ">
+                                            th:class="${ratingBook != null and ratingBook.value >= 3 ? 'Rating-star Rating-star_view' : 'Rating-star'} "/>
                         <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
                           <g>
                             <g>
@@ -396,7 +396,7 @@ p.error-browser
                           </g>
                         </svg></span>
                       <input name="rating" type="radio" value="3"/><span
-                                            th:class="${ratingBook != null and ratingBook.value >= 4 ? 'Rating-star Rating-star_view' : 'Rating-star'} ">
+                                            th:class="${ratingBook != null and ratingBook.value >= 4 ? 'Rating-star Rating-star_view' : 'Rating-star'} "/>
                         <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
                           <g>
                             <g>
@@ -406,7 +406,7 @@ p.error-browser
                           </g>
                         </svg></span>
                       <input name="rating" type="radio" value="4"/><span
-                                            th:class="${ratingBook != null and ratingBook.value >= 5 ? 'Rating-star Rating-star_view' : 'Rating-star'} ">
+                                            th:class="${ratingBook != null and ratingBook.value >= 5 ? 'Rating-star Rating-star_view' : 'Rating-star'} "/>
                         <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
                           <g>
                             <g>
@@ -675,5 +675,6 @@ p.error-browser
 <script src="/assets/js/UploadNewBookImageScript.js"></script>
 <script src="/assets/js/DownloadBookWindowScript.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="/assets/js/scripts.min.js?v=87821122"></script>
 </body>
 </html>

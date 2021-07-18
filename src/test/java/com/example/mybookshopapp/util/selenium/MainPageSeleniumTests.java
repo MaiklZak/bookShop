@@ -1,17 +1,18 @@
-package com.example.mybookshopapp.selenium;
+package com.example.mybookshopapp.util.selenium;
 
-import com.example.mybookshopapp.util.selenium.MainPage;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@TestPropertySource("/application-test.properties")
 class MainPageSeleniumTests {
 
     private static ChromeDriver driver;
@@ -44,11 +45,11 @@ class MainPageSeleniumTests {
         mainPage
                 .callPage()
                 .pause()
-                .setUpSearchToken("Faust")
+                .setUpSearchToken("Java")
                 .pause()
                 .submit()
                 .pause();
 
-        assertTrue(driver.getPageSource().contains("Faust"));
+        assertTrue(driver.getPageSource().contains("Java"));
     }
 }

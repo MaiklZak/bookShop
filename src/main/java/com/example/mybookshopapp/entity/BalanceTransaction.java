@@ -12,7 +12,8 @@ import java.time.format.FormatStyle;
 public class BalanceTransaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "seq_balance", sequenceName = "seq_balance", initialValue = 1001, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_balance")
     private Integer id;
 
     @ManyToOne()

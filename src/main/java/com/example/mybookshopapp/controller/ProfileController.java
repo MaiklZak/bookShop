@@ -2,6 +2,7 @@ package com.example.mybookshopapp.controller;
 
 import com.example.mybookshopapp.dto.BalanceTransactionDto;
 import com.example.mybookshopapp.dto.ChangeUserForm;
+import com.example.mybookshopapp.dto.PaymentDto;
 import com.example.mybookshopapp.dto.UserWithContactsDto;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
@@ -72,11 +73,11 @@ public class ProfileController {
 
     @PostMapping("/payment")
     public RedirectView handlePayment(@AuthenticationPrincipal BookstoreUserDetails user,
-                                      @RequestParam(required = false) Integer sum) throws NoSuchAlgorithmException, IncorrectAmountToEnterException {
-        if (sum == null || sum <= 0) {
+                                      @RequestBody PaymentDto payload) throws NoSuchAlgorithmException, IncorrectAmountToEnterException {
+        if (payload.getSum() == null || payload.getSum() <= 0) {
             throw new IncorrectAmountToEnterException("Amount to enter must be more 0");
         }
-        String paymentUrl = paymentService.deposit(user, sum);
+        String paymentUrl = paymentService.deposit(user, payload.getSum());
         return new RedirectView(paymentUrl);
     }
 

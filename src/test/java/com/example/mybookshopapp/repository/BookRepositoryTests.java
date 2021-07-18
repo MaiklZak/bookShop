@@ -1,7 +1,6 @@
-package com.example.mybookshopapp.data;
+package com.example.mybookshopapp.repository;
 
 import com.example.mybookshopapp.entity.Book;
-import com.example.mybookshopapp.repository.BookRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,19 +24,14 @@ class BookRepositoryTests {
         this.bookRepository = bookRepository;
     }
 
-//    @Test
-//    void findBooksByAuthor_FirstName() {
-//        String token = "Kendal";
-//        List<Book> bookListByAuthorFirstName = bookRepository.findBooksByAuthorNameContaining(token);
-//
-//        assertNotNull(bookListByAuthorFirstName);
-//        assertFalse(bookListByAuthorFirstName.isEmpty());
-//
-//        for (Book book : bookListByAuthorFirstName) {
-//            Logger.getLogger(this.getClass().getSimpleName()).info(book.toString());
-//            assertThat(book.getAuthor().getName()).contains(token);
-//        }
-//    }
+    @Test
+    void findBooksByAuthorNameContaining() {
+        String token = "Evin Dorset";
+        List<Book> bookListByAuthorFirstName = bookRepository.findBooksByAuthorNameContaining(token);
+
+        assertNotNull(bookListByAuthorFirstName);
+        assertFalse(bookListByAuthorFirstName.isEmpty());
+    }
 
     @Test
     void findBooksByTitleContaining() {
