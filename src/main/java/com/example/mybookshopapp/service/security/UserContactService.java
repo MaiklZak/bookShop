@@ -4,6 +4,8 @@ import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.ContactType;
 import com.example.mybookshopapp.entity.security.UserContact;
 import com.example.mybookshopapp.errs.security.NotFoundUserWithContactException;
+import com.example.mybookshopapp.errs.security.WrongCodeLoginException;
+import com.example.mybookshopapp.errs.security.WrongCodeRegException;
 import com.example.mybookshopapp.repository.UserContactRepository;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
@@ -15,6 +17,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -77,27 +80,13 @@ public class UserContactService {
 
     public void saveNewCodeForReg(String code, String contact) {
         UserContact userContact = new UserContact(code, contact);
+        userContact.setCodeTrials(0);
         if (contact.contains("@")) {
             userContact.setType(ContactType.EMAIL);
         } else {
             userContact.setType(ContactType.PHONE);
         }
         userContactRepository.save(userContact);
-    }
-
-    public Boolean verifyCode(String contact, String code) {
-        UserContact userContact = userContactRepository.findByContact(contact);
-        if (userContact == null || !userContact.getCode().equals(code)) {
-            return false;
-        }
-        LocalDateTime timeCode = userContact.getCodeTime();
-        if (userContact.getType().equals(ContactType.EMAIL)) {
-            return LocalDateTime.now().plusSeconds(300).isAfter(timeCode);
-        }
-        if (userContact.getType().equals(ContactType.PHONE)) {
-            return LocalDateTime.now().plusSeconds(60).isAfter(timeCode);
-        }
-        return false;
     }
 
     public Boolean verifyCode(BookstoreUser user, String contact, String code) {
@@ -131,5 +120,66 @@ public class UserContactService {
         message.setSubject("Bookstore email verification!");
         message.setText("Verification code is: " + code);
         javaMailSender.send(message);
+    }
+
+    public Boolean verifyCodeReg(String contact, String code) throws WrongCodeRegException {
+        int countAttempts = 3;
+        UserContact userContact = userContactRepository.findByContact(contact);
+
+        if (userContact.getCodeTime().isAfter(LocalDateTime.now())) {
+            String message = String.format("Число попыток подтверждения превышено, повторите попытку через %d минут",
+                    Duration.between(LocalDateTime.now(), userContact.getCodeTime()).toMinutes());
+
+            throw new WrongCodeRegException(message);
+        }
+        if (!userContact.getCode().equals(code)) {
+            userContact.setCodeTrials(userContact.getCodeTrials() + 1);
+            if (userContact.getCodeTrials() == countAttempts) {
+                userContact.setCodeTrials(0);
+                userContact.setCodeTime(LocalDateTime.now().plusMinutes(5));
+                userContactRepository.save(userContact);
+
+                throw new WrongCodeRegException("Число попыток подтверждения превышено, повторите попытку через 5 минут");
+            }
+            int attemptsCountCurrent = countAttempts - userContact.getCodeTrials();
+            userContactRepository.save(userContact);
+            throw new WrongCodeRegException("Код подтверждения введён неверно. У вас осталось " + attemptsCountCurrent + " попыток");
+        }
+        return true;
+    }
+
+    public void verifyCodeLogin(String code, String contact) throws WrongCodeLoginException {
+        String phone = "phone";
+        String email = "e-mail";
+        int countAttempts = 3;
+        UserContact userContact = userContactRepository.findByContact(contact);
+        String currentType = userContact.getType().equals(ContactType.PHONE) ? phone : email;
+        String otherType = currentType.equals(phone) ? email : phone;
+
+        if (userContact.getCodeTime().isAfter(LocalDateTime.now())) {
+            String message = String.format("Количество попыток входа по %s исчерпано, попробуйте войти по %s " +
+                            "или повторить вход по %s через %d минут", currentType, otherType, currentType,
+                    Duration.between(LocalDateTime.now(), userContact.getCodeTime()).toMinutes());
+
+            throw new WrongCodeLoginException(message);
+        }
+
+        if (!passwordEncoder.matches(code, userContact.getCode())) {
+            userContact.setCodeTrials(userContact.getCodeTrials() + 1);
+            if (userContact.getCodeTrials() == countAttempts) {
+                userContact.setCodeTrials(0);
+                userContact.setCodeTime(LocalDateTime.now().plusMinutes(5));
+                userContactRepository.save(userContact);
+                String message = String.format("Количество попыток входа по %s исчерпано, попробуйте войти по %s " +
+                        "или повторить вход по %s через 5 минут", currentType, otherType, currentType);
+
+                throw new WrongCodeLoginException(message);
+            }
+            int attemptsCountCurrent = countAttempts - userContact.getCodeTrials();
+            userContactRepository.save(userContact);
+            throw new WrongCodeLoginException("Код подтверждения введён неверно. У вас осталось " + attemptsCountCurrent + " попыток");
+        }
+        userContact.setCodeTrials(0);
+        userContactRepository.save(userContact);
     }
 }

@@ -90,6 +90,7 @@ p.error-browser
                             </button>
                         </div>
                     </div>
+                    <span th:if="${codeError}" th:text="${codeError}"></span>
                     <div class="Login-step Login-step_hide" data-type="phone">
                         <div class="form-group">
                             <label class="form-label Login-title">На Ваш телефон отправлено сообщение с кодом

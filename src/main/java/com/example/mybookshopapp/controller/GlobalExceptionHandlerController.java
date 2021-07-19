@@ -5,6 +5,8 @@ import com.example.mybookshopapp.errs.IncorrectAmountToEnterException;
 import com.example.mybookshopapp.errs.NoEnoughFundsForPayment;
 import com.example.mybookshopapp.errs.WrongCredentialsException;
 import com.example.mybookshopapp.errs.security.NotFoundUserWithContactException;
+import com.example.mybookshopapp.errs.security.WrongCodeLoginException;
+import com.example.mybookshopapp.errs.security.WrongCodeRegException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -44,4 +46,18 @@ public class GlobalExceptionHandlerController {
         redirectAttributes.addFlashAttribute("authError", e);
         return "redirect:/signin";
     }
+
+    @ExceptionHandler(WrongCodeLoginException.class)
+    public String handleWrongCodeException(WrongCodeLoginException e, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("codeError", e);
+        return "redirect:/signin";
+    }
+
+    @ExceptionHandler(WrongCodeRegException.class)
+    public String handleWrongCodeRegException(WrongCodeRegException e, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("codeError", e);
+        return "redirect:/signup";
+    }
+
+
 }

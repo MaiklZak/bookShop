@@ -5,6 +5,8 @@ import com.example.mybookshopapp.dto.ContactConfirmationResponse;
 import com.example.mybookshopapp.dto.RegistrationForm;
 import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.errs.security.NotFoundUserWithContactException;
+import com.example.mybookshopapp.errs.security.WrongCodeLoginException;
+import com.example.mybookshopapp.errs.security.WrongCodeRegException;
 import com.example.mybookshopapp.service.security.BookstoreUserRegister;
 import com.example.mybookshopapp.service.security.UserContactService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,9 +90,9 @@ public class AuthUserController {
 
     @PostMapping("/approveContact")
     @ResponseBody
-    public ContactConfirmationResponse handleApproveContact(@RequestBody ContactConfirmationPayload payload) {
+    public ContactConfirmationResponse handleApproveContact(@RequestBody ContactConfirmationPayload payload) throws WrongCodeRegException {
         ContactConfirmationResponse response = new ContactConfirmationResponse();
-        if (Boolean.TRUE.equals(userContactService.verifyCode(payload.getContact(), payload.getCode()))) {
+        if (Boolean.TRUE.equals(userContactService.verifyCodeReg(payload.getContact(), payload.getCode()))) {
             response.setResult("true");
         }
         return response;
@@ -107,7 +109,8 @@ public class AuthUserController {
     @PostMapping("/login")
     @ResponseBody
     public ContactConfirmationResponse handleLogin(@RequestBody ContactConfirmationPayload payload,
-                                                   HttpServletResponse httpServletResponse) {
+                                                   HttpServletResponse httpServletResponse) throws WrongCodeLoginException {
+        userContactService.verifyCodeLogin(payload.getCode(), payload.getContact());
         ContactConfirmationResponse loginResponse = userRegister.jwtLogin(payload);
         Cookie cookie = new Cookie("token", loginResponse.getResult());
         httpServletResponse.addCookie(cookie);
