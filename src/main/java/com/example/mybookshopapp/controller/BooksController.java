@@ -1,5 +1,6 @@
 package com.example.mybookshopapp.controller;
 
+import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.service.BookService;
 import com.example.mybookshopapp.service.ResourceStorage;
 import com.example.mybookshopapp.entity.Book;
@@ -45,6 +46,19 @@ public class BooksController {
         this.bookService = bookService;
     }
 
+    @ModelAttribute("searchWordDto")
+    public SearchWordDto searchWordDto() {
+        return new SearchWordDto();
+    }
+
+    @ModelAttribute("curUsr")
+    public BookstoreUser getCurrentUser(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
+        if (userDetails != null) {
+            return userDetails.getBookstoreUser();
+        }
+        return null;
+    }
+
     @GetMapping("/{slug}")
     public String bookPage(@AuthenticationPrincipal BookstoreUserDetails user,
                            @PathVariable("slug") String slug,
@@ -68,6 +82,7 @@ public class BooksController {
                 bookService.changeBookStatusForUser(book, defaultUser, BookUserType.VIEWED);
 
                 Cookie cookie = new Cookie("userHash", defaultUser.getHash());
+                cookie.setPath("/");
                 response.addCookie(cookie);
             }
         }

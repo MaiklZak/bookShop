@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class BookstoreUserRegister {
@@ -60,6 +61,7 @@ public class BookstoreUserRegister {
             user.setEmail(registrationForm.getEmail());
             user.setPhone(registrationForm.getPhone());
             user.setPassword(passwordEncoder.encode(registrationForm.getPass()));
+            user.setHash(UUID.randomUUID().toString());
             bookstoreUserRepository.save(user);
             return user;
         } else {

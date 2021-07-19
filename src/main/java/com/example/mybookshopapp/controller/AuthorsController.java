@@ -1,5 +1,6 @@
 package com.example.mybookshopapp.controller;
 
+import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.entity.Author;
 import com.example.mybookshopapp.service.AuthorService;
 import io.swagger.annotations.Api;
@@ -24,6 +25,11 @@ public class AuthorsController {
     @Autowired
     public AuthorsController(AuthorService authorService) {
         this.authorService = authorService;
+    }
+
+    @ModelAttribute("searchWordDto")
+    public SearchWordDto searchWordDto() {
+        return new SearchWordDto();
     }
 
     @ModelAttribute("authorsMap")

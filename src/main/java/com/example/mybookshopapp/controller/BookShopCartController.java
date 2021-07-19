@@ -1,14 +1,13 @@
 package com.example.mybookshopapp.controller;
 
-import com.example.mybookshopapp.service.BookService;
+import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.entity.Book;
-import com.example.mybookshopapp.entity.BookUser;
 import com.example.mybookshopapp.entity.BookUserType;
-import com.example.mybookshopapp.repository.BookRepository;
-import com.example.mybookshopapp.repository.BookUserRepository;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
+import com.example.mybookshopapp.repository.BookRepository;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
+import com.example.mybookshopapp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -17,30 +16,43 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/books")
 public class BookShopCartController {
-
-    @ModelAttribute(name = "bookCart")
-    public List<Book> bookCart() {
-        return new ArrayList<>();
-    }
 
     private static final String IS_CART_EMPTY = "isCartEmpty";
 
     private final BookRepository bookRepository;
     private final BookService bookService;
     private final BookstoreUserRepository bookstoreUserRepository;
-    private final BookUserRepository bookUserRepository;
 
     @Autowired
-    public BookShopCartController(BookRepository bookRepository, BookService bookService, BookstoreUserRepository bookstoreUserRepository, BookUserRepository bookUserRepository) {
+    public BookShopCartController(BookRepository bookRepository, BookService bookService, BookstoreUserRepository bookstoreUserRepository) {
         this.bookRepository = bookRepository;
         this.bookService = bookService;
         this.bookstoreUserRepository = bookstoreUserRepository;
-        this.bookUserRepository = bookUserRepository;
+    }
+
+    @ModelAttribute(name = "bookCart")
+    public List<Book> bookCart() {
+        return new ArrayList<>();
+    }
+
+    @ModelAttribute("searchWordDto")
+    public SearchWordDto searchWordDto() {
+        return new SearchWordDto();
+    }
+
+    @ModelAttribute("curUsr")
+    public BookstoreUser getCurrentUser(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
+        if (userDetails != null) {
+            return userDetails.getBookstoreUser();
+        }
+        return null;
     }
 
     @GetMapping("/cart")
@@ -50,22 +62,7 @@ public class BookShopCartController {
                                     Model model) {
 
         if (user != null) {
-            BookstoreUser bookstoreUserByHash = bookstoreUserRepository.findBookstoreUserByHash(userHash);
-            if (userHash != null && !userHash.equals("") && bookstoreUserByHash != null) {
-                List<Book> booksFromCookieUser = bookRepository.findBooksByUser(bookstoreUserByHash);
-                for (Book book : booksFromCookieUser) {
-                    BookUser bookUserFromCookieUser = bookUserRepository.findByBookAndUser(book, bookstoreUserByHash);
-                    BookUser bookUserFromCurrentUser = bookUserRepository.findByBookAndUser(book, user.getBookstoreUser());
-                    if (bookUserFromCurrentUser != null) {
-                        bookUserRepository.delete(bookUserFromCookieUser);
-                    } else {
-                        bookUserFromCookieUser.setUser(user.getBookstoreUser());
-                        bookUserRepository.save(bookUserFromCookieUser);
-                    }
-                }
-                bookstoreUserRepository.delete(bookstoreUserByHash);
-                response.addCookie(new Cookie("cartContents", ""));
-            }
+            bookService.moveBooksFromUserHashToCurrentUser(userHash, user, response);
             List<Book> booksByUser = bookRepository.findBooksByUserAndType(user.getBookstoreUser(), BookUserType.CART);
             model.addAttribute(IS_CART_EMPTY, booksByUser.isEmpty());
             model.addAttribute("bookCart", booksByUser);

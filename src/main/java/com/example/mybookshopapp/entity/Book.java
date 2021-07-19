@@ -9,7 +9,9 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "books")
@@ -66,6 +68,33 @@ public class Book {
     @JsonProperty("discount value for book")
     private Double price;
 
+    @OneToMany(mappedBy = "book")
+    @JsonIgnore
+    private Set<BookRating> bookRatings = new HashSet<>();
+
+    public long getCountRating(int value) {
+        return bookRatings.stream()
+                .filter(rat -> rat.getValue() == value)
+                .count();
+    }
+
+    public Integer getAverageRating() {
+        if (bookRatings.isEmpty()) {
+            return 0;
+        }
+        return Math.toIntExact(
+                Math.round(
+                        bookRatings.stream().mapToInt(BookRating::getValue).average().getAsDouble()));
+    }
+
+    public Set<BookRating> getBookRatings() {
+        return bookRatings;
+    }
+
+    public void setBookRatings(Set<BookRating> bookRatings) {
+        this.bookRatings = bookRatings;
+    }
+
     @JsonProperty
     public Integer discountPrice() {
         return priceOld - Math.toIntExact(Math.round(price * priceOld));
@@ -77,6 +106,30 @@ public class Book {
 
     public void setBookFileList(List<BookFile> bookFileList) {
         this.bookFileList = bookFileList;
+    }
+
+    @ManyToMany(mappedBy = "books")
+    @JsonIgnore
+    private Set<Tag> tags = new HashSet<>();
+
+    @ManyToMany(mappedBy = "books")
+    @JsonIgnore
+    private Set<Genre> genres = new HashSet<>();
+
+    public Set<Genre> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(Set<Genre> genres) {
+        this.genres = genres;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
     }
 
     public Date getPubDate() {

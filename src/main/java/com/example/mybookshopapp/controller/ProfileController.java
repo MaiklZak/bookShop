@@ -1,5 +1,6 @@
 package com.example.mybookshopapp.controller;
 
+import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.service.BalanceTransactionService;
 import com.example.mybookshopapp.service.PaymentService;
 import com.example.mybookshopapp.dto.BalanceTransactionDto;
@@ -31,6 +32,11 @@ public class ProfileController {
         this.paymentService = paymentService;
         this.balanceTransactionService = balanceTransactionService;
         this.userRegister = userRegister;
+    }
+
+    @ModelAttribute("searchWordDto")
+    public SearchWordDto searchWordDto() {
+        return new SearchWordDto();
     }
 
     @GetMapping("/profile")

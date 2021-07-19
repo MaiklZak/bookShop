@@ -39,26 +39,26 @@ p.error-browser
         | браузера здесь&nbsp;
     | для правильного отображения сайта.
 -->
-<header sec:authorize="!isAuthenticated()" th:replace="~{fragments/header_fragment :: headFragment}"></header>
-<header sec:authorize="isAuthenticated()" th:replace="~{fragments/header_auth_fragment :: headFragment}"></header>
+<header th:replace="~{fragments/header_auth_fragment :: headFragment}"></header>
 <div class="Middle">
   <div class="wrap">
     <main class="Middle-main">
       <ul class="breadcrumbs">
         <li class="breadcrumbs-item"><a th:href="@{/}">Главная</a>
         </li>
-        <li class="breadcrumbs-item"><a href="/genres/index.html">Книги</a>
+        <li class="breadcrumbs-item"><a href="/genres/index.html" th:href="@{/genres}">Книги</a>
         </li>
-        <li class="breadcrumbs-item breadcrumbs-item_current"><span>Популярное</span>
+        <li class="breadcrumbs-item breadcrumbs-item_current"><span>Просмотренные</span>
         </li>
       </ul>
-      <div class="Section">
+      <div class="Section" th:if="${viewedBooks.isEmpty()}"><h4>Недавно просмотренных книг нету</h4></div>
+      <div class="Section" th:unless="${viewedBooks.isEmpty()}">
         <div class="Section-header">
-          <h1 class="Section-title">Популярное
+          <h1 class="Section-title">Просмотренные
           </h1>
         </div>
         <div class="Cards Cards_refresh">
-          <th:block th:each="book : ${popularBooks}">
+          <th:block th:each="book : ${viewedBooks}">
             <div class="Card">
               <div class="Card-picture"><a href="#" th:href="@{'/books/' + ${book.slug}}"><img th:src="${book.image}" alt="card.jpg"/></a>
               </div>
@@ -74,7 +74,7 @@ p.error-browser
             </div>
           </th:block>
 
-          <div class="Cards-footer Cards-footer_center"><a class="btn btn_primary" href="#" data-refreshshow="popular" data-refreshoffset="0" data-refreshlimit="20">Показать еще</a>
+          <div class="Cards-footer Cards-footer_center"><a class="btn btn_primary" href="#" data-refreshshow="viewed" data-refreshoffset="0" data-refreshlimit="20">Показать еще</a>
           </div>
         </div>
       </div>

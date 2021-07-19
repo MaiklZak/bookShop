@@ -8,7 +8,8 @@ import java.io.Serializable;
 public class BookstoreUser implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "seq_user", sequenceName = "seq_user", initialValue = 1001, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_user")
     private Integer id;
 
     private String name;
