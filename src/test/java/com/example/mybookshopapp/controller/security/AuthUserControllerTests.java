@@ -47,16 +47,6 @@ class AuthUserControllerTests {
     }
 
     @Test
-    void handleApproveContact() throws Exception {
-        mockMvc.perform(post("/approveContact")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"contact\": \"+7 (111) 111-11-11\"}"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-    }
-
-    @Test
     void handleUserRegistration() throws Exception {
         mockMvc.perform(post("/reg")
                 .contentType(APPLICATION_FORM_URLENCODED)

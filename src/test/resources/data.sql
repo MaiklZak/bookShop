@@ -9912,10 +9912,10 @@ insert into balance_transaction (id, description, time, value, book_id, user_id)
 insert into balance_transaction (id, description, time, value, book_id, user_id) values (999, 'Buy', '2020-11-23 22:31:07', 1539, 756, 71);
 insert into balance_transaction (id, description, time, value, book_id, user_id) values (1000, 'Buy', '2020-10-27 19:31:00', 2963, 546, 92);
 
-insert into book_file (id, hash, type_id, path, book_id) values (1, '050e716539c3d1e64f52f3c88c41509dc434333e', 1, 'NullaJusto.png', 538);
-insert into book_file (id, hash, type_id, path, book_id) values (2, '7ce471bdcf63749dc14154b6a695bee8c89d5241', 2, 'DonecUtDolor.doc', 313);
-insert into book_file (id, hash, type_id, path, book_id) values (3, 'd8ef2d7f99f258f7ac2b3fa57244451d360b68f2', 3, 'EgetEleifendLuctus.mp3', 245);
-insert into book_file (id, hash, type_id, path, book_id) values (4, '5dda3dad1ddd15d67ea501ac8a37222f0f76e8a4', 2, 'SedJustoPellentesque.ppt', 203);
+insert into book_file (id, hash, type_id, path, book_id) values (1, 'fw324dfw234234fwdf221', 1, '/Faust.pdf', 865);
+insert into book_file (id, hash, type_id, path, book_id) values (2, 'kyuj3452435ighsh245rf', 2, '/Faust.epub', 865);
+insert into book_file (id, hash, type_id, path, book_id) values (3, '34tjsdfj23jfij2r24253', 3, '/Faust.fb2', 865);
+insert into book_file (id, hash, type_id, path, book_id) values (4, 'sdfga233jsfs4r34253df', 1, '/Garden.pdf', 614);
 insert into book_file (id, hash, type_id, path, book_id) values (5, '08f236a07a097414def2cae700e19e7f689286f7', 3, 'TortorIdNulla.mov', 510);
 insert into book_file (id, hash, type_id, path, book_id) values (6, '2f94bfdad402ec04bbae00fac89632a8e1872d03', 3, 'QuamSapienVarius.jpeg', 625);
 insert into book_file (id, hash, type_id, path, book_id) values (7, '406d90c41baf0e6e439edf4ec0f2d61da546ec86', 3, 'AtDiamNam.gif', 971);
