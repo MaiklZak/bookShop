@@ -20,7 +20,7 @@ public class BookstoreUser implements Serializable {
 
     private String hash;
 
-    @Column(name = "reg_time", columnDefinition = "TIMESTAMP")
+    @Column(name = "reg_time", columnDefinition = "TIMESTAMP(6)")
     private LocalDateTime regTime;
 
     @Column(columnDefinition="INT default '0'")

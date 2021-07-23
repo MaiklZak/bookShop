@@ -12,10 +12,11 @@ import java.time.LocalDateTime;
 public class Message implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "seq_message", sequenceName = "seq_message", initialValue = 1001, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_message")
     private Integer id;
 
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(columnDefinition = "TIMESTAMP(6)")
     private LocalDateTime time;
 
     @ManyToOne

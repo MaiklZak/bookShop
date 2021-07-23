@@ -27,7 +27,7 @@ public class BookReview implements Serializable {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private BookstoreUser user;
 
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(columnDefinition = "TIMESTAMP(6)")
     private LocalDateTime time;
 
     @Column(columnDefinition = "TEXT")

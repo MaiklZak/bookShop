@@ -14,7 +14,7 @@ public class BookUser {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_book_user")
     private Integer id;
 
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(columnDefinition = "TIMESTAMP(6)")
     private LocalDateTime time;
 
     @ManyToOne

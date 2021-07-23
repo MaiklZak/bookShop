@@ -28,7 +28,7 @@ public class UserContact implements Serializable {
     @Column(name = "code_trials")
     private Integer codeTrials;
 
-    @Column(name = "code_time")
+    @Column(name = "code_time", columnDefinition = "TIMESTAMP(6)")
     private LocalDateTime codeTime;
 
     private String contact;

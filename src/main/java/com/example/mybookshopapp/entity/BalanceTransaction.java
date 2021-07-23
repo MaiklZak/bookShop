@@ -20,7 +20,7 @@ public class BalanceTransaction {
     @JoinColumn(name = "user_id")
     private BookstoreUser user;
 
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(columnDefinition = "TIMESTAMP(6)")
     private LocalDateTime time;
 
     private Integer value;

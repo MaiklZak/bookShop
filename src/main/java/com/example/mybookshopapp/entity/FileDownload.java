@@ -10,7 +10,8 @@ import java.io.Serializable;
 public class FileDownload implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "seq_file_download", sequenceName = "seq_file_download", initialValue = 1001, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_file_download")
     private Integer id;
 
     @ManyToOne
