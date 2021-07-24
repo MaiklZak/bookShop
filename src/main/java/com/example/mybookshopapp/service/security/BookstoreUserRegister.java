@@ -1,15 +1,17 @@
 package com.example.mybookshopapp.service.security;
 
-import com.example.mybookshopapp.entity.SmsCode;
-import com.example.mybookshopapp.errs.WrongCredentialsException;
 import com.example.mybookshopapp.dto.ChangeUserForm;
 import com.example.mybookshopapp.dto.ContactConfirmationPayload;
 import com.example.mybookshopapp.dto.ContactConfirmationResponse;
 import com.example.mybookshopapp.dto.RegistrationForm;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
-import com.example.mybookshopapp.util.security.JWTUtil;
+import com.example.mybookshopapp.entity.security.ContactType;
+import com.example.mybookshopapp.entity.security.UserContact;
+import com.example.mybookshopapp.errs.WrongCredentialsException;
+import com.example.mybookshopapp.repository.UserContactRepository;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
+import com.example.mybookshopapp.util.security.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -29,43 +31,54 @@ import java.util.UUID;
 public class BookstoreUserRegister {
 
     private final BookstoreUserRepository bookstoreUserRepository;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final BookstoreUserDetailsService bookstoreUserDetailsService;
     private final JWTUtil jwtUtil;
-    private final SmsService smsService;
+    private final UserContactService userContactService;
     private final JavaMailSender javaMailSender;
+    private final UserContactRepository userContactRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${appEmail.email}")
     private String email;
 
     @Autowired
-    public BookstoreUserRegister(BookstoreUserRepository bookstoreUserRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, BookstoreUserDetailsService bookstoreUserDetailsService, JWTUtil jwtUtil, SmsService smsService, JavaMailSender javaMailSender) {
+    public BookstoreUserRegister(BookstoreUserRepository bookstoreUserRepository, AuthenticationManager authenticationManager, BookstoreUserDetailsService bookstoreUserDetailsService, JWTUtil jwtUtil, UserContactService userContactService, JavaMailSender javaMailSender, UserContactRepository userContactRepository, PasswordEncoder passwordEncoder) {
         this.bookstoreUserRepository = bookstoreUserRepository;
-        this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.bookstoreUserDetailsService = bookstoreUserDetailsService;
         this.jwtUtil = jwtUtil;
-        this.smsService = smsService;
+        this.userContactService = userContactService;
         this.javaMailSender = javaMailSender;
+        this.userContactRepository = userContactRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public BookstoreUser registerNewUser(RegistrationForm registrationForm) {
+    public Boolean registerNewUser(RegistrationForm registrationForm) {
 
-        BookstoreUser userByEmail = bookstoreUserRepository.findBookstoreUserByEmail(registrationForm.getEmail());
-        BookstoreUser userByPhone = bookstoreUserRepository.findBookstoreUserByPhone(registrationForm.getPhone());
+        BookstoreUser userByEmail = bookstoreUserRepository.findBookstoreUserByContact(registrationForm.getEmail());
+        BookstoreUser userByPhone = bookstoreUserRepository.findBookstoreUserByContact(registrationForm.getPhone());
 
-        if (userByEmail == null && userByPhone == null) {
+        UserContact userContactByEmail = userContactService.getByEmail(registrationForm.getEmail());
+        UserContact userContactByPhone = userContactService.getByPhone(registrationForm.getPhone());
+
+        if (userByEmail == null && userByPhone == null && userContactByEmail != null && userContactByPhone != null) {
             BookstoreUser user = new BookstoreUser();
             user.setName(registrationForm.getName());
-            user.setEmail(registrationForm.getEmail());
-            user.setPhone(registrationForm.getPhone());
-            user.setPassword(passwordEncoder.encode(registrationForm.getPass()));
             user.setHash(UUID.randomUUID().toString());
-            bookstoreUserRepository.save(user);
-            return user;
+            user = bookstoreUserRepository.save(user);
+
+            UserContact userContactEmailForUser = new UserContact(user, userContactByEmail.getContact(), 1, ContactType.EMAIL);
+            UserContact userContactPhoneForUser = new UserContact(user, userContactByPhone.getContact(), 1, ContactType.PHONE);
+
+            userContactRepository.save(userContactEmailForUser);
+            userContactRepository.save(userContactPhoneForUser);
+            userContactRepository.delete(userContactByEmail);
+            userContactRepository.delete(userContactByPhone);
+
+            return true;
         } else {
-            return userByPhone;
+            return false;
         }
     }
 
@@ -90,18 +103,6 @@ public class BookstoreUserRegister {
         return response;
     }
 
-    public ContactConfirmationResponse jwtLoginByPhoneNumber(ContactConfirmationPayload payload) {
-        RegistrationForm registrationForm = new RegistrationForm();
-        registrationForm.setPhone(payload.getContact());
-        registrationForm.setPass(payload.getCode());
-        registerNewUser(registrationForm);
-        UserDetails userDetails = bookstoreUserDetailsService.loadUserByUsername(payload.getContact());
-        String jwtToken = jwtUtil.generateToken(userDetails);
-        ContactConfirmationResponse response = new ContactConfirmationResponse();
-        response.setResult(jwtToken);
-        return response;
-    }
-
     public Object getCurrentUser() {
         BookstoreUserDetails userDetails =
                 (BookstoreUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -110,60 +111,89 @@ public class BookstoreUserRegister {
 
     public void updateUser(ChangeUserForm changeUserForm) throws WrongCredentialsException {
         BookstoreUser currentUser = (BookstoreUser) getCurrentUser();
+        UserContact userContactEmailForCurrentUser = userContactRepository.findByUserAndType(currentUser, ContactType.EMAIL);
+        String emailOldUser = userContactEmailForCurrentUser.getContact();
+
         BookstoreUser updateUser = new BookstoreUser();
-        if (verifyPassword(changeUserForm.getPassword(), changeUserForm.getPasswordReply())) {
-            updateUser.setPassword(changeUserForm.getPassword());
-        } else {
-            throw new WrongCredentialsException("Incorrect password");
-        }
+        UserContact updateUserContactEmail = new UserContact();
+        UserContact updateUserContactPhone = new UserContact();
+        updateUserContactEmail.setType(ContactType.EMAIL);
+        updateUserContactPhone.setType(ContactType.PHONE);
+
+
         if (verifyUserName(changeUserForm.getName())) {
             updateUser.setName(changeUserForm.getName());
         } else {
             throw new WrongCredentialsException("Incorrect name");
         }
         if (verifyEmail(changeUserForm.getMail())) {
-            updateUser.setEmail(changeUserForm.getMail());
+            updateUserContactEmail.setContact(changeUserForm.getMail());
         } else {
             throw new WrongCredentialsException("Incorrect email");
         }
         if (verifyPhone(changeUserForm.getPhone())) {
-            updateUser.setPhone(changeUserForm.getPhone());
+            updateUserContactPhone.setContact(changeUserForm.getPhone());
         } else {
             throw new WrongCredentialsException("Incorrect phone");
         }
 
+        String code = userContactService.generateCode();
+
+        updateUser = bookstoreUserRepository.save(updateUser);
+        updateUserContactEmail.setUser(updateUser);
+        updateUserContactPhone.setUser(updateUser);
+        updateUserContactEmail.setCode(code);
+        updateUserContactPhone.setCode(code);
+        userContactRepository.save(updateUserContactEmail);
+        userContactRepository.save(updateUserContactPhone);
+
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(email);
-        message.setTo(currentUser.getEmail());
-        SmsCode smsCode = new SmsCode(smsService.generateCode(), 300); //5 minutes
-        smsService.saveNewCode(smsCode);
+        message.setTo(emailOldUser);
         message.setSubject("Changing credentials!");
         message.setText("Please, visit next link: http://localhost:8080/changeCredentials/"
-                + bookstoreUserRepository.save(updateUser).getId() + "/"
+                + updateUser.getId() + "/"
                 + currentUser.getId() + "/"
-                + smsCode.getCode().replace(" ", "_"));
+                + code.replace(" ", "_"));
         javaMailSender.send(message);
     }
 
     public String approveCredentials(Integer updateUserId, Integer currentUserId, String code) throws WrongCredentialsException {
         BookstoreUser currentUser = bookstoreUserRepository.getOne(currentUserId);
-        Optional<BookstoreUser> updateUser = bookstoreUserRepository.findById(updateUserId);
+        UserContact currentUserContactEmail = userContactRepository.findByUserAndType(currentUser, ContactType.EMAIL);
+        UserContact currentUserContactPhone = userContactRepository.findByUserAndType(currentUser, ContactType.PHONE);
 
-        if (Boolean.FALSE.equals(smsService.verifyCode(code.replace("_", " "))) || Boolean.FALSE.equals(updateUser.isPresent()) || !currentUser.getId().equals(currentUserId)) {
-            throw new WrongCredentialsException(!updateUser.isPresent() ? "Changes already confirmed" : "Confirmation code expired");
+        Optional<BookstoreUser> updateUser = bookstoreUserRepository.findById(updateUserId);
+        if (!updateUser.isPresent()) {
+            throw new WrongCredentialsException("Changes already confirmed");
+        }
+        UserContact updateUserContactEmail = userContactRepository.findByUserAndType(updateUser.get(), ContactType.EMAIL);
+        UserContact updateUserContactPhone = userContactRepository.findByUserAndType(updateUser.get(), ContactType.PHONE);
+
+        if (Boolean.FALSE.equals(userContactService.verifyCode(updateUser.get(), updateUserContactEmail.getContact(), code.replace("_", " ")))
+                || Boolean.FALSE.equals(userContactService.verifyCode(updateUser.get(), updateUserContactPhone.getContact(), code.replace("_", " ")))
+                || !currentUser.getId().equals(currentUserId)) {
+            throw new WrongCredentialsException("Confirmation code expired");
         }
         currentUser.setName(updateUser.get().getName());
-        currentUser.setEmail(updateUser.get().getEmail());
-        currentUser.setPhone(updateUser.get().getPhone());
-        currentUser.setPassword(passwordEncoder.encode(updateUser.get().getPassword()));
+        currentUserContactEmail.setContact(updateUserContactEmail.getContact());
+        currentUserContactPhone.setContact(updateUserContactPhone.getContact());
 
-        String password = updateUser.get().getPassword();
+        String codeForAuth = updateUserContactEmail.getCode();
+
+        currentUserContactEmail.setCode(passwordEncoder.encode(codeForAuth));
+        currentUserContactPhone.setCode(passwordEncoder.encode(codeForAuth));
+
+        userContactRepository.delete(updateUserContactEmail);
+        userContactRepository.delete(updateUserContactPhone);
         bookstoreUserRepository.delete(updateUser.get());
         bookstoreUserRepository.save(currentUser);
+        userContactRepository.save(currentUserContactPhone);
+        UserContact contact = userContactRepository.save(currentUserContactEmail);
 
-        String token = generateTokenForUpdateUser(currentUser, password);
+        String token = generateTokenForUpdateUser(contact, codeForAuth);
 
-        authenticateUpdatedUser(currentUser, token);
+        authenticateUpdatedUser(contact, token);
 
         return token;
     }
@@ -173,33 +203,28 @@ public class BookstoreUserRegister {
     }
 
     private boolean verifyEmail(String email) {
-        return  (email != null && !email.isEmpty() && email.contains("@"));
+        return (email != null && !email.isEmpty() && email.contains("@"));
     }
 
     private boolean verifyUserName(String name) {
-        return  (name != null && !name.isEmpty() && name.length() > 2);
+        return (name != null && !name.isEmpty() && name.length() > 2);
     }
 
-    private boolean verifyPassword(String password, String passwordReply) {
-        return  (password != null && !password.isEmpty() && password.length() > 5 && password.equals(passwordReply));
-
-    }
-
-    public String generateTokenForUpdateUser(BookstoreUser user, String pass) {
+    public String generateTokenForUpdateUser(UserContact contact, String code) {
         ContactConfirmationPayload payload = new ContactConfirmationPayload();
-        payload.setContact(user.getEmail());
-        payload.setCode(pass);
+        payload.setContact(contact.getContact());
+        payload.setCode(code);
         ContactConfirmationResponse response = jwtLogin(payload);
         return response.getResult();
     }
 
-    public void authenticateUpdatedUser(BookstoreUser user, String token) {
-            UserDetails userDetails = bookstoreUserDetailsService.loadUserByUsername(user.getEmail());
-            if (Boolean.TRUE.equals(jwtUtil.validateToken(token, userDetails))) {
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+    public void authenticateUpdatedUser(UserContact contact, String token) {
+        UserDetails userDetails = bookstoreUserDetailsService.loadUserByUsername(contact.getContact());
+        if (Boolean.TRUE.equals(jwtUtil.validateToken(token, userDetails))) {
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
     }
 }

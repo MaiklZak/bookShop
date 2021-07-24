@@ -1,12 +1,12 @@
 package com.example.mybookshopapp.entity;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,7 +16,7 @@ import java.util.Set;
 @Entity
 @Table(name = "books")
 @ApiModel(description = "entity representing a book")
-public class Book {
+public class Book implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,16 +26,6 @@ public class Book {
     @Column(name = "pub_date")
     @ApiModelProperty("date of book publication")
     private Date pubDate;
-
-    @ManyToOne()
-    @JoinColumn(name = "author_id", referencedColumnName = "id")
-    @JsonIgnore
-    private Author author;
-
-    @JsonGetter("authors")
-    public String authorFullName() {
-        return author.toString();
-    }
 
     @Column(name = "is_bestseller")
     @ApiModelProperty("if isBestseller = 1 so the book is considered to be bestseller and if 0 the book is not a " +
@@ -72,6 +62,27 @@ public class Book {
     @JsonIgnore
     private Set<BookRating> bookRatings = new HashSet<>();
 
+    @ManyToMany(mappedBy = "books")
+    @JsonIgnore
+    private Set<Tag> tags = new HashSet<>();
+
+    @ManyToMany(mappedBy = "books")
+    @JsonIgnore
+    private Set<Genre> genres = new HashSet<>();
+
+    @OneToMany(mappedBy = "book")
+    @JsonIgnore
+    private Set<BookReview> bookReviews = new HashSet<>();
+
+    @JsonProperty
+    public Integer discountPrice() {
+        return priceOld - Math.toIntExact(Math.round(price * priceOld));
+    }
+
+    public Integer getDiscountPercent() {
+        return Math.toIntExact(Math.round(price * 100));
+    }
+
     public long getCountRating(int value) {
         return bookRatings.stream()
                 .filter(rat -> rat.getValue() == value)
@@ -95,9 +106,12 @@ public class Book {
         this.bookRatings = bookRatings;
     }
 
-    @JsonProperty
-    public Integer discountPrice() {
-        return priceOld - Math.toIntExact(Math.round(price * priceOld));
+    public Set<BookReview> getBookReviews() {
+        return bookReviews;
+    }
+
+    public void setBookReviews(Set<BookReview> bookReviews) {
+        this.bookReviews = bookReviews;
     }
 
     public List<BookFile> getBookFileList() {
@@ -107,14 +121,6 @@ public class Book {
     public void setBookFileList(List<BookFile> bookFileList) {
         this.bookFileList = bookFileList;
     }
-
-    @ManyToMany(mappedBy = "books")
-    @JsonIgnore
-    private Set<Tag> tags = new HashSet<>();
-
-    @ManyToMany(mappedBy = "books")
-    @JsonIgnore
-    private Set<Genre> genres = new HashSet<>();
 
     public Set<Genre> getGenres() {
         return genres;
@@ -172,14 +178,6 @@ public class Book {
         this.description = description;
     }
 
-    public Author getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Author author) {
-        this.author = author;
-    }
-
     public Integer getId() {
         return id;
     }
@@ -216,7 +214,6 @@ public class Book {
     public String toString() {
         return "Book{" +
                 "id=" + id +
-                ", author=" + author +
                 ", title='" + title + '\'' +
                 ", priceOld='" + priceOld + '\'' +
                 ", price='" + price + '\'' +

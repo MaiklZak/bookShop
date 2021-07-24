@@ -6,10 +6,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -18,6 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/application-test.properties")
+@Sql(value = "/scripts-test/test-data-before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = "/scripts-test/test-data-after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class MainPageControllerTests {
 
     private final MockMvc mockMvc;
@@ -44,20 +46,14 @@ class MainPageControllerTests {
     }
 
     @Test
-    void correctLoginTest() throws Exception {
-        mockMvc.perform(formLogin("/signin").user("yayota1045@naymio.com").password("1234567"))
-                .andDo(print())
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/"));
-    }
-
-    @Test
-    @WithUserDetails("yayota1045@naymio.com")
+    @Sql(value = "/scripts-test/test-data-before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/scripts-test/test-data-after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails("bogoke1616@eyeremind.com")
     void testAuthenticatedAccessToProfilePage() throws Exception {
         mockMvc.perform(get("/profile"))
                 .andDo(print())
                 .andExpect(authenticated())
-                .andExpect(xpath("/html/body/header/div[1]/div/div/div[3]/div/a[4]/span[1]").string("Дмитрий Петров"));
+                .andExpect(xpath("/html/body/header/div[1]/div/div/div[3]/div/a[4]/span[1]").string("Rob Coast"));
     }
 
     @Test

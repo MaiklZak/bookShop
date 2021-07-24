@@ -1,9 +1,8 @@
 package com.example.mybookshopapp.controller;
 
+import com.example.mybookshopapp.dto.BookWithAuthorsDto;
 import com.example.mybookshopapp.dto.BooksPageDto;
-import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.entity.Book;
-import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
 import com.example.mybookshopapp.service.BookService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,22 +23,10 @@ public class ViewedPageController {
         this.bookService = bookService;
     }
 
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
-    }
-
-    @ModelAttribute("curUsr")
-    public BookstoreUser getCurrentUser(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
-        if (userDetails != null) {
-            return userDetails.getBookstoreUser();
-        }
-        return null;
-    }
-
     @ModelAttribute("viewedBooks")
-    public List<Book> viewedBooks(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
-        return bookService.getPageOfViewedBooksByUser(userDetails.getBookstoreUser(), 0, 20);
+    public List<BookWithAuthorsDto> viewedBooks(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
+        List<Book> viewedBooks = bookService.getPageOfViewedBooksByUser(userDetails.getBookstoreUser(), 0, 20);
+        return bookService.getBookWithAuthorDtoList(viewedBooks);
     }
 
     @GetMapping("/viewed")
@@ -52,6 +39,7 @@ public class ViewedPageController {
     public BooksPageDto getPopularBooksPage(@AuthenticationPrincipal BookstoreUserDetails userDetails,
                                             @RequestParam("offset") Integer offset,
                                             @RequestParam("limit") Integer limit) {
-        return new BooksPageDto(bookService.getPageOfViewedBooksByUser(userDetails.getBookstoreUser(), offset, limit));
+        List<Book> books = bookService.getPageOfViewedBooksByUser(userDetails.getBookstoreUser(), offset, limit);
+        return new BooksPageDto(bookService.getBookWithAuthorDtoList(books));
     }
 }

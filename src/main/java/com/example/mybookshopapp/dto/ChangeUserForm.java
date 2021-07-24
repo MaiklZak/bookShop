@@ -5,8 +5,6 @@ public class ChangeUserForm {
     private String name;
     private String mail;
     private String phone;
-    private String password;
-    private String passwordReply;
 
     public String getName() {
         return name;
@@ -32,30 +30,12 @@ public class ChangeUserForm {
         this.phone = phone;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPasswordReply() {
-        return passwordReply;
-    }
-
-    public void setPasswordReply(String passwordReply) {
-        this.passwordReply = passwordReply;
-    }
-
     @Override
     public String toString() {
         return "ChangeUserForm{" +
                 "name='" + name + '\'' +
                 ", mail='" + mail + '\'' +
                 ", phone='" + phone + '\'' +
-                ", password='" + password + '\'' +
-                ", passwordReply='" + passwordReply + '\'' +
                 '}';
     }
 }

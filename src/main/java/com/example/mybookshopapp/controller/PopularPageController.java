@@ -1,9 +1,8 @@
 package com.example.mybookshopapp.controller;
 
+import com.example.mybookshopapp.dto.BookWithAuthorsDto;
 import com.example.mybookshopapp.dto.BooksPageDto;
-import com.example.mybookshopapp.dto.SearchWordDto;
 import com.example.mybookshopapp.entity.Book;
-import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
 import com.example.mybookshopapp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,26 +23,16 @@ public class PopularPageController {
         this.bookService = bookService;
     }
 
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
-    }
-
-    @ModelAttribute("curUsr")
-    public BookstoreUser getCurrentUser(@AuthenticationPrincipal BookstoreUserDetails userDetails) {
-        if (userDetails != null) {
-            return userDetails.getBookstoreUser();
-        }
-        return null;
-    }
-
     @ModelAttribute("popularBooks")
-    public List<Book> popularBooks(@AuthenticationPrincipal BookstoreUserDetails userDetails,
-                                   @CookieValue(value = "userHash", required = false) String userHash) {
+    public List<BookWithAuthorsDto> popularBooks(@AuthenticationPrincipal BookstoreUserDetails userDetails,
+                                                 @CookieValue(value = "userHash", required = false) String userHash) {
+        List<Book> popularBooks;
         if (userDetails != null) {
-            return bookService.getPageOfPopularBooksForUser(userDetails.getBookstoreUser(), 0, 20);
+            popularBooks = bookService.getPageOfPopularBooksForUser(userDetails.getBookstoreUser(), 0, 20);
+        } else {
+            popularBooks = bookService.getPageOfPopularBooksForNotAuthenticatedUser(userHash, 0, 20);
         }
-        return bookService.getPageOfPopularBooksForNotAuthenticatedUser(userHash, 0, 20);
+        return bookService.getBookWithAuthorDtoList(popularBooks);
     }
 
     @GetMapping(value = "/books/popular", produces = MediaType.TEXT_HTML_VALUE)
@@ -57,10 +46,12 @@ public class PopularPageController {
                                             @RequestParam("offset") Integer offset,
                                             @RequestParam("limit") Integer limit,
                                             @CookieValue(value = "userHash", required = false) String userHash) {
-
+        List<Book> books;
         if (userDetails != null) {
-            return new BooksPageDto(bookService.getPageOfPopularBooksForUser(userDetails.getBookstoreUser(), offset, limit));
+            books = bookService.getPageOfPopularBooksForUser(userDetails.getBookstoreUser(), offset, limit);
+        } else {
+            books = bookService.getPageOfPopularBooksForNotAuthenticatedUser(userHash, offset, limit);
         }
-        return new BooksPageDto(bookService.getPageOfPopularBooksForNotAuthenticatedUser(userHash, offset, limit));
+        return new BooksPageDto(bookService.getBookWithAuthorDtoList(books));
     }
 }

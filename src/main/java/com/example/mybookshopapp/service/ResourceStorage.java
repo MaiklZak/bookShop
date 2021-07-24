@@ -1,7 +1,10 @@
 package com.example.mybookshopapp.service;
 
 import com.example.mybookshopapp.entity.BookFile;
+import com.example.mybookshopapp.entity.FileDownload;
+import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.repository.BookFileRepository;
+import com.example.mybookshopapp.repository.FileDownloadRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,10 +30,12 @@ public class ResourceStorage {
     String downloadPath;
 
     private final BookFileRepository bookFileRepository;
+    private final FileDownloadRepository fileDownloadRepository;
 
     @Autowired
-    public ResourceStorage(BookFileRepository bookFileRepository) {
+    public ResourceStorage(BookFileRepository bookFileRepository, FileDownloadRepository fileDownloadRepository) {
         this.bookFileRepository = bookFileRepository;
+        this.fileDownloadRepository = fileDownloadRepository;
     }
 
     public String saveNewBookImage(MultipartFile file, String slug) throws IOException {
@@ -70,5 +75,16 @@ public class ResourceStorage {
         BookFile bookFile = bookFileRepository.findBookFileByHash(hash);
         Path path = Paths.get(downloadPath, bookFile.getPath());
         return Files.readAllBytes(path);
+    }
+
+    public void setCountDownloadBookForUser(BookstoreUser user, String hash) {
+        BookFile fileByHash = bookFileRepository.findBookFileByHash(hash);
+        FileDownload download = fileDownloadRepository.findByUserAndBook(user, fileByHash.getBook());
+        if (download == null) {
+            download = new FileDownload(user, fileByHash.getBook());
+        } else {
+            download.setCount(download.getCount() + 1);
+        }
+        fileDownloadRepository.save(download);
     }
 }

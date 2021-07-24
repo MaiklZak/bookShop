@@ -39,14 +39,12 @@ public class JWTRequestFilter extends OncePerRequestFilter {
                     token = cookie.getValue();
                     username = jwtUtil.extractUsername(token);
                 }
-
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     UserDetails userDetails = bookstoreUserDetailsService.loadUserByUsername(username);
                     if (Boolean.TRUE.equals(jwtUtil.validateToken(token, userDetails))) {
                         UsernamePasswordAuthenticationToken authenticationToken =
                                 new UsernamePasswordAuthenticationToken(
                                         userDetails, null, userDetails.getAuthorities());
-
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     }

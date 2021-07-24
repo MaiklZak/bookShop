@@ -1,10 +1,11 @@
 package com.example.mybookshopapp.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "book_file")
-public class BookFile {
+public class BookFile implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
