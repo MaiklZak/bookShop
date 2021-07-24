@@ -27,4 +27,5 @@
     <include file="db/changelog/bookGenre/create_book2genre_table.xml"/>
     <include file="db/changelog/balanceTransaction/create_balance_transaction_table.xml"/>
     <include file="db/changelog/userContact/create_user_contact_table.xml"/>
+    <include file="db/changelog/userRole/create_user_role_table.xml"/>
 </databaseChangeLog>

@@ -3,13 +3,14 @@ package com.example.mybookshopapp.entity;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
 @Entity
 @Table(name = "balance_transaction")
-public class BalanceTransaction {
+public class BalanceTransaction implements Serializable {
 
     @Id
     @SequenceGenerator(name = "seq_balance", sequenceName = "seq_balance", initialValue = 1001, allocationSize = 1)

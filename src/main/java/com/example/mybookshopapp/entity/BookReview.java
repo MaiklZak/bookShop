@@ -33,7 +33,7 @@ public class BookReview implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String text;
 
-    @OneToMany(mappedBy = "bookReview")
+    @OneToMany(mappedBy = "bookReview", cascade = CascadeType.ALL)
     private Set<BookReviewLike> bookReviewLikes = new HashSet<>();
 
     public String getFormatTime() {

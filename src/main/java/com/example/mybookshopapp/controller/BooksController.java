@@ -7,6 +7,7 @@ import com.example.mybookshopapp.entity.Book;
 import com.example.mybookshopapp.entity.BookReview;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
+import com.example.mybookshopapp.entity.security.Role;
 import com.example.mybookshopapp.repository.BookRatingRepository;
 import com.example.mybookshopapp.repository.BookRepository;
 import com.example.mybookshopapp.repository.BookReviewRepository;
@@ -30,6 +31,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -73,7 +75,8 @@ public class BooksController {
         BookstoreUser currentUser;
         Book book = bookRepository.findBookBySlug(slug);
         if (book == null) {
-            return "redirect:/index";
+            model.addAttribute("bookRemoved", "Book removed");
+            return "/books/slug";
         }
         if (user != null) {
             currentUser = user.getBookstoreUser();
@@ -85,6 +88,7 @@ public class BooksController {
             } else {
                 currentUser = new BookstoreUser();
                 currentUser.setHash(UUID.randomUUID().toString());
+                currentUser.setRoles(Collections.singleton(Role.ANONYMOUS));
                 currentUser = bookstoreUserRepository.save(currentUser);
 
                 Cookie cookie = new Cookie("userHash", currentUser.getHash());
@@ -160,5 +164,20 @@ public class BooksController {
         Book book = bookRepository.getOne(payload.getBookId());
         ratingService.rateBook(userDetails.getBookstoreUser(), book, payload);
         return REDIRECT_BOOKS_URL + book.getSlug();
+    }
+
+    @GetMapping("/remove/{slug}")
+    public String removeBook(@PathVariable String slug) {
+        bookRepository.deleteBySlug(slug);
+        return REDIRECT_BOOKS_URL + slug;
+    }
+
+    @PostMapping("/edit/{slug}")
+    public String editDescriptionOfBook(@PathVariable String slug,
+                                        @RequestParam String editText) {
+        Book book = bookRepository.findBookBySlug(slug);
+        book.setDescription(editText);
+        bookRepository.save(book);
+        return REDIRECT_BOOKS_URL + slug;
     }
 }

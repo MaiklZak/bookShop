@@ -33,4 +33,8 @@ public class AuthorService {
     public Author getAuthorBySlug(String slug) {
         return authorRepository.findBySlug(slug);
     }
+
+    public void save(Author author) {
+        authorRepository.save(author);
+    }
 }

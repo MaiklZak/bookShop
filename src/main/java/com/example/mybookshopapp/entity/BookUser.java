@@ -3,11 +3,12 @@ package com.example.mybookshopapp.entity;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "book2user")
-public class BookUser {
+public class BookUser implements Serializable {
 
     @Id
     @SequenceGenerator(name = "seq_book_user", sequenceName = "seq_book_user", initialValue = 1001, allocationSize = 1)

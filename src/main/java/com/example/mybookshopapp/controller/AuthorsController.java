@@ -82,5 +82,14 @@ public class AuthorsController {
         List<Book> books = bookService.getBooksByAuthorPage(author, offset, limit);
         return new BooksPageDto(bookService.getBookWithAuthorDtoList(books));
     }
+
+    @PostMapping("/authors/edit/{slug}")
+    public String editDescriptionOfAuthor(@PathVariable String slug,
+                                          @RequestParam String editText) {
+        Author author = authorService.getAuthorBySlug(slug);
+        author.setDescription(editText);
+        authorService.save(author);
+        return "redirect:/authors/" + slug;
+    }
 }
 

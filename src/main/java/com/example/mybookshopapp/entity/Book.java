@@ -41,7 +41,7 @@ public class Book implements Serializable {
     @ApiModelProperty("image url")
     private String image;
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<BookFile> bookFileList = new ArrayList<>();
 
@@ -58,21 +58,45 @@ public class Book implements Serializable {
     @JsonProperty("discount value for book")
     private Double price;
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<BookRating> bookRatings = new HashSet<>();
 
-    @ManyToMany(mappedBy = "books")
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name = "book2tag", joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @JsonIgnore
     private Set<Tag> tags = new HashSet<>();
 
-    @ManyToMany(mappedBy = "books")
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name = "book2genre", joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id"))
     @JsonIgnore
     private Set<Genre> genres = new HashSet<>();
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<BookReview> bookReviews = new HashSet<>();
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<BookUser> bookUsers = new HashSet<>();
+
+    @OneToMany(mappedBy = "book", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<BookAuthor> bookAuthors = new HashSet<>();
+
+    @OneToMany(mappedBy = "book")
+    @JsonIgnore
+    private Set<BalanceTransaction> balanceTransactions = new HashSet<>();
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<FileDownload> fileDownloads = new HashSet<>();
+
+    @PreRemove
+    private void preRemove() {
+        balanceTransactions.forEach(transaction -> transaction.setBook(null));
+    }
 
     @JsonProperty
     public Integer discountPrice() {
@@ -104,6 +128,14 @@ public class Book implements Serializable {
 
     public void setBookRatings(Set<BookRating> bookRatings) {
         this.bookRatings = bookRatings;
+    }
+
+    public Set<FileDownload> getFileDownloads() {
+        return fileDownloads;
+    }
+
+    public void setFileDownloads(Set<FileDownload> fileDownloads) {
+        this.fileDownloads = fileDownloads;
     }
 
     public Set<BookReview> getBookReviews() {
@@ -208,6 +240,30 @@ public class Book implements Serializable {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Set<BookUser> getBookUsers() {
+        return bookUsers;
+    }
+
+    public void setBookUsers(Set<BookUser> bookUsers) {
+        this.bookUsers = bookUsers;
+    }
+
+    public Set<BookAuthor> getBookAuthors() {
+        return bookAuthors;
+    }
+
+    public void setBookAuthors(Set<BookAuthor> bookAuthors) {
+        this.bookAuthors = bookAuthors;
+    }
+
+    public Set<BalanceTransaction> getBalanceTransactions() {
+        return balanceTransactions;
+    }
+
+    public void setBalanceTransactions(Set<BalanceTransaction> balanceTransactions) {
+        this.balanceTransactions = balanceTransactions;
     }
 
     @Override
