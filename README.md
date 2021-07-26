@@ -27,16 +27,16 @@
 ## Настройки приложения:
 ### Изменить настройки вы можете в файле MyBookShopApp\src\main\resources\application.properties
 
-_Порт приложения: 8080_ <br>
-_Порт базы данных: 5432_ <br>
-_Имя пользователя: postgres_ <br>
-_Пароль пользователя: postgres_ <br>
+Для подключении базы данных необходимо установить настройки: 
 
-База данных инициализируется при запуске приложения с помощью Liquibase, в resources/db/changelog для каждой сущности находится пакет с changeSet b SQL-скриптами, для этого необходимо установить следующие настройки:
 
-_spring.liquibase.enabled=true_ <br>
-_spring.liquibase.drop-first=true_ <br>
-_spring.liquibase.change-log=classpath:/db/changelog/db.changelog-master.xml_ <br>
+_spring.datasource.url={url}_ <br>
+_spring.datasource.username={name}_ <br>
+_spring.datasource.password={pass}_ <br>
+_spring.datasource.driver-class-name={driver}_ <br>
+_spring.jpa.database-platform={dialect}_ <br>
+
+База данных инициализируется при запуске приложения с помощью Liquibase, в resources/db/changelog для каждой сущности находится пакет с changeSet b SQL-скриптами.
 
 Приложение интегрировано с Google Book API и для использования строки поиска необходимо установить следующие свойство:
 
@@ -78,7 +78,7 @@ mvnw spring-boot:run для Windows
 Создание и запуск jar файла: <br>
 mvnw clean -Dmaven.test.skip package <br>
 cd target <br>
-java -jar MyBookShopApp-0.0.1-SNAPSHOT.jar
+java -jar MyBookShopApp-0.0.1.jar
 
 #### Для Linux
 Запуск из командной строки из корневой папки: <br>
@@ -86,4 +86,4 @@ mvn spring-boot:run для Windows
 
 Создание и запуск jar файла: <br>
 mvn clean -Dmaven.test.skip package <br>
-java -jar */MyBookShopApp-0.0.1-SNAPSHOT.jar
+java -jar */MyBookShopApp-0.0.1.jar

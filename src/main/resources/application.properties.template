@@ -1,27 +1,27 @@
-spring.messages.basename={lang}
-spring.web.resources.static-locations={path}
-spring.thymeleaf.prefix={path}
+spring.messages.basename=lang.messages
+spring.web.resources.static-locations=classpath:/spring-frontend/
+spring.thymeleaf.prefix=classpath:/spring-frontend/
 
 spring.datasource.url={url}
 spring.datasource.username={name}
 spring.datasource.password={pass}
 spring.datasource.driver-class-name={driver}
 
-spring.datasource.initialization-mode={mode}
+spring.datasource.initialization-mode=never
 
-spring.jpa.hibernate.ddl-auto={mode}
-spring.jpa.database-platform={platform}
-spring.jpa.show-sql={mode}
+spring.jpa.hibernate.ddl-auto=none
+spring.jpa.database-platform={dialect}
+spring.jpa.show-sql=true
 
-spring.liquibase.enabled={mode}
-spring.liquibase.drop-first={mode}
-spring.liquibase.change-log={mode}
+spring.liquibase.enabled=true
+spring.liquibase.drop-first=true
+spring.liquibase.change-log=classpath:/db/changelog/db.changelog-master.xml
 
 upload.path={path}
 download.path={path}
 
 auth.secret={secret}
-server.servlet.session.tracking-modes={mode}
+server.servlet.session.tracking-modes=cookie
 
 spring.security.oauth2.client.registration.facebook.client-id={id}
 spring.security.oauth2.client.registration.facebook.client-secret={secret}
