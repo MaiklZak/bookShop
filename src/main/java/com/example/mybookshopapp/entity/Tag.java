@@ -12,7 +12,8 @@ import java.util.Set;
 public class Tag implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "seq_tag_id", sequenceName = "seq_tag_id", initialValue = 1001, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_tag_id")
     private Integer id;
 
     private String name;

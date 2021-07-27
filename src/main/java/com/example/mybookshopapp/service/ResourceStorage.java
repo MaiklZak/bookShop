@@ -3,6 +3,7 @@ package com.example.mybookshopapp.service;
 import com.example.mybookshopapp.entity.BookFile;
 import com.example.mybookshopapp.entity.FileDownload;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
+import com.example.mybookshopapp.errs.NoSupportFileException;
 import com.example.mybookshopapp.repository.BookFileRepository;
 import com.example.mybookshopapp.repository.FileDownloadRepository;
 import org.apache.commons.io.FilenameUtils;
@@ -12,12 +13,15 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @Service
@@ -86,5 +90,23 @@ public class ResourceStorage {
             download.setCount(download.getCount() + 1);
         }
         fileDownloadRepository.save(download);
+    }
+
+    public BookFile uploadFile(MultipartFile fileBook) throws NoSupportFileException {
+        String fileName = fileBook.getOriginalFilename();
+        if (fileName != null && !fileName.isEmpty() &&
+                !fileName.endsWith(".pdf") && !fileName.endsWith(".epub") && !fileName.endsWith(".fb2")) {
+            throw new NoSupportFileException("current file is not supported");
+        }
+        try (BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(downloadPath + "/" + fileBook.getOriginalFilename()))) {
+            os.write(fileBook.getBytes());
+        } catch (IOException e) {
+            throw new NoSupportFileException("during uploading file occurred error");
+        }
+        BookFile file = new BookFile();
+        file.setPath(fileName);
+        file.setHash(UUID.randomUUID().toString());
+        file.setType(fileName);
+        return file;
     }
 }

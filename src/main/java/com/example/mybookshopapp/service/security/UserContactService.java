@@ -33,7 +33,7 @@ public class UserContactService {
     @Value("${twilio.TWILIO_NUMBER}")
     private String twilioNumber;
 
-    private Random random = new Random();
+    private final Random random = new Random();
 
     private final UserContactRepository userContactRepository;
     private final PasswordEncoder passwordEncoder;

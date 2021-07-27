@@ -8,10 +8,11 @@ import java.io.Serializable;
 public class BookAuthor implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "seq_book2author_id", sequenceName = "seq_book2author_id", initialValue = 1001, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_book2author_id")
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "book_id")
     private Book book;
 

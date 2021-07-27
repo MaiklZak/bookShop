@@ -15,4 +15,6 @@ public interface GenreRepository extends JpaRepository<Genre, Integer> {
     List<Genre> findByBooksIn(List<Book> books);
 
     Genre findBySlug(String slug);
+
+    Genre findByName(String name);
 }

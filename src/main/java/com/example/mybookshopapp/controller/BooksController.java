@@ -1,5 +1,6 @@
 package com.example.mybookshopapp.controller;
 
+import com.example.mybookshopapp.dto.BookNewDto;
 import com.example.mybookshopapp.dto.RatingBookDto;
 import com.example.mybookshopapp.dto.ReviewDto;
 import com.example.mybookshopapp.dto.ReviewLikeDto;
@@ -8,14 +9,12 @@ import com.example.mybookshopapp.entity.BookReview;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
 import com.example.mybookshopapp.entity.security.Role;
+import com.example.mybookshopapp.errs.NoSupportFileException;
 import com.example.mybookshopapp.repository.BookRatingRepository;
 import com.example.mybookshopapp.repository.BookRepository;
 import com.example.mybookshopapp.repository.BookReviewRepository;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
-import com.example.mybookshopapp.service.AuthorService;
-import com.example.mybookshopapp.service.BookUserService;
-import com.example.mybookshopapp.service.RatingService;
-import com.example.mybookshopapp.service.ResourceStorage;
+import com.example.mybookshopapp.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -24,11 +23,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -53,9 +54,10 @@ public class BooksController {
     private final BookUserService bookUserService;
     private final RatingService ratingService;
     private final AuthorService authorService;
+    private final BookService bookService;
 
     @Autowired
-    public BooksController(BookRatingRepository bookRatingRepository, BookReviewRepository bookReviewRepository, BookRepository bookRepository, ResourceStorage storage, BookstoreUserRepository bookstoreUserRepository, BookUserService bookUserService, RatingService ratingService, AuthorService authorService) {
+    public BooksController(BookRatingRepository bookRatingRepository, BookReviewRepository bookReviewRepository, BookRepository bookRepository, ResourceStorage storage, BookstoreUserRepository bookstoreUserRepository, BookUserService bookUserService, RatingService ratingService, AuthorService authorService, BookService bookService) {
         this.bookRatingRepository = bookRatingRepository;
         this.bookReviewRepository = bookReviewRepository;
         this.bookRepository = bookRepository;
@@ -64,6 +66,7 @@ public class BooksController {
         this.bookUserService = bookUserService;
         this.ratingService = ratingService;
         this.authorService = authorService;
+        this.bookService = bookService;
     }
 
     @GetMapping("/{slug}")
@@ -179,5 +182,23 @@ public class BooksController {
         book.setDescription(editText);
         bookRepository.save(book);
         return REDIRECT_BOOKS_URL + slug;
+    }
+
+    @GetMapping("/new")
+    public String newBookPage(Model model) {
+        model.addAttribute("newBook", new BookNewDto());
+        return "/books/new";
+    }
+
+    @PostMapping("/new")
+    public String saveNewBook(@Valid @ModelAttribute("newBook") BookNewDto newBook,
+                              BindingResult bindingResult,
+                              Model model) throws IOException, NoSupportFileException {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("newBook", newBook);
+            return "/books/new";
+        }
+        Book book = bookService.getBookFromBookNewDto(newBook);
+        return REDIRECT_BOOKS_URL + book.getSlug();
     }
 }

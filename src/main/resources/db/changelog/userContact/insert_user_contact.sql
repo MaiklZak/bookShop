@@ -1,3 +1,4 @@
+insert into user_contact (id, user_id, type, approved, code, code_trials, code_time, contact) values (39, 1, 'EMAIL', 1, '648 099', 0, '2020-12-28 08:34:48', 'vecav13989@dedatre.com');
 insert into user_contact (id, user_id, type, approved, code, code_trials, code_time, contact) values (1, 78, 'PHONE', 0, '529 981', 0, '2021-01-13 06:11:59', '+7 (202) 855-72-39');
 insert into user_contact (id, user_id, type, approved, code, code_trials, code_time, contact) values (2, 59, 'PHONE', 1, '505 970', 0, '2021-03-18 16:07:01', '+7 (035) 187-83-45');
 insert into user_contact (id, user_id, type, approved, code, code_trials, code_time, contact) values (3, 99, 'PHONE', 0, '807 854', 0, '2021-06-09 22:17:30', '+7 (364) 028-01-56');
@@ -36,7 +37,6 @@ insert into user_contact (id, user_id, type, approved, code, code_trials, code_t
 insert into user_contact (id, user_id, type, approved, code, code_trials, code_time, contact) values (36, 67, 'PHONE', 0, '884 522', 0, '2021-04-28 17:17:12', '+7 (897) 069-13-52');
 insert into user_contact (id, user_id, type, approved, code, code_trials, code_time, contact) values (37, 89, 'PHONE', 0, '432 262', 0, '2020-07-19 05:38:13', '+7 (867) 689-61-07');
 insert into user_contact (id, user_id, type, approved, code, code_trials, code_time, contact) values (38, 37, 'PHONE', 0, '711 615', 0, '2020-07-15 17:32:36', '+7 (350) 998-46-86');
-insert into user_contact (id, user_id, type, approved, code, code_trials, code_time, contact) values (39, 1, 'EMAIL', 1, '648 099', 0, '2020-12-28 08:34:48', 'vecav13989@dedatre.com');
 insert into user_contact (id, user_id, type, approved, code, code_trials, code_time, contact) values (40, 19, 'PHONE', 0, '732 245', 0, '2020-11-07 08:34:21', '+7 (566) 873-32-11');
 insert into user_contact (id, user_id, type, approved, code, code_trials, code_time, contact) values (41, 33, 'PHONE', 0, '900 299', 0, '2021-02-01 05:37:38', '+7 (662) 050-26-66');
 insert into user_contact (id, user_id, type, approved, code, code_trials, code_time, contact) values (42, 22, 'PHONE', 1, '760 380', 0, '2021-06-16 17:35:24', '+7 (987) 356-45-26');

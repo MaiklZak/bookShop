@@ -1,9 +1,6 @@
 package com.example.mybookshopapp.controller;
 
-import com.example.mybookshopapp.errs.EmptySearchException;
-import com.example.mybookshopapp.errs.IncorrectAmountToEnterException;
-import com.example.mybookshopapp.errs.NoEnoughFundsForPayment;
-import com.example.mybookshopapp.errs.WrongCredentialsException;
+import com.example.mybookshopapp.errs.*;
 import com.example.mybookshopapp.errs.security.NotFoundUserWithContactException;
 import com.example.mybookshopapp.errs.security.WrongCodeLoginException;
 import com.example.mybookshopapp.errs.security.WrongCodeRegException;
@@ -59,5 +56,10 @@ public class GlobalExceptionHandlerController {
         return "redirect:/signup";
     }
 
+    @ExceptionHandler(NoSupportFileException.class)
+    public String handleNoSupportFileException(NoSupportFileException e, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("fileError", e);
+        return "redirect:/books/new";
+    }
 
 }

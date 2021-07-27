@@ -8,7 +8,8 @@ import java.io.Serializable;
 public class BookFile implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "seq_book_file_id", sequenceName = "seq_book_file_id", initialValue = 1001, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_book_file_id")
     private Integer id;
 
     private String hash;
@@ -24,6 +25,16 @@ public class BookFile implements Serializable {
 
     public String getBookFileExtensionString() {
         return BookFileType.getExtensionStringByTypeId(typeId);
+    }
+
+    public void setType(String fileName) {
+        if (fileName.endsWith(".pdf")) {
+            setTypeId(1);
+        } else if (fileName.endsWith(".epub")) {
+            setTypeId(2);
+        } else {
+            setTypeId(3);
+        }
     }
 
     public Integer getId() {

@@ -11,7 +11,8 @@ import java.util.Set;
 public class Genre implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "seq_genre_id", sequenceName = "seq_genre_id", initialValue = 1001, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_genre_id")
     private Integer id;
 
     @Column(name = "parent_id")
