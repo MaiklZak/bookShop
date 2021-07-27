@@ -61,9 +61,14 @@ p.error-browser
                 </div>
                 <div class="Spoiler">
                     <div class="Spoiler-visible">
-                        <div class="pict pict_left"><img th:src="${author.photo}"
-                                                         src="/assets/img/content/main/card.jpg" alt="card.jpg"/>
-                        </div>
+                        <form sec:authorize="hasAuthority('ADMIN')" id="imgForm" method="POST"
+                              enctype="multipart/form-data" action="#"
+                              th:action="${'/authors/' + author.slug + '/photo/save'}">
+                            <div class="pict pict_left" id="uploadButton"><img th:src="${author.photo}"
+                                                             src="/assets/img/content/main/card.jpg" alt="card.jpg"/>
+                            </div>
+                            <input type="file" name="file" id="dialog" style="display: none" accept="image/*"/>
+                        </form>
                         <div th:text="${author.description}">
                             <h2>Биография
                             </h2>
@@ -98,7 +103,8 @@ p.error-browser
                         <button class="Spoiler-trigger btn btn_primary btn_nr" type="button" data-showtext="Свернуть"
                                 data-hidetext="Показать полностью">
                         </button>
-                        <div sec:authorize="hasAuthority('ADMIN')" style="margin-left: 25px" class="ProductCard-cartElement">
+                        <div sec:authorize="hasAuthority('ADMIN')" style="margin-left: 25px"
+                             class="ProductCard-cartElement">
                             <a id="btn_edit" href="#" class="btn btn_primary btn_nr">
                                 <span class="btn-content">Редактировать</span>
                             </a>
@@ -163,6 +169,7 @@ p.error-browser
 </div>
 <footer th:replace="~{fragments/footer_fragment :: footFragment}"></footer>
 <script src="/assets/plg/jQuery/jquery-3.5.1.min.js"></script>
+<script src="/assets/js/UploadNewImageScript.js"></script>
 <script src="/assets/js/EditDescriptionScript.js"></script>
 <script src="/assets/js/scripts.min.js?v=93601584"></script>
 </body>

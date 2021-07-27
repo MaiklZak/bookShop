@@ -16,6 +16,7 @@ import com.example.mybookshopapp.repository.BookReviewRepository;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
 import com.example.mybookshopapp.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -41,6 +42,9 @@ import java.util.logging.Logger;
 @Controller
 @RequestMapping("/books")
 public class BooksController {
+
+    @Value("${upload.book-image.path}")
+    String uploadPath;
 
     private static final String REDIRECT_BOOKS_URL = "redirect:/books/";
 
@@ -113,7 +117,7 @@ public class BooksController {
 
     @PostMapping("/{slug}/img/save")
     public String saveNewBookImage(@RequestParam("file") MultipartFile file, @PathVariable("slug") String slug) throws IOException {
-        String savePath = storage.saveNewBookImage(file, slug);
+        String savePath = storage.saveNewImage(file, slug, uploadPath);
         Book bookToUpdate = bookRepository.findBookBySlug(slug);
         bookToUpdate.setImage(savePath);
         bookRepository.save(bookToUpdate); //save new path in db here
@@ -200,5 +204,11 @@ public class BooksController {
         }
         Book book = bookService.getBookFromBookNewDto(newBook);
         return REDIRECT_BOOKS_URL + book.getSlug();
+    }
+
+    @GetMapping("/{slug}/review/remove/{id}")
+    public String removeReview(@PathVariable String slug, @PathVariable Integer id) {
+        bookReviewRepository.deleteById(id);
+        return REDIRECT_BOOKS_URL + slug;
     }
 }

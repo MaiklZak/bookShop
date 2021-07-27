@@ -27,9 +27,6 @@ import java.util.logging.Logger;
 @Service
 public class ResourceStorage {
 
-    @Value("${upload.path}")
-    String uploadPath;
-
     @Value("${download.path}")
     String downloadPath;
 
@@ -42,7 +39,7 @@ public class ResourceStorage {
         this.fileDownloadRepository = fileDownloadRepository;
     }
 
-    public String saveNewBookImage(MultipartFile file, String slug) throws IOException {
+    public String saveNewImage(MultipartFile file, String slug, String uploadPath) throws IOException {
         String resourceURI = null;
 
         if (!file.isEmpty()) {
@@ -53,7 +50,7 @@ public class ResourceStorage {
 
             String fileName = slug + "." + FilenameUtils.getExtension(file.getOriginalFilename());
             Path path = Paths.get(uploadPath, fileName);
-            resourceURI = "/book-covers/" + fileName;
+            resourceURI = (slug.contains("book") ? "/book-covers/" : "/author-covers/") + fileName;
             file.transferTo(path); // uploading user file here
             Logger.getLogger(this.getClass().getSimpleName()).info(() -> fileName + " uploaded OK!");
         }

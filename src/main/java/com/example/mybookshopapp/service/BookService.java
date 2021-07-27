@@ -30,6 +30,9 @@ import java.util.stream.Collectors;
 @Service
 public class BookService {
 
+    @Value("${upload.book-image.path}")
+    String uploadPath;
+
     private static final String PUB_DATE = "pubDate";
     private static final String TITLE = "title";
 
@@ -266,7 +269,7 @@ public class BookService {
         BookFile bookFile = resourceStorage.uploadFile(newBookDto.getFileBook());
         book.setBookFileList(Collections.singletonList(bookFile));
 
-        String image = resourceStorage.saveNewBookImage(newBookDto.getImage(), book.getSlug());
+        String image = resourceStorage.saveNewImage(newBookDto.getImage(), book.getSlug(), uploadPath);
         book.setImage(image);
 
         Set<Genre> genreSet = genreService.getGenresForNewBook(newBookDto.getGenre());
