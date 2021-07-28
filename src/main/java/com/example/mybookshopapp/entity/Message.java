@@ -19,7 +19,7 @@ public class Message implements Serializable {
     @Column(columnDefinition = "TIMESTAMP(6)")
     private LocalDateTime time;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "user_id")
     private BookstoreUser user;
 

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -181,5 +182,9 @@ public class UserContactService {
         }
         userContact.setCodeTrials(0);
         userContactRepository.save(userContact);
+    }
+
+    public List<UserContact> getContactsByUser(BookstoreUser user) {
+        return userContactRepository.findByUser(user);
     }
 }
