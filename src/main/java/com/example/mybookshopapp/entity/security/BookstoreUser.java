@@ -2,6 +2,7 @@ package com.example.mybookshopapp.entity.security;
 
 import com.example.mybookshopapp.entity.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -35,7 +36,8 @@ public class BookstoreUser implements Serializable {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<UserContact> contacts = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
@@ -70,10 +72,12 @@ public class BookstoreUser implements Serializable {
         this.regTime = LocalDateTime.now();
     }
 
+    @JsonProperty("formatTime")
     public String getFormatTime() {
         return regTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT));
     }
 
+    @JsonProperty("roleString")
     public String getRolesString() {
         return roles.toString().replaceAll("[\\[\\]]", "");
     }

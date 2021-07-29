@@ -67,10 +67,13 @@ public class UserContactService {
         return sb.toString();
     }
 
-    public void saveNewCode(String code, String contact) throws NotFoundUserWithContactException {
+    public void saveNewCode(String code, String contact) throws NotFoundUserWithContactException, WrongCodeLoginException {
         UserContact userContact = userContactRepository.findByContact(contact);
         if (userContact == null || userContact.getApproved() == 0) {
             throw new NotFoundUserWithContactException("User with specified contact is not exists");
+        }
+        if (userContact.getCodeTime().isAfter(LocalDateTime.now())) {
+            throw new WrongCodeLoginException("You were blocked. Try to log in later");
         }
         userContact.setCode(passwordEncoder.encode(code));
         userContact.setCodeTime(LocalDateTime.now());
@@ -79,9 +82,20 @@ public class UserContactService {
     }
 
 
-    public void saveNewCodeForReg(String code, String contact) {
-        UserContact userContact = new UserContact(code, contact);
-        userContact.setCodeTrials(0);
+    public void saveNewCodeForReg(String code, String contact) throws WrongCodeRegException {
+        UserContact userContact = userContactRepository.findByContact(contact);
+        if (userContact != null) {
+            if (userContact.getApproved() == 1) {
+                throw new WrongCodeRegException("Contact already approved");
+            }
+            userContact.setCode(code);
+            if (userContact.getCodeTime().plusMinutes(5).isBefore(LocalDateTime.now())) {
+                userContact.setCodeTrials(0);
+            }
+        } else {
+            userContact = new UserContact(code, contact);
+            userContact.setCodeTrials(0);
+        }
         if (contact.contains("@")) {
             userContact.setType(ContactType.EMAIL);
         } else {
@@ -186,5 +200,14 @@ public class UserContactService {
 
     public List<UserContact> getContactsByUser(BookstoreUser user) {
         return userContactRepository.findByUser(user);
+    }
+
+    public void sendEmailNotice(String emailFrom, String emailTo, String notice) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(emailFrom);
+        message.setTo(emailTo);
+        message.setSubject("Bookstore notice!");
+        message.setText(notice);
+        javaMailSender.send(message);
     }
 }

@@ -20,8 +20,8 @@ public class UserContact implements Serializable {
     @Enumerated(EnumType.STRING)
     private ContactType type;
 
-    @Column(columnDefinition = "SMALLINT")
-    private Integer approved;
+    @Column(columnDefinition = "SMALLINT default '0'")
+    private Integer approved = 0;
 
     private String code;
 

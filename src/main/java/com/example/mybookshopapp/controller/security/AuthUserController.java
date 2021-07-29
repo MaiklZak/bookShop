@@ -52,7 +52,7 @@ public class AuthUserController {
 
     @PostMapping("/requestContactConfirmation")
     @ResponseBody
-    public ContactConfirmationResponse handleRequestContactConfirmation(@RequestBody ContactConfirmationPayload payload) throws NotFoundUserWithContactException {
+    public ContactConfirmationResponse handleRequestContactConfirmation(@RequestBody ContactConfirmationPayload payload) throws NotFoundUserWithContactException, WrongCodeLoginException {
         ContactConfirmationResponse response = new ContactConfirmationResponse();
         String code = userContactService.generateCode();
         if (payload.getContact().contains("@")) {
@@ -68,7 +68,7 @@ public class AuthUserController {
 
     @PostMapping("/requestEmailConfirmation")
     @ResponseBody
-    public ContactConfirmationResponse handleRequestEmailConfirmation(@RequestBody ContactConfirmationPayload payload) {
+    public ContactConfirmationResponse handleRequestEmailConfirmation(@RequestBody ContactConfirmationPayload payload) throws WrongCodeRegException {
         ContactConfirmationResponse response = new ContactConfirmationResponse();
         String code = userContactService.generateCode();
         userContactService.saveNewCodeForReg(code, payload.getContact());
@@ -79,7 +79,7 @@ public class AuthUserController {
 
     @PostMapping("/requestPhoneContactConfirmation")
     @ResponseBody
-    public ContactConfirmationResponse handleRequestPhoneConfirmation(@RequestBody ContactConfirmationPayload payload) {
+    public ContactConfirmationResponse handleRequestPhoneConfirmation(@RequestBody ContactConfirmationPayload payload) throws WrongCodeRegException {
         ContactConfirmationResponse response = new ContactConfirmationResponse();
         String code = userContactService.generateCode();
         userContactService.sendSecretCodeSms(payload.getContact(), code);
