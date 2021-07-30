@@ -17,7 +17,8 @@ spring.liquibase.enabled=true
 spring.liquibase.drop-first=true
 spring.liquibase.change-log=classpath:/db/changelog/db.changelog-master.xml
 
-upload.path={path}
+upload.book-image.path={path}
+upload.author-photo.path={path}
 download.path={path}
 
 auth.secret={secret}
