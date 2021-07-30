@@ -688,7 +688,7 @@
                                                     alt="dislike.svg"/></span>
                                             <span th:text="${review.getDisLikes()}">100</span>
                                         </div>
-                                        <div class="divLike">
+                                        <div class="divLike" sec:authorize="hasAuthority('ADMIN')">
                                             <a style="margin-left: 750px" class="btn btn_warning"
                                                th:href="@{'/books/' + ${slugBook.slug} + '/review/remove/' + ${review.id}}">Удалить
                                             </a>

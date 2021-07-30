@@ -33,3 +33,11 @@
 .table tbody tr td:last-child {
     border-radius: 0 8px 8px 0;
 }
+
+#users-upload {
+    margin-left: 380px;
+}
+
+.users-books {
+    margin-top: 50px;
+}
