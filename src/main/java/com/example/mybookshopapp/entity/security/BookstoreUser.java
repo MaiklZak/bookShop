@@ -3,6 +3,8 @@ package com.example.mybookshopapp.entity.security;
 import com.example.mybookshopapp.entity.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,6 +14,8 @@ import java.time.format.FormatStyle;
 import java.util.HashSet;
 import java.util.Set;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class BookstoreUser implements Serializable {
@@ -86,117 +90,5 @@ public class BookstoreUser implements Serializable {
     private void preRemove() {
         messages.forEach(message -> message.setUser(null));
         bookReviews.forEach(review -> review.setUser(null));
-    }
-
-    public Set<UserContact> getContacts() {
-        return contacts;
-    }
-
-    public void setContacts(Set<UserContact> contacts) {
-        this.contacts = contacts;
-    }
-
-    public Set<FileDownload> getFileDownloads() {
-        return fileDownloads;
-    }
-
-    public void setFileDownloads(Set<FileDownload> fileDownloads) {
-        this.fileDownloads = fileDownloads;
-    }
-
-    public Set<Message> getMessages() {
-        return messages;
-    }
-
-    public void setMessages(Set<Message> messages) {
-        this.messages = messages;
-    }
-
-    public Set<BalanceTransaction> getBalanceTransactions() {
-        return balanceTransactions;
-    }
-
-    public void setBalanceTransactions(Set<BalanceTransaction> balanceTransactions) {
-        this.balanceTransactions = balanceTransactions;
-    }
-
-    public Set<BookRating> getRatings() {
-        return ratings;
-    }
-
-    public void setRatings(Set<BookRating> ratings) {
-        this.ratings = ratings;
-    }
-
-    public Set<BookUser> getBookUsers() {
-        return bookUsers;
-    }
-
-    public void setBookUsers(Set<BookUser> bookUsers) {
-        this.bookUsers = bookUsers;
-    }
-
-    public Integer getBalance() {
-        return balance;
-    }
-
-    public void setBalance(Integer balance) {
-        this.balance = balance;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getHash() {
-        return hash;
-    }
-
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
-
-    public LocalDateTime getRegTime() {
-        return regTime;
-    }
-
-    public void setRegTime(LocalDateTime regTime) {
-        this.regTime = regTime;
-    }
-
-    public Set<BookReview> getBookReviews() {
-        return bookReviews;
-    }
-
-    public void setBookReviews(Set<BookReview> bookReviews) {
-        this.bookReviews = bookReviews;
-    }
-
-    public Set<BookReviewLike> getBookReviewLikes() {
-        return bookReviewLikes;
-    }
-
-    public void setBookReviewLikes(Set<BookReviewLike> bookReviewLikes) {
-        this.bookReviewLikes = bookReviewLikes;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
     }
 }

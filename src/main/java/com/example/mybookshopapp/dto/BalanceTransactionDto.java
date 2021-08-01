@@ -1,9 +1,13 @@
 package com.example.mybookshopapp.dto;
 
 import com.example.mybookshopapp.entity.BalanceTransaction;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Setter
 public class BalanceTransactionDto {
 
     private Integer count;
@@ -12,21 +16,5 @@ public class BalanceTransactionDto {
     public BalanceTransactionDto(List<BalanceTransaction> transactions) {
         this.transactions = transactions;
         this.count = transactions.size();
-    }
-
-    public Integer getCount() {
-        return count;
-    }
-
-    public void setCount(Integer count) {
-        this.count = count;
-    }
-
-    public List<BalanceTransaction> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(List<BalanceTransaction> transactions) {
-        this.transactions = transactions;
     }
 }

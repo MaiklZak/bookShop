@@ -99,6 +99,7 @@ public class BooksController {
                 currentUser = bookstoreUserRepository.save(currentUser);
 
                 Cookie cookie = new Cookie("userHash", currentUser.getHash());
+                cookie.setHttpOnly(true);
                 cookie.setPath("/");
                 response.addCookie(cookie);
             }

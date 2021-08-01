@@ -22,8 +22,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import java.security.NoSuchAlgorithmException;
 
 @Controller
@@ -85,14 +83,12 @@ public class ProfileController {
     public String approveCredentials(@PathVariable Integer updateUserId,
                                      @PathVariable Integer currentUserId,
                                      @PathVariable String code,
-                                     HttpServletResponse response,
                                      Model model) throws WrongCredentialsException {
 
-        String token = userRegister.approveCredentials(updateUserId, currentUserId, code);
+        userRegister.approveCredentials(updateUserId, currentUserId, code);
         BookstoreUser user = (BookstoreUser) userRegister.getCurrentUser();
         UserContact userContactEmail = userContactRepository.findByUserAndType(user, ContactType.EMAIL);
         UserContact userContactPhone = userContactRepository.findByUserAndType(user, ContactType.PHONE);
-        response.addCookie(new Cookie("token", token));
         model.addAttribute("curUsr", new UserWithContactsDto(user.getHash(), user.getBalance(), user.getName(),
                 userContactEmail.getContact(), userContactPhone.getContact()));
         model.addAttribute("part", null);

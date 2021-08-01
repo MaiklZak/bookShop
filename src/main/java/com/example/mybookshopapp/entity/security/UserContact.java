@@ -1,9 +1,14 @@
 package com.example.mybookshopapp.entity.security;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "user_contact")
 public class UserContact implements Serializable {
@@ -48,69 +53,5 @@ public class UserContact implements Serializable {
 
     public UserContact() {
         this.codeTime = LocalDateTime.now();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public BookstoreUser getUser() {
-        return user;
-    }
-
-    public void setUser(BookstoreUser user) {
-        this.user = user;
-    }
-
-    public ContactType getType() {
-        return type;
-    }
-
-    public void setType(ContactType type) {
-        this.type = type;
-    }
-
-    public Integer getApproved() {
-        return approved;
-    }
-
-    public void setApproved(Integer approved) {
-        this.approved = approved;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public Integer getCodeTrials() {
-        return codeTrials;
-    }
-
-    public void setCodeTrials(Integer codeTrials) {
-        this.codeTrials = codeTrials;
-    }
-
-    public LocalDateTime getCodeTime() {
-        return codeTime;
-    }
-
-    public void setCodeTime(LocalDateTime codeTime) {
-        this.codeTime = codeTime;
-    }
-
-    public String getContact() {
-        return contact;
-    }
-
-    public void setContact(String contact) {
-        this.contact = contact;
     }
 }

@@ -157,7 +157,7 @@ public class BookstoreUserRegister {
         javaMailSender.send(message);
     }
 
-    public String approveCredentials(Integer updateUserId, Integer currentUserId, String code) throws WrongCredentialsException {
+    public void approveCredentials(Integer updateUserId, Integer currentUserId, String code) throws WrongCredentialsException {
         BookstoreUser currentUser = bookstoreUserRepository.getOne(currentUserId);
         UserContact currentUserContactEmail = userContactRepository.findByUserAndType(currentUser, ContactType.EMAIL);
         UserContact currentUserContactPhone = userContactRepository.findByUserAndType(currentUser, ContactType.PHONE);
@@ -193,8 +193,6 @@ public class BookstoreUserRegister {
         String token = generateTokenForUpdateUser(contact, codeForAuth);
 
         authenticateUpdatedUser(contact, token);
-
-        return token;
     }
 
     private boolean verifyPhone(String phone) {

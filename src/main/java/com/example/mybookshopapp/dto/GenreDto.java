@@ -3,11 +3,15 @@ package com.example.mybookshopapp.dto;
 
 
 import com.example.mybookshopapp.entity.Genre;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
+@Setter
 public class GenreDto {
 
     private Genre parentGenre;
@@ -24,30 +28,6 @@ public class GenreDto {
         this.childGenres = new ArrayList<>(childGenres);
         this.parentGenre = parentGenre;
         this.countBooks = genre.getBooks().size();
-    }
-
-    public Integer getCountBooks() {
-        return countBooks;
-    }
-
-    public void setCountBooks(Integer countBooks) {
-        this.countBooks = countBooks;
-    }
-
-    public Genre getParentGenre() {
-        return parentGenre;
-    }
-
-    public void setParentGenre(Genre parentGenre) {
-        this.parentGenre = parentGenre;
-    }
-
-    public Genre getGenre() {
-        return genre;
-    }
-
-    public void setGenre(Genre genre) {
-        this.genre = genre;
     }
 
     public List<Genre> getChildGenres() {

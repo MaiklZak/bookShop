@@ -113,6 +113,7 @@ public class AuthUserController {
         userContactService.verifyCodeLogin(payload.getCode(), payload.getContact());
         ContactConfirmationResponse loginResponse = userRegister.jwtLogin(payload);
         Cookie cookie = new Cookie("token", loginResponse.getResult());
+        cookie.setHttpOnly(true);
         httpServletResponse.addCookie(cookie);
         return loginResponse;
     }
