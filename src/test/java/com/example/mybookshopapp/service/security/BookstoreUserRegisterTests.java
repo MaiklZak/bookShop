@@ -27,7 +27,7 @@ class BookstoreUserRegisterTests {
     private BookstoreUserRepository bookstoreUserRepositoryMock;
 
     @MockBean
-    private UserContactService userContactService;
+    private UserContactService userContactServiceMock;
 
     @Autowired
     BookstoreUserRegisterTests(BookstoreUserRegister userRegister) {
@@ -48,8 +48,8 @@ class BookstoreUserRegisterTests {
 
     @Test
     void registerNewUser() {
-        Mockito.doReturn(new UserContact()).when(userContactService).getByEmail(registrationForm.getEmail());
-        Mockito.doReturn(new UserContact()).when(userContactService).getByPhone(registrationForm.getPhone());
+        Mockito.doReturn(new UserContact()).when(userContactServiceMock).getByEmail(registrationForm.getEmail());
+        Mockito.doReturn(new UserContact()).when(userContactServiceMock).getByPhone(registrationForm.getPhone());
         Boolean result = userRegister.registerNewUser(registrationForm);
         assertTrue(result);
         Mockito.verify(bookstoreUserRepositoryMock, Mockito.times(1))

@@ -119,7 +119,6 @@ public class BookstoreUserRegister {
         updateUserContactEmail.setType(ContactType.EMAIL);
         updateUserContactPhone.setType(ContactType.PHONE);
 
-
         if (verifyUserName(changeUserForm.getName())) {
             updateUser.setName(changeUserForm.getName());
         } else {
@@ -200,11 +199,11 @@ public class BookstoreUserRegister {
     }
 
     private boolean verifyEmail(String email) {
-        return (email != null && !email.isEmpty() && email.contains("@"));
+        return (email != null && email.contains("@"));
     }
 
     private boolean verifyUserName(String name) {
-        return (name != null && !name.isEmpty() && name.length() > 2);
+        return (name != null && name.length() > 2);
     }
 
     public String generateTokenForUpdateUser(UserContact contact, String code) {
