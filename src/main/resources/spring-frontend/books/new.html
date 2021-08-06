@@ -2,21 +2,20 @@
 <html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>New book</title>
-    <meta name="description" content="Описание страницы">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <link href="favicon.ico" rel="shortcut icon">
-    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin="anonymous">
-    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Light.woff2" as="font" crossorigin="anonymous">
-    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Medium.woff2" as="font" crossorigin="anonymous">
-    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-ExtraBold.woff2" as="font" crossorigin="anonymous">
-    <link rel="stylesheet" href="/assets/css/fonts.min.css?v=09585989">
-    <link rel="stylesheet" href="/assets/css/basic.min.css?v=09585989">
-    <link rel="stylesheet" href="/assets/css/extra.min.css?v=09585989">
+    <meta name="description" content="Описание страницы"/>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+    <link href="favicon.ico" rel="shortcut icon"/>
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin="anonymous"/>
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Light.woff2" as="font" crossorigin="anonymous"/>
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Medium.woff2" as="font" crossorigin="anonymous"/>
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-ExtraBold.woff2" as="font" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="/assets/css/fonts.min.css?v=09585989"/>
+    <link rel="stylesheet" href="/assets/css/basic.min.css?v=09585989"/>
+    <link rel="stylesheet" href="/assets/css/extra.min.css?v=09585989"/>
     <link rel="stylesheet" href="/assets/css/AddNewBookStyle.css"/>
     <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-    <script defer src="/assets/js/scripts.min.js?v=09585989"></script>
 </head>
 <body>
 <header th:replace="~{fragments/header_auth_fragment :: headFragment}"></header>
@@ -81,14 +80,14 @@
                         </li>
                         <li>
                             <label for="image">Image of book:</label>
-                            <input id="image" type="file" name="image" th:field="*{image}" required/>
+                            <input id="image" type="file" name="image" th:field="*{image}" required="required"/>
                         </li>
                         <li class="li_error" th:if="${#fields.hasErrors('image')}">
                             <span class="field_error" th:errors="*{image}"></span>
                         </li>
                         <li>
                             <label for="fileBook">File of book:</label>
-                            <input id="fileBook" type="file" name="fileBook" th:field="*{fileBook}" required/>
+                            <input id="fileBook" type="file" name="fileBook" th:field="*{fileBook}" required="required"/>
                         </li>
                         <li class="li_error" th:if="${#fields.hasErrors('fileBook')}">
                             <span class="field_error" th:errors="*{fileBook}"></span>
@@ -104,5 +103,6 @@
     </div>
 </div>
 <footer th:replace="~{fragments/footer_fragment :: footFragment}"></footer>
+<script src="/assets/js/scripts.min.js?v=09585989"></script>
 </body>
 </html>

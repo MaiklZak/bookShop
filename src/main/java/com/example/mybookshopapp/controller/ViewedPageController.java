@@ -36,9 +36,9 @@ public class ViewedPageController {
 
     @GetMapping("/books/viewed")
     @ResponseBody
-    public BooksPageDto getPopularBooksPage(@AuthenticationPrincipal BookstoreUserDetails userDetails,
-                                            @RequestParam("offset") Integer offset,
-                                            @RequestParam("limit") Integer limit) {
+    public BooksPageDto getViewedBooksPage(@AuthenticationPrincipal BookstoreUserDetails userDetails,
+                                           @RequestParam("offset") Integer offset,
+                                           @RequestParam("limit") Integer limit) {
         List<Book> books = bookService.getPageOfViewedBooksByUser(userDetails.getBookstoreUser(), offset, limit);
         return new BooksPageDto(bookService.getBookWithAuthorDtoList(books));
     }

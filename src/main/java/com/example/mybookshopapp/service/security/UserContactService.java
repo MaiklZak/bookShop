@@ -109,7 +109,7 @@ public class UserContactService {
         if (userContact == null || !userContact.getCode().equals(code)) {
             return false;
         }
-        return LocalDateTime.now().plusSeconds(300).isAfter(userContact.getCodeTime());
+        return LocalDateTime.now().isBefore(userContact.getCodeTime().plusSeconds(300));
     }
 
     public UserContact getByEmail(String email) {

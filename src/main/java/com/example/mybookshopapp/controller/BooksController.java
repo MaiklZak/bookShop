@@ -168,7 +168,6 @@ public class BooksController {
     @PostMapping("/toRating")
     public String toRatingBook(@AuthenticationPrincipal BookstoreUserDetails userDetails,
                                @RequestBody RatingBookDto payload) {
-
         Book book = bookRepository.getOne(payload.getBookId());
         ratingService.rateBook(userDetails.getBookstoreUser(), book, payload);
         return REDIRECT_BOOKS_URL + book.getSlug();
