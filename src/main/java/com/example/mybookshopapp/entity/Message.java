@@ -2,11 +2,15 @@ package com.example.mybookshopapp.entity;
 
 import com.example.mybookshopapp.dto.MessageDto;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "message")
 public class Message implements Serializable {
@@ -19,7 +23,7 @@ public class Message implements Serializable {
     @Column(columnDefinition = "TIMESTAMP(6)")
     private LocalDateTime time;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "user_id")
     private BookstoreUser user;
 
@@ -51,61 +55,5 @@ public class Message implements Serializable {
 
     public Message() {
         time = LocalDateTime.now();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getTime() {
-        return time;
-    }
-
-    public void setTime(LocalDateTime time) {
-        this.time = time;
-    }
-
-    public BookstoreUser getUser() {
-        return user;
-    }
-
-    public void setUser(BookstoreUser user) {
-        this.user = user;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 }

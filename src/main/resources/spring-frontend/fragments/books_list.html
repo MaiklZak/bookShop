@@ -16,7 +16,7 @@
                     <div class="Card-description" th:text="${book.authorsName()}">Кондратенко Валерий
                         Петрович
                     </div>
-                    <div class="Card-cost"><span class="Card-priceOld"
+                    <div class="Card-cost"><span class="Card-priceOld" th:if="${book.priceOld != book.discountPrice}"
                                                  th:text="${'₽' + book.priceOld}">₽300.00</span>
                         <span class="Card-price"
                               th:text="${'₽' + book.discountPrice}">₽190.00</span>
@@ -36,8 +36,9 @@
                 </strong>
                 <div class="Card-description" th:text="${book.authorsName()}">Кондратенко Александр Петрович
                 </div>
-                <div class="Card-cost"><span class="Card-priceOld" th:text="${book.priceOld}">₽300.00</span>
-                    <span class="Card-price" th:text="${book.discountPrice}">₽190.00</span>
+                <div class="Card-cost"><span class="Card-priceOld" th:if="${book.priceOld != book.discountPrice}"
+                                             th:text="${'₽' + book.priceOld}">₽300.00</span>
+                    <span class="Card-price" th:text="${'₽' + book.discountPrice}">₽190.00</span>
                 </div>
             </div>
         </div>

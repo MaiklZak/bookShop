@@ -1,14 +1,21 @@
 package com.example.mybookshopapp.entity.security;
 
-import com.example.mybookshopapp.entity.BookReview;
-import com.example.mybookshopapp.entity.BookReviewLike;
+import com.example.mybookshopapp.entity.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.HashSet;
 import java.util.Set;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class BookstoreUser implements Serializable {
@@ -28,69 +35,60 @@ public class BookstoreUser implements Serializable {
 
     private String name;
 
-    @OneToMany(mappedBy = "user")
-    private Set<BookReview> bookReviews = new HashSet<>();
+    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
+    private Set<Role> roles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<UserContact> contacts = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private Set<BookReview> bookReviews = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<BookReviewLike> bookReviewLikes = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<BookRating> ratings = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<BookUser> bookUsers = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<BalanceTransaction> balanceTransactions = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<FileDownload> fileDownloads = new HashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private Set<Message> messages = new HashSet<>();
 
     public BookstoreUser() {
         this.regTime = LocalDateTime.now();
     }
 
-    public Integer getBalance() {
-        return balance;
+    @JsonProperty("formatTime")
+    public String getFormatTime() {
+        return regTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT));
     }
 
-    public void setBalance(Integer balance) {
-        this.balance = balance;
+    @JsonProperty("roleString")
+    public String getRolesString() {
+        return roles.toString().replaceAll("[\\[\\]]", "");
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getHash() {
-        return hash;
-    }
-
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
-
-    public LocalDateTime getRegTime() {
-        return regTime;
-    }
-
-    public void setRegTime(LocalDateTime regTime) {
-        this.regTime = regTime;
-    }
-
-    public Set<BookReview> getBookReviews() {
-        return bookReviews;
-    }
-
-    public void setBookReviews(Set<BookReview> bookReviews) {
-        this.bookReviews = bookReviews;
-    }
-
-    public Set<BookReviewLike> getBookReviewLikes() {
-        return bookReviewLikes;
-    }
-
-    public void setBookReviewLikes(Set<BookReviewLike> bookReviewLikes) {
-        this.bookReviewLikes = bookReviewLikes;
+    @PreRemove
+    private void preRemove() {
+        messages.forEach(message -> message.setUser(null));
+        bookReviews.forEach(review -> review.setUser(null));
     }
 }

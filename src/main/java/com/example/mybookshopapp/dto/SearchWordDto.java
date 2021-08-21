@@ -1,5 +1,10 @@
 package com.example.mybookshopapp.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class SearchWordDto {
 
     private String example;
@@ -9,13 +14,5 @@ public class SearchWordDto {
     }
 
     public SearchWordDto() {
-    }
-
-    public String getExample() {
-        return example;
-    }
-
-    public void setExample(String example) {
-        this.example = example;
     }
 }

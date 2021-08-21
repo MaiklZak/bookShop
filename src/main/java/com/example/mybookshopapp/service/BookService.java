@@ -1,16 +1,16 @@
 package com.example.mybookshopapp.service;
 
+import com.example.mybookshopapp.dto.BookNewDto;
 import com.example.mybookshopapp.dto.BookWithAuthorsDto;
 import com.example.mybookshopapp.dto.google.api.books.Item;
 import com.example.mybookshopapp.dto.google.api.books.Root;
 import com.example.mybookshopapp.entity.*;
 import com.example.mybookshopapp.entity.security.BookstoreUser;
 import com.example.mybookshopapp.errs.BookstoreApiWrongParameterException;
-import com.example.mybookshopapp.repository.AuthorRepository;
-import com.example.mybookshopapp.repository.BookRepository;
-import com.example.mybookshopapp.repository.GenreRepository;
-import com.example.mybookshopapp.repository.TagRepository;
+import com.example.mybookshopapp.errs.NoSupportFileException;
+import com.example.mybookshopapp.repository.*;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
+import com.example.mybookshopapp.util.GeneratorSlug;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -20,13 +20,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class BookService {
+
+    @Value("${upload.book-image.path}")
+    String uploadPath;
 
     private static final String PUB_DATE = "pubDate";
     private static final String TITLE = "title";
@@ -34,20 +39,26 @@ public class BookService {
     private final BookRepository bookRepository;
     private final RestTemplate restTemplate;
     private final BookstoreUserRepository bookstoreUserRepository;
-    private final AuthorRepository authorRepository;
-    private final GenreRepository genreRepository;
-    private final TagRepository tagRepository;
     private final BookUserService bookUserService;
+    private final ResourceStorage resourceStorage;
+    private final AuthorService authorService;
+    private final GeneratorSlug generatorSlug;
+    private final GenreService genreService;
+    private final TagService tagService;
+    private final BookFileRepository bookFileRepository;
 
     @Autowired
-    public BookService(BookRepository bookRepository, RestTemplate restTemplate, BookstoreUserRepository bookstoreUserRepository, AuthorRepository authorRepository, GenreRepository genreRepository, TagRepository tagRepository, BookUserService bookUserService) {
+    public BookService(BookRepository bookRepository, RestTemplate restTemplate, BookstoreUserRepository bookstoreUserRepository, BookUserService bookUserService, ResourceStorage resourceStorage, AuthorService authorService, GeneratorSlug generatorSlug, GenreService genreService, TagService tagService, BookFileRepository bookFileRepository) {
         this.bookRepository = bookRepository;
         this.restTemplate = restTemplate;
         this.bookstoreUserRepository = bookstoreUserRepository;
-        this.authorRepository = authorRepository;
-        this.genreRepository = genreRepository;
-        this.tagRepository = tagRepository;
         this.bookUserService = bookUserService;
+        this.resourceStorage = resourceStorage;
+        this.authorService = authorService;
+        this.generatorSlug = generatorSlug;
+        this.genreService = genreService;
+        this.tagService = tagService;
+        this.bookFileRepository = bookFileRepository;
     }
 
     public List<Book> getBooksByAuthorName(String authorName) {
@@ -111,9 +122,9 @@ public class BookService {
         List<Book> bookListByUser = bookRepository.findBooksByUserAndTypeIn(user,
                 new TypeBookToUser[]{TypeBookToUser.CART, TypeBookToUser.KEPT, TypeBookToUser.PAID, TypeBookToUser.VIEWED});
 
-        List<Author> authorList = authorRepository.findByBookIn(bookListByUser);
-        List<Genre> genreList = genreRepository.findByBooksIn(bookListByUser);
-        List<Tag> tagList = tagRepository.findByBooksIn(bookListByUser);
+        List<Author> authorList = authorService.findByBookIn(bookListByUser);
+        List<Genre> genreList = genreService.findByBooksIn(bookListByUser);
+        List<Tag> tagList = tagService.findByBooksIn(bookListByUser);
 
         List<Book> recommendBooks = bookRepository.findBooksByAuthorInOrGenresInOrTagsInAndBookUserNotIn(
                 authorList,
@@ -233,7 +244,7 @@ public class BookService {
 
     public List<BookWithAuthorsDto> getBookWithAuthorDtoList(List<Book> bookList) {
         return bookList.stream()
-                .map(book -> new BookWithAuthorsDto(book, authorRepository.findByBook(book)))
+                .map(book -> new BookWithAuthorsDto(book, authorService.getAuthorsByBook(book)))
                 .collect(Collectors.toList());
     }
 
@@ -244,5 +255,42 @@ public class BookService {
     public List<Book> getBooksByAuthorPage(Author author, Integer offset, Integer limit) {
         Pageable nextPage = PageRequest.of(offset, limit, Sort.Direction.DESC, PUB_DATE, TITLE);
         return bookRepository.findBooksByAuthor(author, nextPage);
+    }
+
+    public Book getBookFromBookNewDto(BookNewDto newBookDto) throws IOException, NoSupportFileException {
+        Book book = new Book();
+        book.setTitle(newBookDto.getTitle());
+        book.setDescription(newBookDto.getDescription());
+        book.setPriceOld(newBookDto.getPrice());
+        book.setPriceOld(newBookDto.getPrice());
+        book.setPrice(newBookDto.getDiscount() == null ? 0 : newBookDto.getDiscount() / 100.0);
+        book.setSlug(generatorSlug.generateSlug("book"));
+
+        BookFile bookFile = resourceStorage.uploadFile(newBookDto.getFileBook());
+        book.setBookFileList(Collections.singletonList(bookFile));
+
+        String image = resourceStorage.saveNewImage(newBookDto.getImage(), book.getSlug(), uploadPath);
+        book.setImage(image);
+
+        Set<Genre> genreSet = genreService.getGenresForNewBook(newBookDto.getGenre());
+        book.setGenres(genreSet);
+
+        Set<Tag> tagsList = tagService.getTagsForNewBook(newBookDto.getTag());
+        book.setTags(tagsList);
+
+        book = bookRepository.save(book);
+
+        bookFile.setBook(book);
+        bookFileRepository.save(bookFile);
+
+        List<Author> authorList = authorService.getAuthorsForNewBook(newBookDto.getAuthor());
+
+        authorService.setBookAuthors(book, authorList);
+
+        return book;
+    }
+
+    public Book getBySlug(String slug) {
+        return bookRepository.findBookBySlug(slug);
     }
 }

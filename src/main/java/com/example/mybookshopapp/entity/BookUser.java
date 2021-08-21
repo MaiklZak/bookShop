@@ -1,13 +1,18 @@
 package com.example.mybookshopapp.entity;
 
 import com.example.mybookshopapp.entity.security.BookstoreUser;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "book2user")
-public class BookUser {
+public class BookUser implements Serializable {
 
     @Id
     @SequenceGenerator(name = "seq_book_user", sequenceName = "seq_book_user", initialValue = 1001, allocationSize = 1)
@@ -38,45 +43,5 @@ public class BookUser {
 
     public BookUser() {
         this.time = LocalDateTime.now();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getTime() {
-        return time;
-    }
-
-    public void setTime(LocalDateTime time) {
-        this.time = time;
-    }
-
-    public BookUserType getType() {
-        return type;
-    }
-
-    public void setType(BookUserType type) {
-        this.type = type;
-    }
-
-    public Book getBook() {
-        return book;
-    }
-
-    public void setBook(Book book) {
-        this.book = book;
-    }
-
-    public BookstoreUser getUser() {
-        return user;
-    }
-
-    public void setUser(BookstoreUser user) {
-        this.user = user;
     }
 }

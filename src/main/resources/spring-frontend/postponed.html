@@ -130,7 +130,7 @@ p.error-browser
                             <div class="Cart-block Cart-block_price">
                                 <div class="Cart-priceTitle">Цена:
                                 </div>
-                                <div class="Cart-price Cart-price_old" th:text="${book.priceOld}">150 р.
+                                <div class="Cart-price Cart-price_old" th:if="${book.priceOld != book.discountPrice}" th:text="${book.priceOld}">150 р.
                                 </div>
                                 <div class="Cart-price" th:text="${book.discountPrice}">100 р.
                                 </div>

@@ -52,7 +52,9 @@ public class BookUserService {
                 }
             }
             bookstoreUserRepository.delete(bookstoreUserByHash);
-            response.addCookie(new Cookie("userHash", ""));
+            Cookie cookie = new Cookie("userHash", "");
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
         }
     }
 
@@ -126,6 +128,7 @@ public class BookUserService {
             changeBookStatusForUser(payload.getBooksIds(), defaultUser, type);
 
             Cookie cookie = new Cookie("userHash", defaultUser.getHash());
+            cookie.setHttpOnly(true);
             response.addCookie(cookie);
         }
     }

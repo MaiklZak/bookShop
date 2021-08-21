@@ -120,6 +120,12 @@
                     <li class="menu-item">
                         <a class="menu-link" href="/books/popular.html" th:href="@{/viewed}">Просмотренные</a>
                     </li>
+                    <li class="menu-item" sec:authorize="hasAuthority('ADMIN')">
+                        <a class="menu-link" th:href="@{/books/new}">Новая книга</a>
+                    </li>
+                    <li class="menu-item" sec:authorize="hasAuthority('ADMIN')">
+                        <a class="menu-link" th:href="@{/users}">Пользователи</a>
+                    </li>
                 </ul>
             </nav>
         </div>

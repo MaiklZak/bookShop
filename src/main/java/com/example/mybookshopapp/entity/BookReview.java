@@ -1,6 +1,8 @@
 package com.example.mybookshopapp.entity;
 
 import com.example.mybookshopapp.entity.security.BookstoreUser;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -10,6 +12,8 @@ import java.time.format.FormatStyle;
 import java.util.HashSet;
 import java.util.Set;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "book_review")
 public class BookReview implements Serializable {
@@ -33,7 +37,7 @@ public class BookReview implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String text;
 
-    @OneToMany(mappedBy = "bookReview")
+    @OneToMany(mappedBy = "bookReview", cascade = CascadeType.ALL)
     private Set<BookReviewLike> bookReviewLikes = new HashSet<>();
 
     public String getFormatTime() {
@@ -63,55 +67,6 @@ public class BookReview implements Serializable {
 
     public BookReview() {
         this.time = LocalDateTime.now();
-    }
-
-    public Set<BookReviewLike> getBookReviewLikes() {
-        return bookReviewLikes;
-    }
-
-    public void setBookReviewLikes(Set<BookReviewLike> bookReviewLikes) {
-        this.bookReviewLikes = bookReviewLikes;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Book getBook() {
-        return book;
-    }
-
-    public void setBook(Book book) {
-        this.book = book;
-    }
-
-    public BookstoreUser getUser() {
-        return user;
-    }
-
-    public void setUser(BookstoreUser user) {
-        this.user = user;
-    }
-
-    public LocalDateTime getTime() {
-
-        return time;
-    }
-
-    public void setTime(LocalDateTime time) {
-        this.time = time;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 
     @Override

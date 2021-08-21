@@ -1,15 +1,20 @@
 package com.example.mybookshopapp.entity;
 
 import com.example.mybookshopapp.entity.security.BookstoreUser;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "balance_transaction")
-public class BalanceTransaction {
+public class BalanceTransaction implements Serializable {
 
     @Id
     @SequenceGenerator(name = "seq_balance", sequenceName = "seq_balance", initialValue = 1001, allocationSize = 1)
@@ -46,53 +51,5 @@ public class BalanceTransaction {
 
     public String getFormatTime() {
         return time.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT));
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public BookstoreUser getUser() {
-        return user;
-    }
-
-    public void setUser(BookstoreUser user) {
-        this.user = user;
-    }
-
-    public LocalDateTime getTime() {
-        return time;
-    }
-
-    public void setTime(LocalDateTime time) {
-        this.time = time;
-    }
-
-    public Integer getValue() {
-        return value;
-    }
-
-    public void setValue(Integer value) {
-        this.value = value;
-    }
-
-    public Book getBook() {
-        return book;
-    }
-
-    public void setBook(Book book) {
-        this.book = book;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }

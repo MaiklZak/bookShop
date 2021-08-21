@@ -1,7 +1,12 @@
 package com.example.mybookshopapp.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Getter
+@Setter
 public class BooksPageDto {
 
     private Integer count;
@@ -10,21 +15,5 @@ public class BooksPageDto {
     public BooksPageDto(List<BookWithAuthorsDto> books) {
         this.books = books;
         this.count = books.size();
-    }
-
-    public Integer getCount() {
-        return count;
-    }
-
-    public void setCount(Integer count) {
-        this.count = count;
-    }
-
-    public List<BookWithAuthorsDto> getBooks() {
-        return books;
-    }
-
-    public void setBooks(List<BookWithAuthorsDto> books) {
-        this.books = books;
     }
 }

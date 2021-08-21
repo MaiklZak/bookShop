@@ -4,10 +4,7 @@ import com.example.mybookshopapp.dto.ChangeUserForm;
 import com.example.mybookshopapp.dto.ContactConfirmationPayload;
 import com.example.mybookshopapp.dto.ContactConfirmationResponse;
 import com.example.mybookshopapp.dto.RegistrationForm;
-import com.example.mybookshopapp.entity.security.BookstoreUser;
-import com.example.mybookshopapp.entity.security.BookstoreUserDetails;
-import com.example.mybookshopapp.entity.security.ContactType;
-import com.example.mybookshopapp.entity.security.UserContact;
+import com.example.mybookshopapp.entity.security.*;
 import com.example.mybookshopapp.errs.WrongCredentialsException;
 import com.example.mybookshopapp.repository.UserContactRepository;
 import com.example.mybookshopapp.repository.security.BookstoreUserRepository;
@@ -24,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -66,6 +64,7 @@ public class BookstoreUserRegister {
             BookstoreUser user = new BookstoreUser();
             user.setName(registrationForm.getName());
             user.setHash(UUID.randomUUID().toString());
+            user.setRoles(Collections.singleton(Role.USER));
             user = bookstoreUserRepository.save(user);
 
             UserContact userContactEmailForUser = new UserContact(user, userContactByEmail.getContact(), 1, ContactType.EMAIL);
@@ -158,7 +157,7 @@ public class BookstoreUserRegister {
         javaMailSender.send(message);
     }
 
-    public String approveCredentials(Integer updateUserId, Integer currentUserId, String code) throws WrongCredentialsException {
+    public void approveCredentials(Integer updateUserId, Integer currentUserId, String code) throws WrongCredentialsException {
         BookstoreUser currentUser = bookstoreUserRepository.getOne(currentUserId);
         UserContact currentUserContactEmail = userContactRepository.findByUserAndType(currentUser, ContactType.EMAIL);
         UserContact currentUserContactPhone = userContactRepository.findByUserAndType(currentUser, ContactType.PHONE);
@@ -194,8 +193,6 @@ public class BookstoreUserRegister {
         String token = generateTokenForUpdateUser(contact, codeForAuth);
 
         authenticateUpdatedUser(contact, token);
-
-        return token;
     }
 
     private boolean verifyPhone(String phone) {

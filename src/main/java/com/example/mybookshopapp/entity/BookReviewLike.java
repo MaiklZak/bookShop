@@ -1,11 +1,15 @@
 package com.example.mybookshopapp.entity;
 
 import com.example.mybookshopapp.entity.security.BookstoreUser;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "book_review_like")
 public class BookReviewLike implements Serializable {
@@ -38,45 +42,5 @@ public class BookReviewLike implements Serializable {
 
     public BookReviewLike() {
         this.time = LocalDateTime.now();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public BookReview getBookReview() {
-        return bookReview;
-    }
-
-    public void setBookReview(BookReview bookReview) {
-        this.bookReview = bookReview;
-    }
-
-    public BookstoreUser getUser() {
-        return user;
-    }
-
-    public void setUser(BookstoreUser user) {
-        this.user = user;
-    }
-
-    public LocalDateTime getTime() {
-        return time;
-    }
-
-    public void setTime(LocalDateTime time) {
-        this.time = time;
-    }
-
-    public Integer getValue() {
-        return value;
-    }
-
-    public void setValue(Integer value) {
-        this.value = value;
     }
 }

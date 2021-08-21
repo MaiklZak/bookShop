@@ -23,6 +23,9 @@ class ResourceStorageTests {
     @Value("${download.path}")
     String downloadPath;
 
+    @Value("${upload.book-image.path}")
+    String uploadPath;
+
     @Value("fw324dfw234234fwdf221")
     String bookFileHash;
 
@@ -38,14 +41,14 @@ class ResourceStorageTests {
 
     @Test
     void saveNewBookImage() throws IOException {
-        String slug = "slug";
+        String slug = "book-slug";
         String expected = "/book-covers/" + slug + ".png";
         MockMultipartFile mockMultipartFile =
                 new MockMultipartFile("image", "image.png", "img/png", "example picture".getBytes());
-        String actual = resourceStorage.saveNewBookImage(mockMultipartFile, slug);
+        String actual = resourceStorage.saveNewImage(mockMultipartFile, slug, uploadPath);
         assertNotNull(actual);
         assertEquals(expected, actual);
-        assertNull(resourceStorage.saveNewBookImage(new MockMultipartFile("empty", "".getBytes()), slug));
+        assertNull(resourceStorage.saveNewImage(new MockMultipartFile("empty", "".getBytes()), slug, uploadPath));
     }
 
     @Test
