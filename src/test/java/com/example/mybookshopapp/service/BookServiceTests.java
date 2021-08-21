@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
@@ -99,5 +100,45 @@ class BookServiceTests {
         for (Book book : bookListByTitle) {
             assertThat(book.getTitle()).contains(bookTitle);
         }
+    }
+
+    @Test
+    void getPageOfRecentBooks() {
+        Page<Book> bookPage = bookService.getPageOfRecentBooks(0, 20);
+        assertNotNull(bookPage);
+        assertFalse(bookPage.isEmpty());
+        assertEquals(20, bookPage.getContent().size());
+    }
+
+    @Test
+    void getPageOfRecommendedBooksForNotAuthenticatedUser() {
+       List<Book> bookList = bookService
+               .getPageOfRecommendedBooksForNotAuthenticatedUser("e4e09ed6ee8ca9c5cc773081f7ef0736781d1e9805cb13a3f436a6a1d7bf051d",0, 20);
+        assertNotNull(bookList);
+        assertFalse(bookList.isEmpty());
+        assertEquals(20, bookList.size());
+    }
+
+    @Test
+    void getPageOfPopularBooksForNotAuthenticatedUser() {
+        List<Book> bookList = bookService
+                .getPageOfPopularBooksForNotAuthenticatedUser("e4e09ed6ee8ca9c5cc773081f7ef0736781d1e9805cb13a3f436a6a1d7bf051d",0, 20);
+        assertNotNull(bookList);
+        assertFalse(bookList.isEmpty());
+        assertEquals(20, bookList.size());
+    }
+
+    @Test
+    void getBookByTag() {
+        List<Book> bookList = bookService.getBookByTag(0, 20, 1);
+        assertNotNull(bookList);
+        assertFalse(bookList.isEmpty());
+    }
+
+    @Test
+    void getBooksByGenreId() {
+        List<Book> bookList = bookService.getBooksByGenreId(0, 20, 1);
+        assertNotNull(bookList);
+        assertFalse(bookList.isEmpty());
     }
 }

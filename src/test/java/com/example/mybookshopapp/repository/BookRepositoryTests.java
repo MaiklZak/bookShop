@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @TestPropertySource("/application-test.properties")
@@ -51,5 +50,34 @@ class BookRepositoryTests {
         assertNotNull(bestSellersBooks);
         assertFalse(bestSellersBooks.isEmpty());
         assertThat(bestSellersBooks.size()).isGreaterThan(1);
+    }
+
+    @Test
+    void findBooksByPriceOldBetween() {
+        Integer minPrice = 500;
+        Integer maxPrice = 1000;
+        List<Book> bookListByPriceOld = bookRepository.findBooksByPriceOldBetween(minPrice, maxPrice);
+        assertNotNull(bookListByPriceOld);
+        assertFalse(bookListByPriceOld.isEmpty());
+        for (Book book : bookListByPriceOld) {
+            assertThat(book.getPriceOld()).isGreaterThanOrEqualTo(minPrice);
+            assertThat(book.getPriceOld()).isLessThanOrEqualTo(maxPrice);
+        }
+    }
+
+    @Test
+    void findBookBySlug() {
+        String token = "book-exa-004";
+        Book bookBySlug = bookRepository.findBookBySlug(token);
+        assertNotNull(bookBySlug);
+        assertEquals(token, bookBySlug.getSlug());
+    }
+
+    @Test
+    void deleteBySlug() {
+        String token = "book-goo-056";
+        bookRepository.deleteBySlug(token);
+        Book book = bookRepository.findBookBySlug(token);
+        assertNull(book);
     }
 }
