@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $('a.btn').click(function (event) {
+    $('#btn_download').click(function (event) {
         event.preventDefault();
         $('#myOverlay').fadeIn(297, function () {
             $('#myPopup').css('display', 'block').animate({opacity: 1}, 198);
